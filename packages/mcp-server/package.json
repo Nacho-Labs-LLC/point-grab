@@ -2,7 +2,11 @@
   "name": "@pointgrab/mcp-server",
   "version": "0.1.0",
   "description": "MCP stdio + webhook server for pointgrab",
-  "author": "Nate Richardson",
+  "author": {
+    "name": "Nate Richardson",
+    "email": "hello@naterichardson.com",
+    "url": "https://github.com/naterchrdsn"
+  },
   "license": "MIT",
   "type": "module",
   "repository": {
@@ -23,8 +27,16 @@
   },
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
-  "keywords": ["pointgrab", "mcp", "mcp-server", "ai", "developer-tools"],
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "pointgrab",
+    "mcp",
+    "mcp-server",
+    "ai",
+    "developer-tools"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

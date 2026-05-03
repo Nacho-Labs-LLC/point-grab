@@ -2,7 +2,11 @@
   "name": "@pointgrab/angular",
   "version": "0.1.0",
   "description": "Angular adapter for pointgrab",
-  "author": "Nate Richardson",
+  "author": {
+    "name": "Nate Richardson",
+    "email": "hello@naterichardson.com",
+    "url": "https://github.com/naterchrdsn"
+  },
   "license": "MIT",
   "type": "module",
   "repository": {
@@ -20,8 +24,16 @@
   },
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
-  "keywords": ["pointgrab", "angular", "element-picker", "developer-tools", "ai"],
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "pointgrab",
+    "angular",
+    "element-picker",
+    "developer-tools",
+    "ai"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

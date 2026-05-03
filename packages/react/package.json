@@ -2,7 +2,11 @@
   "name": "@pointgrab/react",
   "version": "0.1.0",
   "description": "React adapter for pointgrab",
-  "author": "Nate Richardson",
+  "author": {
+    "name": "Nate Richardson",
+    "email": "hello@naterichardson.com",
+    "url": "https://github.com/naterchrdsn"
+  },
   "license": "MIT",
   "type": "module",
   "repository": {

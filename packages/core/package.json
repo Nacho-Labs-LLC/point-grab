@@ -2,7 +2,11 @@
   "name": "pointgrab",
   "version": "0.1.0",
   "description": "Point at any element. Grab its full context. Send it to your AI agent.",
-  "author": "Nate Richardson",
+  "author": {
+    "name": "Nate Richardson",
+    "email": "hello@naterichardson.com",
+    "url": "https://github.com/naterchrdsn"
+  },
   "license": "MIT",
   "type": "module",
   "repository": {

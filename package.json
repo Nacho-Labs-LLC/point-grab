@@ -1,5 +1,11 @@
 {
   "private": true,
+  "author": {
+    "name": "Nate Richardson",
+    "email": "hello@naterichardson.com",
+    "url": "https://github.com/naterchrdsn"
+  },
+  "license": "MIT",
   "packageManager": "pnpm@9.15.0",
   "scripts": {
     "build": "turbo run build",
