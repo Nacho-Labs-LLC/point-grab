@@ -1,0 +1,45 @@
+{
+  "name": "pointgrab",
+  "version": "0.1.0",
+  "description": "Point at any element. Grab its full context. Send it to your AI agent.",
+  "author": "Nate Richardson",
+  "license": "MIT",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./global": {
+      "default": "./dist/index.global.js"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "pointgrab",
+    "element-picker",
+    "developer-tools",
+    "ai",
+    "mcp",
+    "component-inspector"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "lint": "tsc --noEmit",
+    "clean": "rm -rf dist .turbo"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  }
+}

@@ -1,0 +1,342 @@
+---
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import CodeBlock from "../../components/CodeBlock.astro";
+import {
+  codePointGrabOptions,
+  codeElementContext,
+  codeStackEntry,
+  codeHistoryEntry,
+  codePlugin,
+  codeTheme,
+  codeResolvers,
+  codeFilterTypes,
+  codePluginHooks,
+  codeExecOrder,
+  codeLoggerPlugin,
+  codeComponentResolver,
+  codeSourceResolver,
+  codeRegistration,
+  codeInit,
+  codeActivate,
+  codeSetOptions,
+  codeRegisterPlugin,
+} from "../../data/api-code";
+---
+
+<Base title="API Reference — pointgrab" description="Complete API reference for pointgrab.">
+  <Section padding="md">
+    <div class="mx-auto max-w-3xl">
+      <h1 class="text-4xl font-bold">API Reference</h1>
+      <p class="mt-4 text-lg text-text-muted">
+        Complete API reference for the pointgrab core library.
+      </p>
+
+      <!-- Table of contents -->
+      <nav class="mt-8 rounded-xl border border-border bg-bg-raised p-6">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-text-faint mb-3">On this page</h2>
+        <ul class="space-y-1 text-sm">
+          <li><a href="#core-api" class="text-pointgrab-blue hover:underline">Core API</a></li>
+          <li><a href="#types" class="text-pointgrab-blue hover:underline">Types</a></li>
+          <li><a href="#plugins" class="text-pointgrab-blue hover:underline">Plugins</a></li>
+          <li><a href="#custom-adapters" class="text-pointgrab-blue hover:underline">Custom adapters</a></li>
+        </ul>
+      </nav>
+    </div>
+  </Section>
+
+  <!-- Core API -->
+  <Section id="core-api" padding="md" background="raised">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Core API</h2>
+      <p class="mt-3 text-text-muted">
+        The <code class="text-amber font-mono">PointGrabAPI</code> interface is returned by <code class="text-amber font-mono">init()</code> and is the primary way to interact with pointgrab.
+      </p>
+
+      <!-- init -->
+      <div class="mt-8 rounded-xl border border-border bg-bg p-5">
+        <div class="font-mono text-sm">
+          <span class="text-pointgrab-blue">init</span>(options?: <span class="text-text-faint">Partial&lt;PointGrabOptions&gt;</span>): <span class="text-amber">PointGrabAPI</span>
+        </div>
+        <p class="mt-2 text-sm text-text-muted">
+          Create a new pointgrab instance. Accepts optional configuration. Returns a no-op API in production when <code class="text-amber font-mono">devOnly: true</code>.
+        </p>
+        <CodeBlock class="mt-3" lang="typescript" code={codeInit} />
+      </div>
+
+      <!-- activate / deactivate / toggle / isActive -->
+      <div class="mt-4 rounded-xl border border-border bg-bg p-5">
+        <div class="font-mono text-sm space-y-1">
+          <div><span class="text-pointgrab-blue">activate</span>(): <span class="text-text-faint">void</span></div>
+          <div><span class="text-pointgrab-blue">deactivate</span>(): <span class="text-text-faint">void</span></div>
+          <div><span class="text-pointgrab-blue">toggle</span>(): <span class="text-text-faint">void</span></div>
+          <div><span class="text-pointgrab-blue">isActive</span>(): <span class="text-amber">boolean</span></div>
+        </div>
+        <p class="mt-2 text-sm text-text-muted">
+          Programmatically control the inspector. <code class="text-amber font-mono">activate()</code> starts element picking, <code class="text-amber font-mono">deactivate()</code> stops it. <code class="text-amber font-mono">toggle()</code> switches between the two states.
+        </p>
+        <CodeBlock class="mt-3" lang="typescript" code={codeActivate} />
+      </div>
+
+      <!-- setOptions -->
+      <div class="mt-4 rounded-xl border border-border bg-bg p-5">
+        <div class="font-mono text-sm">
+          <span class="text-pointgrab-blue">setOptions</span>(opts: <span class="text-text-faint">Partial&lt;PointGrabOptions&gt;</span>): <span class="text-text-faint">void</span>
+        </div>
+        <p class="mt-2 text-sm text-text-muted">
+          Merge new options into the current configuration. Shallow merge &mdash; arrays are replaced, not concatenated.
+        </p>
+        <CodeBlock class="mt-3" lang="typescript" code={codeSetOptions} />
+      </div>
+
+      <!-- registerPlugin / unregisterPlugin -->
+      <div class="mt-4 rounded-xl border border-border bg-bg p-5">
+        <div class="font-mono text-sm space-y-1">
+          <div><span class="text-pointgrab-blue">registerPlugin</span>(plugin: <span class="text-amber">Plugin</span>): <span class="text-text-faint">void</span></div>
+          <div><span class="text-pointgrab-blue">unregisterPlugin</span>(name: <span class="text-text-faint">string</span>): <span class="text-text-faint">void</span></div>
+        </div>
+        <p class="mt-2 text-sm text-text-muted">
+          Register or remove a plugin by name. On registration, plugin options and theme overrides are applied, and the <code class="text-amber font-mono">setup()</code> function is called.
+        </p>
+        <CodeBlock class="mt-3" lang="typescript" code={codeRegisterPlugin} />
+      </div>
+
+      <!-- setComponentResolver / setSourceResolver -->
+      <div class="mt-4 rounded-xl border border-border bg-bg p-5">
+        <div class="font-mono text-sm space-y-1">
+          <div><span class="text-pointgrab-blue">setComponentResolver</span>(resolver: <span class="text-amber">ComponentResolver</span>): <span class="text-text-faint">void</span></div>
+          <div><span class="text-pointgrab-blue">setSourceResolver</span>(resolver: <span class="text-amber">SourceResolver</span>): <span class="text-text-faint">void</span></div>
+        </div>
+        <p class="mt-2 text-sm text-text-muted">
+          Set custom resolvers for component names and source file locations. Only one of each can be active &mdash; setting a new one replaces the previous. Framework adapters call these automatically.
+        </p>
+      </div>
+
+      <!-- showToolbar / hideToolbar / setThemeMode -->
+      <div class="mt-4 rounded-xl border border-border bg-bg p-5">
+        <div class="font-mono text-sm space-y-1">
+          <div><span class="text-pointgrab-blue">showToolbar</span>(): <span class="text-text-faint">void</span></div>
+          <div><span class="text-pointgrab-blue">hideToolbar</span>(): <span class="text-text-faint">void</span></div>
+          <div><span class="text-pointgrab-blue">setThemeMode</span>(mode: <span class="text-amber">ThemeMode</span>): <span class="text-text-faint">void</span></div>
+        </div>
+        <p class="mt-2 text-sm text-text-muted">
+          Control toolbar visibility and theme. <code class="text-amber font-mono">ThemeMode</code> is <code class="text-text-faint font-mono">'dark' | 'light' | 'system'</code>.
+        </p>
+      </div>
+
+      <!-- getHistory / clearHistory -->
+      <div class="mt-4 rounded-xl border border-border bg-bg p-5">
+        <div class="font-mono text-sm space-y-1">
+          <div><span class="text-pointgrab-blue">getHistory</span>(): <span class="text-amber">HistoryEntry[]</span></div>
+          <div><span class="text-pointgrab-blue">clearHistory</span>(): <span class="text-text-faint">void</span></div>
+        </div>
+        <p class="mt-2 text-sm text-text-muted">
+          Access the in-memory capture history (up to 50 entries). Returns a copy of the array.
+        </p>
+      </div>
+
+      <!-- dispose -->
+      <div class="mt-4 rounded-xl border border-border bg-bg p-5">
+        <div class="font-mono text-sm">
+          <span class="text-pointgrab-blue">dispose</span>(): <span class="text-text-faint">void</span>
+        </div>
+        <p class="mt-2 text-sm text-text-muted">
+          Tear down the entire pointgrab instance. Removes all event listeners, DOM elements, and calls plugin cleanup functions.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Types -->
+  <Section id="types" padding="md">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Types</h2>
+      <p class="mt-3 text-text-muted">Key interfaces exported from the <code class="text-amber font-mono">pointgrab</code> package.</p>
+
+      <!-- PointGrabOptions -->
+      <div class="mt-8">
+        <h3 class="text-lg font-semibold"><code class="font-mono text-amber">PointGrabOptions</code></h3>
+        <CodeBlock class="mt-3" lang="typescript" code={codePointGrabOptions} />
+      </div>
+
+      <!-- ElementContext -->
+      <div class="mt-8">
+        <h3 class="text-lg font-semibold"><code class="font-mono text-amber">ElementContext</code></h3>
+        <CodeBlock class="mt-3" lang="typescript" code={codeElementContext} />
+      </div>
+
+      <!-- ComponentStackEntry -->
+      <div class="mt-8">
+        <h3 class="text-lg font-semibold"><code class="font-mono text-amber">ComponentStackEntry</code></h3>
+        <CodeBlock class="mt-3" lang="typescript" code={codeStackEntry} />
+      </div>
+
+      <!-- HistoryEntry -->
+      <div class="mt-8">
+        <h3 class="text-lg font-semibold"><code class="font-mono text-amber">HistoryEntry</code></h3>
+        <CodeBlock class="mt-3" lang="typescript" code={codeHistoryEntry} />
+      </div>
+
+      <!-- Plugin -->
+      <div class="mt-8">
+        <h3 class="text-lg font-semibold"><code class="font-mono text-amber">Plugin</code></h3>
+        <CodeBlock class="mt-3" lang="typescript" code={codePlugin} />
+      </div>
+
+      <!-- Theme -->
+      <div class="mt-8">
+        <h3 class="text-lg font-semibold"><code class="font-mono text-amber">Theme</code></h3>
+        <CodeBlock class="mt-3" lang="typescript" code={codeTheme} />
+      </div>
+
+      <!-- ComponentResolver / SourceResolver -->
+      <div class="mt-8">
+        <h3 class="text-lg font-semibold"><code class="font-mono text-amber">ComponentResolver</code> / <code class="font-mono text-amber">SourceResolver</code></h3>
+        <CodeBlock class="mt-3" lang="typescript" code={codeResolvers} />
+      </div>
+
+      <!-- ClassFilter / HtmlCleaner -->
+      <div class="mt-8">
+        <h3 class="text-lg font-semibold"><code class="font-mono text-amber">ClassFilter</code> / <code class="font-mono text-amber">HtmlCleaner</code></h3>
+        <CodeBlock class="mt-3" lang="typescript" code={codeFilterTypes} />
+      </div>
+    </div>
+  </Section>
+
+  <!-- Plugins -->
+  <Section id="plugins" padding="md" background="raised">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Plugins</h2>
+      <p class="mt-3 text-text-muted">
+        Plugins extend pointgrab's behavior via lifecycle hooks. All hooks are optional &mdash; implement only the ones you need.
+      </p>
+
+      <!-- PluginHooks -->
+      <h3 class="text-lg font-semibold mt-8">Hook reference</h3>
+      <CodeBlock class="mt-3" lang="typescript" code={codePluginHooks} />
+
+      <div class="mt-6 overflow-x-auto rounded-xl border border-border">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-border bg-bg-muted">
+              <th class="px-4 py-2.5 text-left font-semibold text-text-heading">Hook</th>
+              <th class="px-4 py-2.5 text-left font-semibold text-text-heading">When it fires</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-border/50">
+              <td class="px-4 py-2.5 font-mono text-amber text-xs">onActivate()</td>
+              <td class="px-4 py-2.5 text-text-muted">Inspector enters selection mode</td>
+            </tr>
+            <tr class="border-b border-border/50 bg-bg-raised/50">
+              <td class="px-4 py-2.5 font-mono text-amber text-xs">onDeactivate()</td>
+              <td class="px-4 py-2.5 text-text-muted">Inspector exits selection mode</td>
+            </tr>
+            <tr class="border-b border-border/50">
+              <td class="px-4 py-2.5 font-mono text-amber text-xs">onElementHover(element)</td>
+              <td class="px-4 py-2.5 text-text-muted">Mouse moves over a new element. Fires frequently &mdash; keep fast.</td>
+            </tr>
+            <tr class="border-b border-border/50 bg-bg-raised/50">
+              <td class="px-4 py-2.5 font-mono text-amber text-xs">onElementSelect(context)</td>
+              <td class="px-4 py-2.5 text-text-muted">Element is clicked. Receives full <code class="text-text-faint font-mono">ElementContext</code>.</td>
+            </tr>
+            <tr class="border-b border-border/50">
+              <td class="px-4 py-2.5 font-mono text-amber text-xs">onBeforeCopy(context)</td>
+              <td class="px-4 py-2.5 text-text-muted">Just before the snippet is written to clipboard</td>
+            </tr>
+            <tr class="border-b border-border/50 bg-bg-raised/50">
+              <td class="px-4 py-2.5 font-mono text-amber text-xs">onCopySuccess(text, context, prompt?)</td>
+              <td class="px-4 py-2.5 text-text-muted">Clipboard write succeeded. <code class="text-text-faint font-mono">prompt</code> is set when comment mode is used.</td>
+            </tr>
+            <tr class="border-b border-border/50">
+              <td class="px-4 py-2.5 font-mono text-amber text-xs">onCopyError(error)</td>
+              <td class="px-4 py-2.5 text-text-muted">Clipboard write failed</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-2.5 font-mono text-amber text-xs">transformCopyContent(text, context)</td>
+              <td class="px-4 py-2.5 text-text-muted">Modify snippet before copy. Must return a string. Chains across plugins.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Execution order -->
+      <h3 class="text-lg font-semibold mt-8">Execution order</h3>
+      <p class="mt-2 text-sm text-text-muted">Plugins execute in registration order. The full lifecycle for a capture:</p>
+      <CodeBlock class="mt-3" lang="text" code={codeExecOrder} />
+
+      <!-- Writing a plugin -->
+      <h3 class="text-lg font-semibold mt-8">Writing a plugin</h3>
+      <CodeBlock class="mt-3" lang="typescript" code={codeLoggerPlugin} />
+    </div>
+  </Section>
+
+  <!-- Custom adapters -->
+  <Section id="custom-adapters" padding="md">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Custom adapters</h2>
+      <p class="mt-3 text-text-muted">
+        Adapters teach pointgrab how to extract component metadata from a specific framework. Implement two resolver functions and register them with the core engine.
+      </p>
+
+      <h3 class="text-lg font-semibold mt-8">ComponentResolver</h3>
+      <p class="mt-2 text-sm text-text-muted">
+        Given a DOM element, return the closest component name, host element, and ancestor stack. Walk up the DOM or framework tree collecting every component boundary.
+      </p>
+      <CodeBlock class="mt-3" lang="typescript" code={codeComponentResolver} />
+
+      <h3 class="text-lg font-semibold mt-8">SourceResolver</h3>
+      <p class="mt-2 text-sm text-text-muted">
+        Given a DOM element, return the source file path, line, and column for the closest component. Return nulls when unavailable.
+      </p>
+      <CodeBlock class="mt-3" lang="typescript" code={codeSourceResolver} />
+
+      <h3 class="text-lg font-semibold mt-8">Registration</h3>
+      <CodeBlock class="mt-3" lang="typescript" code={codeRegistration} />
+
+      <h3 class="text-lg font-semibold mt-8">Adapter checklist</h3>
+      <ul class="mt-3 space-y-2 text-sm text-text-muted">
+        <li class="flex items-start gap-2">
+          <span class="text-text-faint mt-0.5 shrink-0">&#9744;</span>
+          <span><code class="text-amber font-mono">resolveComponent()</code> handles missing debug info gracefully (returns nulls, never throws)</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-text-faint mt-0.5 shrink-0">&#9744;</span>
+          <span><code class="text-amber font-mono">resolveSource()</code> returns <code class="text-text-faint font-mono">{"{ filePath: null, line: null, column: null }"}</code> when unavailable</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-text-faint mt-0.5 shrink-0">&#9744;</span>
+          <span>Component stack walks up from element, closest first</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-text-faint mt-0.5 shrink-0">&#9744;</span>
+          <span><code class="text-amber font-mono">Set</code> prevents duplicate stack entries</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-text-faint mt-0.5 shrink-0">&#9744;</span>
+          <span><code class="text-amber font-mono">ClassFilter</code> strips framework-specific classes</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-text-faint mt-0.5 shrink-0">&#9744;</span>
+          <span><code class="text-amber font-mono">HtmlCleaner</code> regex pairs strip framework-specific attributes</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-text-faint mt-0.5 shrink-0">&#9744;</span>
+          <span>Init function is idempotent (returns existing instance on repeat calls)</span>
+        </li>
+        <li class="flex items-start gap-2">
+          <span class="text-text-faint mt-0.5 shrink-0">&#9744;</span>
+          <span>Production guard returns <code class="text-amber font-mono">createNoopApi()</code> when appropriate</span>
+        </li>
+      </ul>
+    </div>
+  </Section>
+
+  <!-- Page nav -->
+  <Section padding="sm">
+    <div class="mx-auto max-w-3xl flex items-center justify-between border-t border-border pt-8">
+      <a href="/docs/mcp" class="text-pointgrab-blue hover:underline text-sm font-medium">&larr; MCP Integration</a>
+      <span></span>
+    </div>
+  </Section>
+</Base>

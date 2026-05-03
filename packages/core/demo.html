@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PointGrab Demo</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --border: #334155;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #3b82f6;
+      --green: #22c55e;
+      --red: #ef4444;
+      --amber: #f59e0b;
+      --purple: #a855f7;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    .logo span { color: var(--accent); }
+    header nav { display: flex; gap: 20px; }
+    header nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.15s;
+    }
+    header nav a:hover { color: var(--text); }
+
+    /* ── Main Layout ── */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 24px 120px;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      color: var(--muted);
+      font-size: 15px;
+      margin-bottom: 32px;
+    }
+
+    /* ── Cards Grid ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: border-color 0.2s;
+    }
+    .card:hover { border-color: var(--accent); }
+    .card h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .card p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* ── Stat Badges ── */
+    .stats {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+    .stat {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .stat.green { background: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.2); color: var(--green); }
+    .stat.red { background: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.2); color: var(--red); }
+    .stat.amber { background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.2); color: var(--amber); }
+
+    /* ── Buttons ── */
+    .btn-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+    .btn {
+      padding: 7px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: #2563eb; }
+    .btn-secondary { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { background: #283548; }
+    .btn-danger { background: var(--red); color: #fff; }
+    .btn-danger:hover { background: #dc2626; }
+
+    /* ── Table ── */
+    .table-wrapper {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 40px;
+    }
+    .table-wrapper h2 {
+      font-size: 16px;
+      font-weight: 600;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th {
+      text-align: left;
+      padding: 10px 20px;
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 12px 20px;
+      border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+    }
+    tr:last-child td { border-bottom: none; }
+    td .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    td .status::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+    td .status.active::before { background: var(--green); }
+    td .status.pending::before { background: var(--amber); }
+    td .status.error::before { background: var(--red); }
+
+    /* ── Form ── */
+    .form-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 40px;
+    }
+    .form-section h2 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 4px; }
+    .form-group label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--muted);
+    }
+    .form-group input, .form-group select, .form-group textarea {
+      padding: 8px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font: inherit;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+      border-color: var(--accent);
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    .form-full { grid-column: 1 / -1; }
+
+    /* ── Animation Section ── */
+    .animation-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 40px;
+    }
+    .animation-section h2 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+    .animation-stage {
+      position: relative;
+      height: 200px;
+      background: var(--bg);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    /* Orbiting balls */
+    .orbit-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 160px;
+      height: 160px;
+      transform: translate(-50%, -50%);
+    }
+    .orbit-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 24px;
+      height: 24px;
+      background: var(--accent);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+    }
+    .orbiter {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      transform-origin: 0 0;
+    }
+    .orbiter-1 {
+      background: var(--green);
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.4);
+      animation: orbit-1 3s linear infinite;
+    }
+    .orbiter-2 {
+      background: var(--amber);
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.4);
+      animation: orbit-2 4s linear infinite;
+    }
+    .orbiter-3 {
+      background: var(--purple);
+      box-shadow: 0 0 12px rgba(168, 85, 247, 0.4);
+      animation: orbit-3 5s linear infinite;
+    }
+
+    @keyframes orbit-1 {
+      from { transform: rotate(0deg) translateX(50px) rotate(0deg); }
+      to   { transform: rotate(360deg) translateX(50px) rotate(-360deg); }
+    }
+    @keyframes orbit-2 {
+      from { transform: rotate(120deg) translateX(65px) rotate(-120deg); }
+      to   { transform: rotate(480deg) translateX(65px) rotate(-480deg); }
+    }
+    @keyframes orbit-3 {
+      from { transform: rotate(240deg) translateX(80px) rotate(-240deg); }
+      to   { transform: rotate(600deg) translateX(80px) rotate(-600deg); }
+    }
+
+    /* Moving bars */
+    .bars-container {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      padding: 0 20px;
+    }
+    .bar {
+      flex: 1;
+      background: var(--accent);
+      border-radius: 2px 2px 0 0;
+      opacity: 0.6;
+    }
+    .bar:nth-child(odd) { animation: bar-pulse 1.5s ease-in-out infinite; }
+    .bar:nth-child(even) { animation: bar-pulse 1.5s ease-in-out infinite 0.75s; }
+    .bar:nth-child(3n) { background: var(--green); }
+    .bar:nth-child(5n) { background: var(--purple); }
+
+    @keyframes bar-pulse {
+      0%, 100% { height: 8px; }
+      50% { height: 36px; }
+    }
+
+    /* Scrolling marquee text */
+    .marquee {
+      position: absolute;
+      top: 12px;
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .marquee-inner {
+      display: inline-block;
+      animation: marquee 15s linear infinite;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    @keyframes marquee {
+      0%   { transform: translateX(100%); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* Progress ring */
+    .progress-section {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-top: 16px;
+    }
+    .progress-ring-wrapper {
+      position: relative;
+      width: 64px;
+      height: 64px;
+    }
+    .progress-ring {
+      transform: rotate(-90deg);
+    }
+    .progress-ring circle {
+      fill: none;
+      stroke-width: 4;
+    }
+    .progress-ring .bg { stroke: var(--border); }
+    .progress-ring .fg {
+      stroke: var(--accent);
+      stroke-linecap: round;
+      stroke-dasharray: 157;
+      animation: progress-fill 3s ease-in-out infinite alternate;
+    }
+    @keyframes progress-fill {
+      0%   { stroke-dashoffset: 157; }
+      100% { stroke-dashoffset: 20; }
+    }
+    .progress-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      animation: counter 3s ease-in-out infinite alternate;
+    }
+    @keyframes counter {
+      0%   { content: '0%'; }
+      100% { content: '87%'; }
+    }
+    .counter-value {
+      animation: count-up 3s ease-in-out infinite alternate;
+    }
+    @keyframes count-up {
+      0%   { opacity: 0.3; }
+      100% { opacity: 1; }
+    }
+    .progress-info p { font-size: 13px; }
+    .progress-info p:first-child { font-weight: 500; }
+    .progress-info p:last-child { color: var(--muted); font-size: 12px; }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      color: var(--muted);
+      font-size: 12px;
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    /* ── Instructions Banner ── */
+    .instructions {
+      background: rgba(59, 130, 246, 0.08);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 32px;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .instructions strong { color: var(--accent); }
+    .instructions code {
+      background: rgba(59, 130, 246, 0.15);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    .instructions ul { margin-top: 8px; padding-left: 20px; }
+    .instructions li { color: var(--muted); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo"><span>point</span>grab</div>
+    <nav>
+      <a href="#">Dashboard</a>
+      <a href="#">Analytics</a>
+      <a href="#">Settings</a>
+      <a href="#">Docs</a>
+    </nav>
+  </header>
+
+  <main>
+    <h1>PointGrab Interactive Demo</h1>
+    <p class="subtitle">A real page with the real package loaded. Try selecting elements, commenting, and freezing animations.</p>
+
+    <div class="instructions">
+      <strong>How to use:</strong>
+      <ul>
+        <li>Hold <code>Cmd+C</code> (Mac) or <code>Ctrl+C</code> (Win) to activate selection mode</li>
+        <li>Hover over any element to see the overlay, click to copy</li>
+        <li>Press <code>F</code> while in selection mode to freeze animations</li>
+        <li>Use the toolbar to access <strong>Comment mode</strong> &mdash; annotate multiple elements, then copy as one prompt</li>
+        <li>Try the <strong>Actions</strong> menu for Copy Styles, Copy HTML, and more</li>
+      </ul>
+    </div>
+
+    <!-- Cards -->
+    <div class="grid">
+      <div class="card">
+        <h3>Revenue</h3>
+        <p>Monthly recurring revenue from all active subscriptions and one-time purchases.</p>
+        <div class="stats">
+          <span class="stat green">+12.5%</span>
+          <span class="stat">$48,200</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary">View Report</button>
+          <button class="btn btn-secondary">Export</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Active Users</h3>
+        <p>Users who logged in at least once in the last 30 days across all platforms.</p>
+        <div class="stats">
+          <span class="stat green">+8.3%</span>
+          <span class="stat">2,847</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-primary">Segments</button>
+          <button class="btn btn-secondary">Cohorts</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Error Rate</h3>
+        <p>Percentage of API requests returning 5xx errors in the last 24 hours.</p>
+        <div class="stats">
+          <span class="stat red">+0.3%</span>
+          <span class="stat amber">1.2%</span>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-danger">Investigate</button>
+          <button class="btn btn-secondary">Alerts</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+      <h2>Recent Deployments</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Service</th>
+            <th>Version</th>
+            <th>Status</th>
+            <th>Deployed</th>
+            <th>Author</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>api-gateway</td>
+            <td><code>v3.14.2</code></td>
+            <td><span class="status active">Active</span></td>
+            <td>2 min ago</td>
+            <td>sarah.k</td>
+          </tr>
+          <tr>
+            <td>auth-service</td>
+            <td><code>v2.8.0</code></td>
+            <td><span class="status active">Active</span></td>
+            <td>15 min ago</td>
+            <td>mike.r</td>
+          </tr>
+          <tr>
+            <td>billing-engine</td>
+            <td><code>v1.22.1</code></td>
+            <td><span class="status pending">Deploying</span></td>
+            <td>1 min ago</td>
+            <td>alex.c</td>
+          </tr>
+          <tr>
+            <td>notification-hub</td>
+            <td><code>v4.1.0</code></td>
+            <td><span class="status error">Failed</span></td>
+            <td>8 min ago</td>
+            <td>dana.l</td>
+          </tr>
+          <tr>
+            <td>analytics-worker</td>
+            <td><code>v2.0.3</code></td>
+            <td><span class="status active">Active</span></td>
+            <td>1 hr ago</td>
+            <td>james.w</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Form Section -->
+    <div class="form-section">
+      <h2>Create Webhook</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="webhook-name">Name</label>
+          <input type="text" id="webhook-name" placeholder="my-webhook" />
+        </div>
+        <div class="form-group">
+          <label for="webhook-url">Endpoint URL</label>
+          <input type="url" id="webhook-url" placeholder="https://example.com/hook" />
+        </div>
+        <div class="form-group">
+          <label for="webhook-event">Event Type</label>
+          <select id="webhook-event">
+            <option>deployment.completed</option>
+            <option>deployment.failed</option>
+            <option>alert.triggered</option>
+            <option>user.created</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="webhook-secret">Secret</label>
+          <input type="password" id="webhook-secret" placeholder="whsec_..." />
+        </div>
+        <div class="form-group form-full">
+          <label for="webhook-desc">Description</label>
+          <textarea id="webhook-desc" placeholder="What this webhook is used for..."></textarea>
+        </div>
+      </div>
+      <div class="btn-row" style="margin-top: 16px;">
+        <button class="btn btn-primary">Create Webhook</button>
+        <button class="btn btn-secondary">Cancel</button>
+      </div>
+    </div>
+
+    <!-- Animation Section -->
+    <div class="animation-section">
+      <h2>Live Metrics Visualization</h2>
+      <p style="color: var(--muted); font-size: 13px; margin-bottom: 16px;">
+        These elements are continuously animating. Press <code style="background: rgba(59, 130, 246, 0.15); padding: 2px 6px; border-radius: 4px; font-size: 12px;">F</code> while in selection mode to freeze the page and inspect animated elements.
+      </p>
+      <div class="animation-stage" id="animation-stage">
+        <div class="marquee">
+          <span class="marquee-inner">
+            THROUGHPUT: 14.2K req/s &nbsp;&bull;&nbsp; LATENCY P99: 42ms &nbsp;&bull;&nbsp;
+            MEMORY: 67% &nbsp;&bull;&nbsp; CPU: 34% &nbsp;&bull;&nbsp;
+            ACTIVE CONNECTIONS: 1,847 &nbsp;&bull;&nbsp; CACHE HIT RATE: 94.2% &nbsp;&bull;&nbsp;
+            QUEUE DEPTH: 23 &nbsp;&bull;&nbsp; ERROR RATE: 0.03% &nbsp;&bull;&nbsp;
+          </span>
+        </div>
+        <div class="orbit-container">
+          <div class="orbit-center" aria-label="Central node"></div>
+          <div class="orbiter orbiter-1" aria-label="Service node 1"></div>
+          <div class="orbiter orbiter-2" aria-label="Service node 2"></div>
+          <div class="orbiter orbiter-3" aria-label="Service node 3"></div>
+        </div>
+        <div class="bars-container" aria-label="Throughput bars">
+          <div class="bar" style="height: 12px;"></div>
+          <div class="bar" style="height: 20px;"></div>
+          <div class="bar" style="height: 8px;"></div>
+          <div class="bar" style="height: 28px;"></div>
+          <div class="bar" style="height: 15px;"></div>
+          <div class="bar" style="height: 32px;"></div>
+          <div class="bar" style="height: 10px;"></div>
+          <div class="bar" style="height: 24px;"></div>
+          <div class="bar" style="height: 18px;"></div>
+          <div class="bar" style="height: 30px;"></div>
+          <div class="bar" style="height: 14px;"></div>
+          <div class="bar" style="height: 26px;"></div>
+          <div class="bar" style="height: 8px;"></div>
+          <div class="bar" style="height: 22px;"></div>
+          <div class="bar" style="height: 16px;"></div>
+          <div class="bar" style="height: 34px;"></div>
+          <div class="bar" style="height: 12px;"></div>
+          <div class="bar" style="height: 20px;"></div>
+          <div class="bar" style="height: 28px;"></div>
+          <div class="bar" style="height: 10px;"></div>
+        </div>
+      </div>
+
+      <div class="progress-section">
+        <div class="progress-ring-wrapper">
+          <svg class="progress-ring" width="64" height="64" viewBox="0 0 64 64">
+            <circle class="bg" cx="32" cy="32" r="25" />
+            <circle class="fg" cx="32" cy="32" r="25" />
+          </svg>
+          <div class="progress-label">
+            <span class="counter-value">87%</span>
+          </div>
+        </div>
+        <div class="progress-info">
+          <p>Deployment Progress</p>
+          <p>Rolling update across 12 instances</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nested components to test component-like structure -->
+    <section class="card" aria-label="Notification preferences" style="margin-bottom: 40px;">
+      <h3>Notification Preferences</h3>
+      <p>Configure how and when you receive alerts from the system.</p>
+      <div style="margin-top: 16px; display: flex; flex-direction: column; gap: 12px;">
+        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 13px;">
+          <input type="checkbox" checked /> Email notifications
+        </label>
+        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 13px;">
+          <input type="checkbox" checked /> Slack integration
+        </label>
+        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 13px;">
+          <input type="checkbox" /> SMS alerts (critical only)
+        </label>
+        <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; font-size: 13px;">
+          <input type="checkbox" checked /> Browser push notifications
+        </label>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary">Save Preferences</button>
+      </div>
+    </section>
+
+    <!-- Image / media area -->
+    <div class="grid">
+      <div class="card" role="article">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='120' fill='%231e293b'%3E%3Crect width='280' height='120' rx='8'/%3E%3Ctext x='140' y='65' text-anchor='middle' fill='%2394a3b8' font-family='system-ui' font-size='14'%3EChart Placeholder%3C/text%3E%3C/svg%3E"
+             alt="Monthly revenue chart" style="width: 100%; border-radius: 8px; margin-bottom: 12px;" />
+        <h3>Revenue Trend</h3>
+        <p>Month-over-month revenue growth showing consistent upward trajectory since Q2.</p>
+      </div>
+      <div class="card" role="article">
+        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='280' height='120' fill='%231e293b'%3E%3Crect width='280' height='120' rx='8'/%3E%3Ctext x='140' y='65' text-anchor='middle' fill='%2394a3b8' font-family='system-ui' font-size='14'%3EHeatmap Placeholder%3C/text%3E%3C/svg%3E"
+             alt="User activity heatmap" style="width: 100%; border-radius: 8px; margin-bottom: 12px;" />
+        <h3>Activity Heatmap</h3>
+        <p>Peak usage hours concentrated between 9 AM and 2 PM across all time zones.</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    Built with <a href="#">pointgrab</a> &mdash; the element inspector for AI-assisted development
+  </footer>
+
+  <script src="./dist/index.global.js"></script>
+  <script>
+    // PointGrab is loaded via the global IIFE build.
+    // The default init() in index.global.ts already created an instance,
+    // but we'll create our own with custom settings for the demo.
+    const pg = PointGrab.init({
+      activationMode: 'hold',
+      devOnly: false,
+      showToolbar: true,
+      themeMode: 'dark',
+      mcpWebhook: false,
+    });
+    pg.showToolbar();
+  </script>
+</body>
+</html>

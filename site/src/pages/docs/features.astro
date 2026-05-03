@@ -1,0 +1,535 @@
+---
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import CodeBlock from "../../components/CodeBlock.astro";
+
+const from = "from";
+---
+
+<Base title="Features — pointgrab" description="Explore everything pointgrab can do.">
+  <Section padding="md">
+    <div class="mx-auto max-w-3xl">
+      <h1 class="text-4xl font-bold">Features</h1>
+      <p class="mt-4 text-lg text-text-muted">
+        Everything pointgrab can do, from element picking to AI integration.
+      </p>
+
+      <!-- Table of contents -->
+      <nav class="mt-8 rounded-xl border border-border bg-bg-raised p-6">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-text-faint mb-3">On this page</h2>
+        <ul class="grid grid-cols-1 gap-1 text-sm sm:grid-cols-2">
+          <li><a href="#element-picking" class="text-pointgrab-blue hover:underline">Element picking</a></li>
+          <li><a href="#smart-context" class="text-pointgrab-blue hover:underline">Smart context</a></li>
+          <li><a href="#component-stack" class="text-pointgrab-blue hover:underline">Component stack</a></li>
+          <li><a href="#source-resolution" class="text-pointgrab-blue hover:underline">Source file resolution</a></li>
+          <li><a href="#freeze-mode" class="text-pointgrab-blue hover:underline">Freeze mode</a></li>
+          <li><a href="#keyboard-shortcuts" class="text-pointgrab-blue hover:underline">Keyboard shortcuts</a></li>
+          <li><a href="#toolbar" class="text-pointgrab-blue hover:underline">Floating toolbar</a></li>
+          <li><a href="#history" class="text-pointgrab-blue hover:underline">History</a></li>
+          <li><a href="#actions-menu" class="text-pointgrab-blue hover:underline">Actions menu</a></li>
+          <li><a href="#comment-mode" class="text-pointgrab-blue hover:underline">Comment mode</a></li>
+          <li><a href="#plugins" class="text-pointgrab-blue hover:underline">Plugin system</a></li>
+          <li><a href="#theming" class="text-pointgrab-blue hover:underline">Theming</a></li>
+          <li><a href="#class-cleaning" class="text-pointgrab-blue hover:underline">Framework class cleaning</a></li>
+        </ul>
+      </nav>
+    </div>
+  </Section>
+
+  <!-- Element picking -->
+  <Section id="element-picking" padding="md" background="raised">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Element picking</h2>
+      <p class="mt-3 text-text-muted">
+        Hold your activation key, hover any element, click to capture. The picker highlights elements in real time with a bounding-box overlay and label.
+      </p>
+
+      <!-- Visual mockup -->
+      <div class="mt-6 rounded-xl border border-border bg-bg-muted p-6">
+        <div class="relative rounded-lg border border-dashed border-pointgrab-blue/40 p-8">
+          <div class="relative inline-block">
+            <div class="rounded-lg border-2 border-pointgrab-blue bg-pointgrab-blue/5 px-6 py-4">
+              <div class="text-sm font-mono text-text">&lt;div class="user-card"&gt;</div>
+              <div class="ml-4 text-sm font-mono text-text-muted">&lt;h3&gt;Jane Doe&lt;/h3&gt;</div>
+              <div class="text-sm font-mono text-text">&lt;/div&gt;</div>
+            </div>
+            <div class="absolute -top-7 left-0 rounded bg-pointgrab-blue px-2 py-0.5 text-xs font-mono text-white whitespace-nowrap">
+              div.user-card &mdash; UserCard &mdash; src/UserCard.tsx
+            </div>
+          </div>
+          <div class="mt-4 text-xs text-text-faint">Crosshair cursor active during selection</div>
+        </div>
+      </div>
+
+      <ul class="mt-4 space-y-1 text-sm text-text-muted list-disc list-inside">
+        <li>Overlay shows bounding box, tag name, component name, and source file</li>
+        <li>Crosshair cursor replaces the default pointer during selection mode</li>
+        <li>Click events are captured and prevented from reaching your app</li>
+        <li>Toolbar and overlay elements are automatically excluded from picking</li>
+      </ul>
+    </div>
+  </Section>
+
+  <!-- Smart context -->
+  <Section id="smart-context" padding="md">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Smart context</h2>
+      <p class="mt-3 text-text-muted">
+        Clicking an element builds a rich context: cleaned HTML, CSS selector, component name, file path, line number, and the full component ancestor chain. Copied to clipboard as a formatted snippet.
+      </p>
+
+      <CodeBlock class="mt-6" lang="text" code={`<div class="user-card">
+  <h3>Jane Doe</h3>
+  <p class="email">jane@example.com</p>
+</div>
+
+in UserCard at src/components/UserCard.tsx:18
+in Dashboard at src/pages/Dashboard.tsx:42
+in App at src/App.tsx:7`} />
+
+      <ul class="mt-4 space-y-1 text-sm text-text-muted list-disc list-inside">
+        <li>HTML truncated to <code class="text-amber font-mono">maxContextLines</code> (default 20)</li>
+        <li>Framework-specific attributes automatically stripped</li>
+        <li>CSS selector generated as <code class="text-amber font-mono">tag#id.class1.class2</code></li>
+        <li>Component resolution runs on every hover for instant feedback</li>
+      </ul>
+    </div>
+  </Section>
+
+  <!-- Component stack -->
+  <Section id="component-stack" padding="md" background="raised">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Component stack</h2>
+      <p class="mt-3 text-text-muted">
+        Every capture includes the full ancestor component chain. The stack walks up the DOM (or framework tree) from the selected element, collecting every component boundary with name and source location.
+      </p>
+
+      <div class="mt-6 rounded-xl border border-border bg-bg-muted p-6">
+        <div class="space-y-0">
+          <div class="flex items-center gap-3 border-l-2 border-pointgrab-blue pl-4 py-2">
+            <span class="font-mono text-sm text-pointgrab-blue">UserCard</span>
+            <span class="font-mono text-xs text-text-faint">src/components/UserCard.tsx:18</span>
+          </div>
+          <div class="flex items-center gap-3 border-l-2 border-pointgrab-blue/60 pl-4 py-2">
+            <span class="font-mono text-sm text-pointgrab-blue/80">Dashboard</span>
+            <span class="font-mono text-xs text-text-faint">src/pages/Dashboard.tsx:42</span>
+          </div>
+          <div class="flex items-center gap-3 border-l-2 border-pointgrab-blue/30 pl-4 py-2">
+            <span class="font-mono text-sm text-pointgrab-blue/60">App</span>
+            <span class="font-mono text-xs text-text-faint">src/App.tsx:7</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="mt-4 text-sm text-text-faint">
+        Each <code class="text-amber font-mono">ComponentStackEntry</code> includes
+        <code class="text-amber font-mono">name</code>, <code class="text-amber font-mono">filePath</code>,
+        <code class="text-amber font-mono">line</code>, and <code class="text-amber font-mono">column</code>.
+        AI agents use this to navigate your codebase without guessing file locations.
+      </p>
+    </div>
+  </Section>
+
+  <!-- Source file resolution -->
+  <Section id="source-resolution" padding="md">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Source file resolution</h2>
+      <p class="mt-3 text-text-muted">
+        Each framework adapter resolves source locations using framework-specific debug data. File paths and line numbers are included for both the selected component and every ancestor.
+      </p>
+
+      <div class="mt-6 overflow-x-auto rounded-xl border border-border">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-border bg-bg-raised">
+              <th class="px-4 py-3 text-left font-semibold text-text-heading">Framework</th>
+              <th class="px-4 py-3 text-left font-semibold text-text-heading">Source strategy</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-border/50">
+              <td class="px-4 py-3 font-mono text-amber">React</td>
+              <td class="px-4 py-3 text-text-muted"><code class="text-text-faint font-mono">{"fiber._debugSource.{ fileName, lineNumber, columnNumber }"}</code></td>
+            </tr>
+            <tr class="border-b border-border/50 bg-bg-raised/50">
+              <td class="px-4 py-3 font-mono text-amber">Angular</td>
+              <td class="px-4 py-3 text-text-muted">Build-time <code class="text-text-faint font-mono">__POINTGRAB_SOURCE_MAP__</code> (component name to file + line)</td>
+            </tr>
+            <tr class="border-b border-border/50">
+              <td class="px-4 py-3 font-mono text-amber">Vue</td>
+              <td class="px-4 py-3 text-text-muted"><code class="text-text-faint font-mono">type.__file</code> on component options (file path only)</td>
+            </tr>
+            <tr class="border-b border-border/50 bg-bg-raised/50">
+              <td class="px-4 py-3 font-mono text-amber">Svelte</td>
+              <td class="px-4 py-3 text-text-muted"><code class="text-text-faint font-mono">{"__svelte_meta.loc.{ file, line, column }"}</code></td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 font-mono text-amber">Web Components</td>
+              <td class="px-4 py-3 text-text-muted"><code class="text-text-faint font-mono">Constructor.__source</code> or global <code class="text-text-faint font-mono">__POINTGRAB_WC_SOURCE_MAP__</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="mt-4 text-sm text-text-faint">
+        All source data is dev-only. Adapters return <code class="text-amber font-mono">null</code> gracefully in production.
+      </p>
+    </div>
+  </Section>
+
+  <!-- Freeze mode -->
+  <Section id="freeze-mode" padding="md" background="raised">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Freeze mode</h2>
+      <p class="mt-3 text-text-muted">
+        Press <kbd class="inline-flex items-center rounded border border-border bg-bg-muted px-1.5 py-0.5 font-mono text-xs text-text">F</kbd>
+        while the inspector is active to freeze the page. The inspector stays active even after releasing the activation key. Press
+        <kbd class="inline-flex items-center rounded border border-border bg-bg-muted px-1.5 py-0.5 font-mono text-xs text-text">F</kbd>
+        again to unfreeze.
+      </p>
+
+      <div class="mt-6 rounded-xl border border-border bg-bg-muted p-6">
+        <div class="flex items-center gap-4">
+          <div class="rounded-lg border border-amber/40 bg-amber/5 px-4 py-3">
+            <div class="flex items-center gap-2">
+              <div class="h-2 w-2 rounded-full bg-amber animate-pulse"></div>
+              <span class="font-mono text-xs text-amber">FROZEN</span>
+            </div>
+            <p class="mt-1 text-xs text-text-faint">Selection mode stays active</p>
+          </div>
+          <div class="text-sm text-text-faint">
+            Useful for capturing hover states, tooltips, dropdowns, and other transient UI
+          </div>
+        </div>
+      </div>
+
+      <p class="mt-4 text-sm text-text-faint">
+        In hold mode, releasing the activation key normally deactivates the inspector. Freeze overrides this behavior until you press
+        <kbd class="inline-flex items-center rounded border border-border bg-bg-muted px-1 py-0.5 font-mono text-xs text-text">F</kbd>
+        again or click an element.
+      </p>
+    </div>
+  </Section>
+
+  <!-- Keyboard shortcuts -->
+  <Section id="keyboard-shortcuts" padding="md">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Keyboard shortcuts</h2>
+      <p class="mt-3 text-text-muted">
+        The activation key is fully customizable. Use any combination of modifier keys plus a letter or symbol.
+      </p>
+
+      <div class="mt-6 overflow-x-auto rounded-xl border border-border">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-border bg-bg-raised">
+              <th class="px-4 py-3 text-left font-semibold text-text-heading">Mode</th>
+              <th class="px-4 py-3 text-left font-semibold text-text-heading">Behavior</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-border/50">
+              <td class="px-4 py-3 font-mono text-amber">hold</td>
+              <td class="px-4 py-3 text-text-muted">Activates on keydown, deactivates on keyup. Optional <code class="text-amber font-mono">keyHoldDuration</code> for delayed activation.</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 font-mono text-amber">toggle</td>
+              <td class="px-4 py-3 text-text-muted">Each keypress toggles the inspector on or off.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <CodeBlock class="mt-6" lang="typescript" code={`init({
+  activationKey: 'Alt+I',
+  activationMode: 'toggle',
+  keyHoldDuration: 300,  // 300ms hold required (hold mode only)
+});`} />
+
+      <p class="mt-4 text-sm text-text-faint">
+        Default:
+        <kbd class="inline-flex items-center rounded border border-border bg-bg-muted px-1 py-0.5 font-mono text-xs text-text">Cmd+C</kbd> on Mac,
+        <kbd class="inline-flex items-center rounded border border-border bg-bg-muted px-1 py-0.5 font-mono text-xs text-text">Ctrl+C</kbd> on Windows.
+        The inspector intercepts the shortcut and prevents default copy behavior while active.
+      </p>
+    </div>
+  </Section>
+
+  <!-- Floating toolbar -->
+  <Section id="toolbar" padding="md" background="raised">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Floating toolbar</h2>
+      <p class="mt-3 text-text-muted">
+        A mini floating toolbar appears when the inspector is first activated. Quick access to all features without memorizing shortcuts.
+      </p>
+
+      <!-- Toolbar mockup -->
+      <div class="mt-6 rounded-xl border border-border bg-bg-muted p-6 flex justify-center">
+        <div class="inline-flex items-center gap-1 rounded-full border border-border bg-bg px-2 py-1.5 shadow-xl">
+          <button class="rounded-full p-1.5 text-pointgrab-blue hover:bg-bg-muted">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+          </button>
+          <button class="rounded-full p-1.5 text-text-faint hover:bg-bg-muted">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </button>
+          <button class="rounded-full p-1.5 text-text-faint hover:bg-bg-muted">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"></path></svg>
+          </button>
+          <button class="rounded-full p-1.5 text-text-faint hover:bg-bg-muted">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          </button>
+          <button class="rounded-full p-1.5 text-text-faint hover:bg-bg-muted">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-6 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
+        <div class="rounded-lg border border-border bg-bg px-4 py-3">
+          <span class="font-semibold text-text-heading">Selection mode</span>
+          <span class="text-text-muted"> &mdash; toggle the element picker on/off</span>
+        </div>
+        <div class="rounded-lg border border-border bg-bg px-4 py-3">
+          <span class="font-semibold text-text-heading">History</span>
+          <span class="text-text-muted"> &mdash; browse and re-copy past captures</span>
+        </div>
+        <div class="rounded-lg border border-border bg-bg px-4 py-3">
+          <span class="font-semibold text-text-heading">Actions</span>
+          <span class="text-text-muted"> &mdash; copy element, styles, HTML, or add comment</span>
+        </div>
+        <div class="rounded-lg border border-border bg-bg px-4 py-3">
+          <span class="font-semibold text-text-heading">Freeze</span>
+          <span class="text-text-muted"> &mdash; pause animations, keep inspector active</span>
+        </div>
+        <div class="rounded-lg border border-border bg-bg px-4 py-3">
+          <span class="font-semibold text-text-heading">Theme toggle</span>
+          <span class="text-text-muted"> &mdash; cycle between dark, light, and system</span>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- History -->
+  <Section id="history" padding="md">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">History</h2>
+      <p class="mt-3 text-text-muted">
+        The last 50 captures are stored in memory. Click the history button in the toolbar to browse past grabs. Click any entry to re-copy it to clipboard.
+      </p>
+
+      <div class="mt-6 rounded-xl border border-border bg-bg-raised p-6">
+        <div class="w-full max-w-sm space-y-2">
+          <div class="rounded-lg border border-border bg-bg px-3 py-2 hover:border-pointgrab-blue/50 cursor-pointer transition-colors">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-sm text-pointgrab-blue">UserCard</span>
+              <span class="text-xs text-text-faint">2s ago</span>
+            </div>
+            <div class="font-mono text-xs text-text-faint truncate">src/components/UserCard.tsx:18</div>
+          </div>
+          <div class="rounded-lg border border-border bg-bg px-3 py-2 hover:border-pointgrab-blue/50 cursor-pointer transition-colors">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-sm text-pointgrab-blue">NavBar</span>
+              <span class="text-xs text-text-faint">45s ago</span>
+            </div>
+            <div class="font-mono text-xs text-text-faint truncate">src/components/NavBar.tsx:7</div>
+          </div>
+          <div class="rounded-lg border border-border bg-bg px-3 py-2 hover:border-pointgrab-blue/50 cursor-pointer transition-colors">
+            <div class="flex items-center justify-between">
+              <span class="font-mono text-sm text-pointgrab-blue">Sidebar</span>
+              <span class="text-xs text-text-faint">2m ago</span>
+            </div>
+            <div class="font-mono text-xs text-text-faint truncate">src/layout/Sidebar.tsx:12</div>
+          </div>
+        </div>
+      </div>
+
+      <p class="mt-4 text-sm text-text-faint">
+        Each <code class="text-amber font-mono">HistoryEntry</code> stores the full
+        <code class="text-amber font-mono">HistoryContext</code> (HTML, component name, file, stack, selector, classes)
+        plus the formatted snippet and a timestamp. Access programmatically via
+        <code class="text-amber font-mono">api.getHistory()</code>.
+      </p>
+    </div>
+  </Section>
+
+  <!-- Actions menu -->
+  <Section id="actions-menu" padding="md" background="raised">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Actions menu</h2>
+      <p class="mt-3 text-text-muted">
+        The actions dropdown provides multiple copy modes. If you already have a selected element, the action runs immediately. Otherwise, it activates the picker first.
+      </p>
+
+      <div class="mt-6 rounded-xl border border-border bg-bg-muted p-6">
+        <div class="w-full max-w-xs space-y-1">
+          <div class="rounded-lg bg-bg px-3 py-2 hover:bg-bg-raised cursor-pointer transition-colors flex items-center gap-2">
+            <svg class="h-4 w-4 text-pointgrab-blue shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+            <span class="text-sm text-text">Copy element</span>
+            <span class="ml-auto text-xs text-text-faint">Full context</span>
+          </div>
+          <div class="rounded-lg bg-bg px-3 py-2 hover:bg-bg-raised cursor-pointer transition-colors flex items-center gap-2">
+            <svg class="h-4 w-4 text-text-faint shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343"></path></svg>
+            <span class="text-sm text-text">Copy styles</span>
+            <span class="ml-auto text-xs text-text-faint">Computed CSS</span>
+          </div>
+          <div class="rounded-lg bg-bg px-3 py-2 hover:bg-bg-raised cursor-pointer transition-colors flex items-center gap-2">
+            <svg class="h-4 w-4 text-text-faint shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
+            <span class="text-sm text-text">Copy HTML</span>
+            <span class="ml-auto text-xs text-text-faint">Markup only</span>
+          </div>
+          <div class="rounded-lg bg-bg px-3 py-2 hover:bg-bg-raised cursor-pointer transition-colors flex items-center gap-2">
+            <svg class="h-4 w-4 text-text-faint shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
+            <span class="text-sm text-text">Add comment</span>
+            <span class="ml-auto text-xs text-text-faint">Annotate</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Section>
+
+  <!-- Comment mode -->
+  <Section id="comment-mode" padding="md">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Comment mode</h2>
+      <p class="mt-3 text-text-muted">
+        Select "Add comment" from the actions menu to annotate a capture with text feedback. After selecting an element, a comment popover appears. The comment is appended to the snippet and included in the MCP webhook payload via the <code class="text-amber font-mono">prompt</code> parameter on <code class="text-amber font-mono">onCopySuccess</code>.
+      </p>
+
+      <CodeBlock class="mt-6" lang="text" code={`<button class="submit-btn">Submit</button>
+
+in SubmitButton at src/components/SubmitButton.tsx:12
+
+Comment: Make this button disabled while the form is submitting`} />
+    </div>
+  </Section>
+
+  <!-- Plugin system -->
+  <Section id="plugins" padding="md" background="raised">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Plugin system</h2>
+      <p class="mt-3 text-text-muted">
+        Extend pointgrab with custom plugins. Every lifecycle event has a corresponding hook. Plugins can react to events, modify copied content, override theme colors, and manage setup/teardown.
+      </p>
+
+      <CodeBlock class="mt-6" lang="typescript" code={`import { init } ${from} 'pointgrab';
+import type { Plugin } ${from} 'pointgrab';
+
+const myPlugin: Plugin = {
+  name: 'my-plugin',
+  hooks: {
+    onCopySuccess(text, context) {
+      console.log('Captured:', context.componentName);
+    },
+    transformCopyContent(text, context) {
+      return text + '\\n// Custom footer';
+    },
+  },
+};
+
+const inspector = init();
+inspector.registerPlugin(myPlugin);`} />
+
+      <p class="mt-4 text-sm text-text-faint">
+        The built-in MCP webhook is itself a plugin &mdash; registered when
+        <code class="text-amber font-mono">mcpWebhook: true</code>. See the
+        <a href="/docs/api#plugins" class="text-pointgrab-blue hover:underline">API reference</a> for the full hook list and plugin interface.
+      </p>
+    </div>
+  </Section>
+
+  <!-- Theming -->
+  <Section id="theming" padding="md">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Theming</h2>
+      <p class="mt-3 text-text-muted">
+        Three built-in modes: dark, light, and system (follows <code class="text-amber font-mono">prefers-color-scheme</code>). Toggle via the toolbar or programmatically.
+      </p>
+
+      <CodeBlock class="mt-6" lang="typescript" code={`inspector.setThemeMode('light');
+inspector.setThemeMode('system');`} />
+
+      <p class="mt-4 text-text-muted">
+        For full control, plugins can override any subset of the <code class="text-amber font-mono">Theme</code> interface:
+      </p>
+
+      <CodeBlock class="mt-3" lang="typescript" code={`const myTheme: Plugin = {
+  name: 'custom-theme',
+  theme: {
+    overlayBorderColor: '#89b4fa',
+    overlayBgColor: 'rgba(137, 180, 250, 0.1)',
+    toolbarBgColor: '#1e1e2e',
+    toolbarTextColor: '#cdd6f4',
+    toolbarAccentColor: '#89b4fa',
+  },
+};`} />
+
+      <p class="mt-4 text-sm text-text-faint">
+        12 CSS custom properties available: overlay border/background, label background/text, toast background/text, toolbar background/text/accent, popover background/text/border.
+        See <a href="/docs/api#types" class="text-pointgrab-blue hover:underline">Theme type</a> for the full list.
+      </p>
+    </div>
+  </Section>
+
+  <!-- Framework class cleaning -->
+  <Section id="class-cleaning" padding="md" background="raised">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Framework class cleaning</h2>
+      <p class="mt-3 text-text-muted">
+        Each adapter automatically strips framework-internal CSS classes and HTML attributes from captured output. Your AI agent sees clean, human-written markup.
+      </p>
+
+      <div class="mt-6 overflow-x-auto rounded-xl border border-border">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-border bg-bg-muted">
+              <th class="px-4 py-3 text-left font-semibold text-text-heading">Adapter</th>
+              <th class="px-4 py-3 text-left font-semibold text-text-heading">Stripped classes</th>
+              <th class="px-4 py-3 text-left font-semibold text-text-heading">Stripped attributes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-border/50">
+              <td class="px-4 py-3 font-mono text-amber">Angular</td>
+              <td class="px-4 py-3 font-mono text-xs text-text-faint">ng-*, _ng*</td>
+              <td class="px-4 py-3 font-mono text-xs text-text-faint">_nghost-*, _ngcontent-*</td>
+            </tr>
+            <tr class="border-b border-border/50 bg-bg-raised/50">
+              <td class="px-4 py-3 font-mono text-amber">React</td>
+              <td class="px-4 py-3 font-mono text-xs text-text-faint">r-*</td>
+              <td class="px-4 py-3 font-mono text-xs text-text-faint">data-reactroot, data-reactid</td>
+            </tr>
+            <tr class="border-b border-border/50">
+              <td class="px-4 py-3 font-mono text-amber">Vue</td>
+              <td class="px-4 py-3 font-mono text-xs text-text-faint">(none)</td>
+              <td class="px-4 py-3 font-mono text-xs text-text-faint">data-v-*</td>
+            </tr>
+            <tr class="border-b border-border/50 bg-bg-raised/50">
+              <td class="px-4 py-3 font-mono text-amber">Svelte</td>
+              <td class="px-4 py-3 font-mono text-xs text-text-faint">s-*, svelte-*</td>
+              <td class="px-4 py-3 font-mono text-xs text-text-faint">svelte-*</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 font-mono text-amber">Web Components</td>
+              <td class="px-4 py-3 font-mono text-xs text-text-faint">(pass-through)</td>
+              <td class="px-4 py-3 font-mono text-xs text-text-faint">(pass-through)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="mt-4 text-sm text-text-faint">
+        Add custom filters via <code class="text-amber font-mono">classFilters</code> and
+        <code class="text-amber font-mono">htmlCleaners</code> in options. A class is kept only if every
+        <code class="text-amber font-mono">ClassFilter</code> returns <code class="text-amber font-mono">true</code>.
+      </p>
+    </div>
+  </Section>
+
+  <!-- Page nav -->
+  <Section padding="sm">
+    <div class="mx-auto max-w-3xl flex items-center justify-between border-t border-border pt-8">
+      <a href="/docs/install" class="text-pointgrab-blue hover:underline text-sm font-medium">&larr; Installation</a>
+      <a href="/docs/mcp" class="text-pointgrab-blue hover:underline text-sm font-medium">MCP Integration &rarr;</a>
+    </div>
+  </Section>
+</Base>

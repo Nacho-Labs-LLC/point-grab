@@ -1,0 +1,10 @@
+export const Z_INDEX_FREEZE = 2147483644;
+export const Z_INDEX_CROSSHAIR = 2147483645;
+export const Z_INDEX_OVERLAY = 2147483646;
+export const Z_INDEX_LABEL = 2147483647;
+export const Z_INDEX_TOOLBAR = 2147483646;
+export const Z_INDEX_TOAST = 2147483647;
+export const Z_INDEX_POPOVER = 2147483647;
+
+export const TOOLBAR_TOAST_OFFSET = '72px';
+export const TOOLBAR_POPOVER_OFFSET = '68px';

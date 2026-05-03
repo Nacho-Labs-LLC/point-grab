@@ -1,0 +1,68 @@
+---
+const currentYear = new Date().getFullYear();
+
+const footerLinks = {
+  Product: [
+    { label: "Features", href: "/#features" },
+    { label: "Frameworks", href: "/#frameworks" },
+    { label: "MCP Integration", href: "/#mcp" },
+  ],
+  Docs: [
+    { label: "Installation", href: "/docs/install" },
+    { label: "Features Guide", href: "/docs/features" },
+    { label: "API Reference", href: "/docs/api" },
+  ],
+  Community: [
+    { label: "GitHub", href: "https://github.com/pointgrab/pointgrab", external: true },
+    { label: "Issues", href: "https://github.com/pointgrab/pointgrab/issues", external: true },
+    { label: "Discussions", href: "https://github.com/pointgrab/pointgrab/discussions", external: true },
+  ],
+};
+---
+
+<footer class="border-t border-border/50 bg-bg">
+  <div class="mx-auto max-w-[var(--width-content)] px-6 py-16">
+    <div class="grid gap-12 md:grid-cols-4">
+      <!-- Brand -->
+      <div class="md:col-span-1">
+        <a href="/" class="inline-block text-lg font-bold tracking-tight font-mono">
+          <span class="text-text-heading">point</span><span class="text-pointgrab-blue">grab</span>
+        </a>
+        <p class="mt-3 text-sm leading-relaxed text-text-muted">
+          Platform-agnostic web element inspector for AI coding agents.
+        </p>
+      </div>
+
+      <!-- Link columns -->
+      {Object.entries(footerLinks).map(([heading, links]) => (
+        <div>
+          <h3 class="mb-4 text-sm font-semibold text-text-heading">{heading}</h3>
+          <ul class="flex flex-col gap-3">
+            {links.map((link) => (
+              <li>
+                <a
+                  href={link.href}
+                  class="text-sm text-text-muted transition-colors hover:text-text-heading"
+                  {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="mt-16 flex flex-col items-center justify-between gap-4 border-t border-border/50 pt-8 text-sm text-text-faint md:flex-row">
+      <p>&copy; {currentYear} pointgrab. MIT License.</p>
+      <p>
+        Built with
+        <a href="https://astro.build" target="_blank" rel="noopener noreferrer" class="text-text-muted hover:text-text-heading transition-colors">Astro</a>
+        &amp;
+        <a href="https://tailwindcss.com" target="_blank" rel="noopener noreferrer" class="text-text-muted hover:text-text-heading transition-colors">Tailwind CSS</a>
+      </p>
+    </div>
+  </div>
+</footer>

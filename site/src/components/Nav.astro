@@ -1,0 +1,138 @@
+---
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+
+const navLinks = [
+  { label: "Features", href: "/#features" },
+  { label: "Frameworks", href: "/#frameworks" },
+  { label: "MCP", href: "/#mcp" },
+  { label: "Docs", href: "/docs/install" },
+  {
+    label: "GitHub",
+    href: "https://github.com/pointgrab/pointgrab",
+    external: true,
+  },
+];
+---
+
+<nav
+  class:list={[
+    "fixed top-0 left-0 right-0 z-50",
+    "border-b border-border/50",
+    "bg-bg/80 backdrop-blur-xl",
+    className,
+  ]}
+>
+  <div class="mx-auto flex h-16 max-w-[var(--width-content)] items-center justify-between px-6">
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-1 text-lg font-bold tracking-tight font-mono">
+      <span class="text-text-heading">point</span><span class="text-pointgrab-blue">grab</span>
+    </a>
+
+    <!-- Desktop nav -->
+    <ul class="hidden items-center gap-8 md:flex">
+      {navLinks.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            class="text-sm text-text-muted transition-colors hover:text-text-heading"
+            {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+          >
+            {link.label}
+            {link.external && (
+              <svg class="ml-1 inline-block h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            )}
+          </a>
+        </li>
+      ))}
+    </ul>
+
+    <!-- CTA button (desktop) -->
+    <div class="hidden md:block">
+      <a
+        href="/docs/install"
+        class="inline-flex items-center rounded-lg bg-pointgrab-blue px-4 py-2 text-sm font-medium text-white transition-all hover:bg-pointgrab-blue-bright hover:shadow-[var(--shadow-glow-blue)]"
+      >
+        Get Started
+      </a>
+    </div>
+
+    <!-- Mobile menu button -->
+    <button
+      id="mobile-menu-toggle"
+      class="flex h-10 w-10 items-center justify-center rounded-lg text-text-muted transition-colors hover:bg-bg-muted hover:text-text-heading md:hidden"
+      aria-label="Toggle menu"
+      aria-expanded="false"
+    >
+      <svg id="menu-icon-open" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+      <svg id="menu-icon-close" class="hidden h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile menu -->
+  <div
+    id="mobile-menu"
+    class="hidden border-t border-border/50 bg-bg/95 backdrop-blur-xl md:hidden"
+  >
+    <ul class="flex flex-col gap-1 px-6 py-4">
+      {navLinks.map((link) => (
+        <li>
+          <a
+            href={link.href}
+            class="block rounded-lg px-4 py-3 text-sm text-text-muted transition-colors hover:bg-bg-muted hover:text-text-heading"
+            {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+          >
+            {link.label}
+            {link.external && (
+              <svg class="ml-1 inline-block h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            )}
+          </a>
+        </li>
+      ))}
+      <li class="pt-2">
+        <a
+          href="/docs/install"
+          class="block rounded-lg bg-pointgrab-blue px-4 py-3 text-center text-sm font-medium text-white transition-all hover:bg-pointgrab-blue-bright"
+        >
+          Get Started
+        </a>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<script>
+  const toggle = document.getElementById("mobile-menu-toggle");
+  const menu = document.getElementById("mobile-menu");
+  const iconOpen = document.getElementById("menu-icon-open");
+  const iconClose = document.getElementById("menu-icon-close");
+
+  toggle?.addEventListener("click", () => {
+    const expanded = toggle.getAttribute("aria-expanded") === "true";
+    toggle.setAttribute("aria-expanded", String(!expanded));
+    menu?.classList.toggle("hidden");
+    iconOpen?.classList.toggle("hidden");
+    iconClose?.classList.toggle("hidden");
+  });
+
+  // Close mobile menu when clicking a link
+  menu?.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      menu.classList.add("hidden");
+      iconOpen?.classList.remove("hidden");
+      iconClose?.classList.add("hidden");
+      toggle?.setAttribute("aria-expanded", "false");
+    });
+  });
+</script>

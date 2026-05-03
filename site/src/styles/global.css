@@ -1,0 +1,121 @@
+@import "tailwindcss";
+
+/* ─── Design System ─── */
+@theme {
+  /* Colors */
+  --color-bg: #0a0a0b;
+  --color-bg-raised: #141416;
+  --color-bg-muted: #1c1c1f;
+  --color-border: #27272a;
+  --color-border-bright: #3f3f46;
+
+  --color-text: #e4e4e7;
+  --color-text-heading: #fafafa;
+  --color-text-muted: #a1a1aa;
+  --color-text-faint: #71717a;
+
+  --color-pointgrab-blue: #3b82f6;
+  --color-pointgrab-blue-bright: #60a5fa;
+  --color-pointgrab-blue-dim: #1d4ed8;
+
+  --color-amber: #f59e0b;
+  --color-amber-bright: #fbbf24;
+  --color-amber-dim: #b45309;
+
+  --color-success: #22c55e;
+  --color-error: #ef4444;
+
+  /* Typography */
+  --font-sans: "Inter", "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "JetBrains Mono Variable", ui-monospace, monospace;
+
+  /* Spacing / Layout */
+  --width-content: 72rem;
+  --width-narrow: 56rem;
+
+  /* Shadows / Glows */
+  --shadow-glow-blue: 0 0 40px rgba(59, 130, 246, 0.15);
+  --shadow-glow-blue-strong: 0 0 60px rgba(59, 130, 246, 0.25);
+  --shadow-glow-amber: 0 0 40px rgba(245, 158, 11, 0.15);
+}
+
+/* ─── Base ─── */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  line-height: 1.7;
+}
+
+/* Optional subtle grain texture */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* ─── Selection ─── */
+::selection {
+  background-color: rgba(59, 130, 246, 0.3);
+  color: var(--color-text-heading);
+}
+
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-bright);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-faint);
+}
+
+/* ─── Headings ─── */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-text-heading);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+
+/* ─── Code ─── */
+code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+}
+
+pre {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+/* ─── Links ─── */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ─── Focus ─── */
+:focus-visible {
+  outline: 2px solid var(--color-pointgrab-blue);
+  outline-offset: 2px;
+  border-radius: 4px;
+}

@@ -1,0 +1,410 @@
+---
+import Base from "../../layouts/Base.astro";
+import Section from "../../components/Section.astro";
+import CodeBlock from "../../components/CodeBlock.astro";
+
+// Break import strings so Vite's scanner doesn't try to resolve them
+const from = "from";
+---
+
+<Base title="Installation — pointgrab" description="Get started with pointgrab in under a minute.">
+  <Section padding="md">
+    <div class="mx-auto max-w-3xl">
+      <h1 class="text-4xl font-bold">Installation</h1>
+      <p class="mt-4 text-lg text-text-muted">
+        Get pointgrab running in your project in under a minute.
+      </p>
+
+      <!-- Table of contents -->
+      <nav class="mt-8 rounded-xl border border-border bg-bg-raised p-6">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-text-faint mb-3">On this page</h2>
+        <ul class="space-y-1 text-sm">
+          <li><a href="#quick-start" class="text-pointgrab-blue hover:underline">Quick start</a></li>
+          <li><a href="#framework-setup" class="text-pointgrab-blue hover:underline">Framework setup</a></li>
+          <li><a href="#mcp-server" class="text-pointgrab-blue hover:underline">MCP server setup</a></li>
+          <li><a href="#configuration" class="text-pointgrab-blue hover:underline">Configuration</a></li>
+          <li><a href="#build-plugins" class="text-pointgrab-blue hover:underline">Build plugins</a></li>
+        </ul>
+      </nav>
+    </div>
+  </Section>
+
+  <!-- Quick start -->
+  <Section id="quick-start" padding="md">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Quick start</h2>
+      <p class="mt-3 text-text-muted">Install the core package:</p>
+
+      <CodeBlock class="mt-4" code={`# npm
+npm install pointgrab
+
+# pnpm
+pnpm add pointgrab
+
+# yarn
+yarn add pointgrab`} lang="bash" />
+
+      <p class="mt-4 text-sm text-text-faint">
+        The core package works with any framework or plain HTML. Framework adapters add component name resolution and source file mapping.
+      </p>
+    </div>
+  </Section>
+
+  <!-- Framework setup -->
+  <Section id="framework-setup" padding="md" background="raised">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Framework setup</h2>
+
+      <!-- Vanilla JS -->
+      <div id="vanilla-js" class="mt-10">
+        <h3 class="text-xl font-semibold flex items-center gap-2">
+          <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-amber/10 text-xs font-bold text-amber">JS</span>
+          Vanilla JS
+        </h3>
+        <p class="mt-3 text-text-muted">
+          Use a script tag for the simplest setup. Auto-initializes with default options and exposes
+          <code class="text-amber">window.__POINTGRAB__</code>.
+        </p>
+        <CodeBlock class="mt-4" lang="html" code={`<!-- CDN script tag (auto-initializes) -->
+<script src="https://unpkg.com/pointgrab/dist/index.global.js"></script>`} />
+
+        <p class="mt-4 text-text-muted">Or use the ES module import for bundler setups:</p>
+        <CodeBlock class="mt-3" lang="typescript" filename="main.ts" code={`import { init } ${from} 'pointgrab';
+
+const inspector = init();
+
+// Or with options
+const inspector = init({
+  activationMode: 'toggle',
+  themeMode: 'light',
+});`} />
+      </div>
+
+      <!-- React -->
+      <div id="react" class="mt-12">
+        <h3 class="text-xl font-semibold flex items-center gap-2">
+          <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-pointgrab-blue/10 text-xs font-bold text-pointgrab-blue">Re</span>
+          React
+        </h3>
+        <CodeBlock class="mt-4" code="npm install @pointgrab/react" />
+        <p class="mt-4 text-text-muted">
+          Add the <code class="text-amber">usePointGrab()</code> hook to your root component:
+        </p>
+        <CodeBlock class="mt-3" lang="tsx" filename="App.tsx" code={`import { usePointGrab } ${from} '@pointgrab/react';
+
+function App() {
+  usePointGrab();
+  // or: usePointGrab({ activationMode: 'toggle' })
+
+  return <div>...</div>;
+}`} />
+        <p class="mt-3 text-sm text-text-faint">
+          Resolves component names from React fiber tree, source locations from <code class="text-amber">_debugSource</code>.
+          Strips <code class="text-amber">data-reactroot</code> and <code class="text-amber">data-reactid</code> attributes.
+        </p>
+      </div>
+
+      <!-- Angular -->
+      <div id="angular" class="mt-12">
+        <h3 class="text-xl font-semibold flex items-center gap-2">
+          <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-error/10 text-xs font-bold text-error">Ng</span>
+          Angular
+        </h3>
+        <CodeBlock class="mt-4" code="npm install @pointgrab/angular" />
+        <p class="mt-4 text-text-muted">
+          Add <code class="text-amber">providePointGrab()</code> to your application config:
+        </p>
+        <CodeBlock class="mt-3" lang="typescript" filename="app.config.ts" code={`import { providePointGrab } ${from} '@pointgrab/angular';
+
+export const appConfig = {
+  providers: [
+    providePointGrab(),
+    // or: providePointGrab({ activationMode: 'toggle' })
+  ],
+};`} />
+        <p class="mt-3 text-sm text-text-faint">
+          Uses <code class="text-amber">window.ng.getComponent()</code> and <code class="text-amber">window.ng.getOwningComponent()</code> for resolution.
+          Strips <code class="text-amber">ng-*</code> classes and <code class="text-amber">_nghost-*</code> / <code class="text-amber">_ngcontent-*</code> attributes.
+          Auto-disabled in production via <code class="text-amber">ngDevMode</code>.
+        </p>
+      </div>
+
+      <!-- Vue -->
+      <div id="vue" class="mt-12">
+        <h3 class="text-xl font-semibold flex items-center gap-2">
+          <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-success/10 text-xs font-bold text-success">Vu</span>
+          Vue
+        </h3>
+        <CodeBlock class="mt-4" code="npm install @pointgrab/vue" />
+        <p class="mt-4 text-text-muted">
+          Register the plugin in your <code class="text-amber">main.ts</code>:
+        </p>
+        <CodeBlock class="mt-3" lang="typescript" filename="main.ts" code={`import { createApp } ${from} 'vue';
+import { PointGrabPlugin } ${from} '@pointgrab/vue';
+import App ${from} './App.vue';
+
+const app = createApp(App);
+app.use(PointGrabPlugin);
+// or: app.use(PointGrabPlugin, { activationMode: 'toggle' })
+app.mount('#app');`} />
+        <p class="mt-3 text-sm text-text-faint">
+          Resolves components via <code class="text-amber">__vueParentComponent</code>.
+          Source paths from <code class="text-amber">type.__file</code>.
+          Strips <code class="text-amber">data-v-*</code> scoped style attributes.
+        </p>
+      </div>
+
+      <!-- Svelte -->
+      <div id="svelte" class="mt-12">
+        <h3 class="text-xl font-semibold flex items-center gap-2">
+          <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-amber/10 text-xs font-bold text-amber-bright">Sv</span>
+          Svelte
+        </h3>
+        <CodeBlock class="mt-4" code="npm install @pointgrab/svelte" />
+        <p class="mt-4 text-text-muted">
+          Use the <code class="text-amber">use:pointgrab</code> action in your root layout:
+        </p>
+        <CodeBlock class="mt-3" lang="svelte" filename="+layout.svelte" code={`<script>
+  import { pointgrab } ${from} '@pointgrab/svelte';
+</script>
+
+<div use:pointgrab>
+  <slot />
+</div>`} />
+        <p class="mt-3 text-sm text-text-faint">
+          Svelte 5: reads <code class="text-amber">__svelte_meta</code> for component names and source locations.
+          Svelte 4: uses <code class="text-amber">__svelte_component</code>.
+          Strips <code class="text-amber">s-*</code> and <code class="text-amber">svelte-*</code> classes and attributes.
+        </p>
+      </div>
+
+      <!-- Web Components -->
+      <div id="web-components" class="mt-12">
+        <h3 class="text-xl font-semibold flex items-center gap-2">
+          <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-pointgrab-blue/10 text-xs font-bold text-pointgrab-blue-bright">WC</span>
+          Web Components
+        </h3>
+        <CodeBlock class="mt-4" code="npm install @pointgrab/web-components" />
+        <p class="mt-4 text-text-muted">Initialize in your app entry point:</p>
+        <CodeBlock class="mt-3" lang="typescript" filename="main.ts" code={`import { initPointGrabWebComponents } ${from} '@pointgrab/web-components';
+
+initPointGrabWebComponents();
+// or: initPointGrabWebComponents({ activationMode: 'toggle' })`} />
+        <p class="mt-3 text-sm text-text-faint">
+          Detects custom elements via <code class="text-amber">customElements.get()</code>.
+          Pierces Shadow DOM boundaries using <code class="text-amber">deepElementFromPoint()</code>.
+          Serializes shadow trees for captured HTML.
+          Source locations from <code class="text-amber">Constructor.__source</code> or global <code class="text-amber">__POINTGRAB_WC_SOURCE_MAP__</code>.
+        </p>
+      </div>
+    </div>
+  </Section>
+
+  <!-- MCP server setup -->
+  <Section id="mcp-server" padding="md">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">MCP server setup</h2>
+      <p class="mt-3 text-text-muted">
+        The MCP server connects pointgrab to AI coding agents. Install globally or use <code class="text-amber">npx</code>:
+      </p>
+      <CodeBlock class="mt-4" code="npm install -g @pointgrab/mcp-server" />
+
+      <h3 class="text-lg font-semibold mt-8">Claude Code</h3>
+      <CodeBlock class="mt-3" code="claude mcp add pointgrab -- npx @pointgrab/mcp-server" />
+
+      <p class="mt-4 text-text-muted">Or add to your project's <code class="text-amber">.mcp.json</code>:</p>
+      <CodeBlock class="mt-3" lang="json" filename=".mcp.json" code={`{
+  "mcpServers": {
+    "pointgrab": {
+      "command": "npx",
+      "args": ["@pointgrab/mcp-server"]
+    }
+  }
+}`} />
+
+      <h3 class="text-lg font-semibold mt-8">Cursor</h3>
+      <p class="mt-2 text-text-muted">Add to <code class="text-amber">.cursor/mcp.json</code>:</p>
+      <CodeBlock class="mt-3" lang="json" filename=".cursor/mcp.json" code={`{
+  "mcpServers": {
+    "pointgrab": {
+      "command": "npx",
+      "args": ["@pointgrab/mcp-server"]
+    }
+  }
+}`} />
+
+      <p class="mt-6 text-sm text-text-faint">
+        See the <a href="/docs/mcp" class="text-pointgrab-blue hover:underline">MCP Integration</a> page for available tools, webhook details, and environment variables.
+      </p>
+    </div>
+  </Section>
+
+  <!-- Configuration -->
+  <Section id="configuration" padding="md" background="raised">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Configuration</h2>
+      <p class="mt-3 text-text-muted">
+        Pass options to <code class="text-amber">init()</code> or any framework adapter's init function. All properties are optional.
+      </p>
+
+      <div class="mt-6 overflow-x-auto rounded-xl border border-border">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-border bg-bg-muted">
+              <th class="px-4 py-3 text-left font-semibold text-text-heading">Option</th>
+              <th class="px-4 py-3 text-left font-semibold text-text-heading">Type</th>
+              <th class="px-4 py-3 text-left font-semibold text-text-heading">Default</th>
+              <th class="px-4 py-3 text-left font-semibold text-text-heading">Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-border/50">
+              <td class="px-4 py-3 font-mono text-amber">activationKey</td>
+              <td class="px-4 py-3 font-mono text-text-faint">string</td>
+              <td class="px-4 py-3 font-mono text-text-faint">"Meta+C" / "Ctrl+C"</td>
+              <td class="px-4 py-3 text-text-muted">Keyboard shortcut to activate the inspector</td>
+            </tr>
+            <tr class="border-b border-border/50 bg-bg-raised/50">
+              <td class="px-4 py-3 font-mono text-amber">activationMode</td>
+              <td class="px-4 py-3 font-mono text-text-faint">'hold' | 'toggle'</td>
+              <td class="px-4 py-3 font-mono text-text-faint">'hold'</td>
+              <td class="px-4 py-3 text-text-muted">Hold key to keep active, or toggle per press</td>
+            </tr>
+            <tr class="border-b border-border/50">
+              <td class="px-4 py-3 font-mono text-amber">keyHoldDuration</td>
+              <td class="px-4 py-3 font-mono text-text-faint">number</td>
+              <td class="px-4 py-3 font-mono text-text-faint">0</td>
+              <td class="px-4 py-3 text-text-muted">Milliseconds to hold before activating (hold mode)</td>
+            </tr>
+            <tr class="border-b border-border/50 bg-bg-raised/50">
+              <td class="px-4 py-3 font-mono text-amber">maxContextLines</td>
+              <td class="px-4 py-3 font-mono text-text-faint">number</td>
+              <td class="px-4 py-3 font-mono text-text-faint">20</td>
+              <td class="px-4 py-3 text-text-muted">Max lines of HTML in the copied snippet</td>
+            </tr>
+            <tr class="border-b border-border/50">
+              <td class="px-4 py-3 font-mono text-amber">enabled</td>
+              <td class="px-4 py-3 font-mono text-text-faint">boolean</td>
+              <td class="px-4 py-3 font-mono text-text-faint">true</td>
+              <td class="px-4 py-3 text-text-muted">Master on/off switch</td>
+            </tr>
+            <tr class="border-b border-border/50 bg-bg-raised/50">
+              <td class="px-4 py-3 font-mono text-amber">enableInInputs</td>
+              <td class="px-4 py-3 font-mono text-text-faint">boolean</td>
+              <td class="px-4 py-3 font-mono text-text-faint">false</td>
+              <td class="px-4 py-3 text-text-muted">Allow activation inside input/textarea fields</td>
+            </tr>
+            <tr class="border-b border-border/50">
+              <td class="px-4 py-3 font-mono text-amber">devOnly</td>
+              <td class="px-4 py-3 font-mono text-text-faint">boolean</td>
+              <td class="px-4 py-3 font-mono text-text-faint">true</td>
+              <td class="px-4 py-3 text-text-muted">Disable in production (returns a no-op API)</td>
+            </tr>
+            <tr class="border-b border-border/50 bg-bg-raised/50">
+              <td class="px-4 py-3 font-mono text-amber">showToolbar</td>
+              <td class="px-4 py-3 font-mono text-text-faint">boolean</td>
+              <td class="px-4 py-3 font-mono text-text-faint">true</td>
+              <td class="px-4 py-3 text-text-muted">Show the floating mini toolbar</td>
+            </tr>
+            <tr class="border-b border-border/50">
+              <td class="px-4 py-3 font-mono text-amber">themeMode</td>
+              <td class="px-4 py-3 font-mono text-text-faint">'dark' | 'light' | 'system'</td>
+              <td class="px-4 py-3 font-mono text-text-faint">'dark'</td>
+              <td class="px-4 py-3 text-text-muted">Theme for all pointgrab UI elements</td>
+            </tr>
+            <tr class="border-b border-border/50 bg-bg-raised/50">
+              <td class="px-4 py-3 font-mono text-amber">mcpWebhook</td>
+              <td class="px-4 py-3 font-mono text-text-faint">boolean</td>
+              <td class="px-4 py-3 font-mono text-text-faint">true</td>
+              <td class="px-4 py-3 text-text-muted">Auto-register MCP webhook plugin (POSTs to localhost:3456)</td>
+            </tr>
+            <tr class="border-b border-border/50">
+              <td class="px-4 py-3 font-mono text-amber">classFilters</td>
+              <td class="px-4 py-3 font-mono text-text-faint">ClassFilter[]</td>
+              <td class="px-4 py-3 font-mono text-text-faint">[]</td>
+              <td class="px-4 py-3 text-text-muted">Functions that filter CSS classes. Adapters inject their own.</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 font-mono text-amber">htmlCleaners</td>
+              <td class="px-4 py-3 font-mono text-text-faint">HtmlCleaner[]</td>
+              <td class="px-4 py-3 font-mono text-text-faint">[]</td>
+              <td class="px-4 py-3 text-text-muted">Regex/replacer pairs for stripping framework HTML attributes.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="mt-6 text-text-muted">Example with multiple options:</p>
+      <CodeBlock class="mt-3" lang="typescript" code={`import { init } ${from} 'pointgrab';
+
+const inspector = init({
+  activationKey: 'Alt+I',
+  activationMode: 'toggle',
+  maxContextLines: 40,
+  themeMode: 'system',
+  mcpWebhook: true,
+});`} />
+    </div>
+  </Section>
+
+  <!-- Build plugins -->
+  <Section id="build-plugins" padding="md">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-2xl font-bold">Build plugins</h2>
+      <p class="mt-3 text-text-muted">
+        Source file resolution requires build-time injection of location data. Each framework adapter uses a different strategy:
+      </p>
+
+      <div class="mt-6 overflow-x-auto rounded-xl border border-border">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-border bg-bg-raised">
+              <th class="px-4 py-3 text-left font-semibold text-text-heading">Adapter</th>
+              <th class="px-4 py-3 text-left font-semibold text-text-heading">Strategy</th>
+              <th class="px-4 py-3 text-left font-semibold text-text-heading">Dev-only</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-border/50">
+              <td class="px-4 py-3 font-mono text-amber">Angular</td>
+              <td class="px-4 py-3 text-text-muted">Global <code class="text-text-faint font-mono">__POINTGRAB_SOURCE_MAP__</code> injected by build plugin</td>
+              <td class="px-4 py-3 text-text-muted">Yes</td>
+            </tr>
+            <tr class="border-b border-border/50 bg-bg-raised/50">
+              <td class="px-4 py-3 font-mono text-amber">React</td>
+              <td class="px-4 py-3 text-text-muted"><code class="text-text-faint font-mono">fiber._debugSource</code> (built into React dev mode)</td>
+              <td class="px-4 py-3 text-text-muted">Yes</td>
+            </tr>
+            <tr class="border-b border-border/50">
+              <td class="px-4 py-3 font-mono text-amber">Vue</td>
+              <td class="px-4 py-3 text-text-muted"><code class="text-text-faint font-mono">type.__file</code> on component options</td>
+              <td class="px-4 py-3 text-text-muted">Yes</td>
+            </tr>
+            <tr class="border-b border-border/50 bg-bg-raised/50">
+              <td class="px-4 py-3 font-mono text-amber">Svelte</td>
+              <td class="px-4 py-3 text-text-muted"><code class="text-text-faint font-mono">__svelte_meta.loc</code> with file, line, column</td>
+              <td class="px-4 py-3 text-text-muted">Yes</td>
+            </tr>
+            <tr>
+              <td class="px-4 py-3 font-mono text-amber">Web Components</td>
+              <td class="px-4 py-3 text-text-muted"><code class="text-text-faint font-mono">Constructor.__source</code> or <code class="text-text-faint font-mono">__POINTGRAB_WC_SOURCE_MAP__</code></td>
+              <td class="px-4 py-3 text-text-muted">Yes</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p class="mt-4 text-sm text-text-faint">
+        All source location data is stripped in production builds. Adapters gracefully return <code class="text-amber">null</code> when source info is unavailable.
+      </p>
+    </div>
+  </Section>
+
+  <!-- Page nav -->
+  <Section padding="sm">
+    <div class="mx-auto max-w-3xl flex items-center justify-between border-t border-border pt-8">
+      <span></span>
+      <a href="/docs/features" class="text-pointgrab-blue hover:underline text-sm font-medium">Features &rarr;</a>
+    </div>
+  </Section>
+</Base>
