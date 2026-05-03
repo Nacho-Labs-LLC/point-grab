@@ -26,4 +26,4 @@ export const ICON_COMMENT = `<svg width="16" height="16" viewBox="0 0 16 16" fil
 
 export const ICON_TRASH = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 4.5h11"/><path d="M5.5 4.5V3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1.5"/><path d="M4 4.5l.5 8.5a1 1 0 0 0 1 1h5a1 1 0 0 0 1-1l.5-8.5"/></svg>`;
 
-export const ICON_FREEZE = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><path d="M8 1v14"/><path d="M1 8h14"/><path d="M8 1l2 2M8 1L6 3"/><path d="M8 15l2-2M8 15l-2-2"/><path d="M1 8l2 2M1 8l2-2"/><path d="M15 8l-2 2M15 8l-2-2"/></svg>`;
+export const ICON_FREEZE = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="2" width="3.5" height="12" rx="0.5"/><rect x="9.5" y="2" width="3.5" height="12" rx="0.5"/></svg>`;
