@@ -1,6 +1,6 @@
 {
   "name": "@point-grab/react",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "React adapter for pointgrab",
   "author": {
     "name": "Nate Richardson",
