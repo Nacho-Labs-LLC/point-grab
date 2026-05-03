@@ -33,7 +33,7 @@ export function isMac(): boolean {
   return /Mac|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
-export function parseKeyCombo(combo: string): ParsedKey {
+function parseKeyCombo(combo: string): ParsedKey {
   const parts = combo.split('+').map((s) => s.trim());
   const result: ParsedKey = {
     key: '',

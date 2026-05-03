@@ -17,272 +17,178 @@
       </div>
     </div>
 
-    <!-- App content -->
-    <div class="relative p-6 sm:p-8" style="min-height: 400px;">
-      <!-- PointGrab label (hidden by default) -->
-      <div id="demo-label" class="pointer-events-none fixed z-50 hidden whitespace-nowrap rounded-md bg-pointgrab-blue px-2.5 py-1 font-mono text-[11px] text-white shadow-lg">
-      </div>
+    <!-- App content — pointgrab inspects real DOM inside here -->
+    <div id="demo-app" class="relative p-6 sm:p-8" style="min-height: 420px;">
 
-      <!-- Actions menu (hidden by default) -->
-      <div id="demo-actions" class="absolute z-50 hidden w-44 overflow-hidden rounded-lg border border-border bg-bg-muted shadow-xl">
-        <button id="action-copy" class="flex w-full items-center gap-2.5 px-3 py-2 text-left text-xs text-text-muted transition-colors hover:bg-bg-raised hover:text-text">
-          <svg class="h-3.5 w-3.5 text-text-faint" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-          </svg>
-          Copy element
-        </button>
-        <button id="action-comment" class="flex w-full items-center gap-2.5 px-3 py-2 text-left text-xs text-text-muted transition-colors hover:bg-bg-raised hover:text-text">
-          <svg class="h-3.5 w-3.5 text-text-faint" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-          </svg>
-          <span>Add comment</span>
-          <span class="ml-auto rounded bg-amber/10 px-1.5 py-0.5 text-[9px] font-semibold text-amber">AI</span>
-        </button>
-        <div class="border-t border-border/50"></div>
-        <button id="action-styles" class="flex w-full items-center gap-2.5 px-3 py-2 text-left text-xs text-text-faint transition-colors hover:bg-bg-raised hover:text-text-muted">
-          <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path d="M12 2L2 7l10 5 10-5-10-5z" />
-            <path d="M2 17l10 5 10-5" />
-            <path d="M2 12l10 5 10-5" />
-          </svg>
-          Copy styles
-        </button>
-      </div>
-
-      <!-- Comment popover (hidden by default) -->
-      <div id="demo-comment-popover" class="absolute inset-x-0 bottom-0 z-50 hidden">
-        <div class="mx-auto max-w-sm rounded-t-xl border border-b-0 border-border bg-bg-muted p-4 shadow-2xl">
-          <div class="mb-2 flex items-center gap-2">
-            <svg class="h-4 w-4 text-amber" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-            </svg>
-            <span class="text-xs font-semibold text-text-heading">Add comment for your AI agent</span>
-          </div>
-          <textarea
-            id="demo-comment-input"
-            class="w-full resize-none rounded-lg border border-border bg-bg px-3 py-2 text-sm text-text placeholder-text-faint outline-none transition-colors focus:border-pointgrab-blue"
-            rows="2"
-            placeholder="e.g. Make this button disabled while the form is submitting"
-          ></textarea>
-          <div class="mt-2 flex items-center justify-between">
-            <button id="comment-cancel" class="rounded px-2 py-1 text-[11px] text-text-faint transition-colors hover:text-text-muted">
-              Cancel
-            </button>
-            <button id="comment-submit" class="rounded-lg bg-pointgrab-blue px-3 py-1.5 text-[11px] font-medium text-white transition-colors hover:bg-pointgrab-blue-bright">
-              Copy with comment
-            </button>
-          </div>
+      <!-- Top bar with notification bell -->
+      <div class="mb-6 flex items-center justify-between">
+        <div>
+          <h3 class="text-lg font-semibold text-text-heading">Dashboard</h3>
+          <p class="text-xs text-text-faint">Welcome back, Nate</p>
         </div>
-      </div>
-
-      <!-- Sample app layout -->
-      <div class="flex gap-6">
-        <!-- Sidebar nav -->
-        <nav
-          class="demo-target hidden w-40 shrink-0 sm:block"
-          data-component="SideNav"
-          data-file="src/components/SideNav.tsx"
-          data-line="12"
-          data-tag="nav.side-nav"
-        >
-          <div class="mb-4 text-xs font-semibold uppercase tracking-wider text-text-faint">Navigation</div>
-          <ul class="space-y-1">
-            <li>
-              <a
-                href="#"
-                class="demo-target block rounded-md px-3 py-1.5 text-sm text-text-muted transition-colors hover:text-text"
-                data-component="NavLink"
-                data-file="src/components/NavLink.tsx"
-                data-line="8"
-                data-tag="a.nav-link"
-                onclick="event.preventDefault()"
-              >Dashboard</a>
-            </li>
-            <li>
-              <a
-                href="#"
-                class="demo-target block rounded-md bg-pointgrab-blue/10 px-3 py-1.5 text-sm font-medium text-pointgrab-blue"
-                data-component="NavLink"
-                data-file="src/components/NavLink.tsx"
-                data-line="8"
-                data-tag="a.nav-link.active"
-                onclick="event.preventDefault()"
-              >Products</a>
-            </li>
-            <li>
-              <a
-                href="#"
-                class="demo-target block rounded-md px-3 py-1.5 text-sm text-text-muted transition-colors hover:text-text"
-                data-component="NavLink"
-                data-file="src/components/NavLink.tsx"
-                data-line="8"
-                data-tag="a.nav-link"
-                onclick="event.preventDefault()"
-              >Orders</a>
-            </li>
-            <li>
-              <a
-                href="#"
-                class="demo-target block rounded-md px-3 py-1.5 text-sm text-text-muted transition-colors hover:text-text"
-                data-component="NavLink"
-                data-file="src/components/NavLink.tsx"
-                data-line="8"
-                data-tag="a.nav-link"
-                onclick="event.preventDefault()"
-              >Settings</a>
-            </li>
-          </ul>
-        </nav>
-
-        <!-- Main content -->
-        <div class="flex-1">
-          <!-- Page header -->
-          <div
-            class="demo-target mb-6 flex items-center justify-between"
-            data-component="PageHeader"
-            data-file="src/components/PageHeader.tsx"
-            data-line="5"
-            data-tag="div.page-header"
-          >
-            <h3 class="text-lg font-semibold text-text-heading">Products</h3>
+        <div class="flex items-center gap-3">
+          <!-- Notification bell with popover -->
+          <div id="notif-wrapper" class="relative">
             <button
-              class="demo-target rounded-lg bg-pointgrab-blue px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-pointgrab-blue-bright"
-              data-component="Button"
-              data-file="src/components/ui/Button.tsx"
-              data-line="15"
-              data-tag="button.btn-primary"
+              id="notif-bell"
+              class="relative rounded-lg border border-border bg-bg-muted p-2 text-text-muted transition-colors hover:border-border-bright hover:text-text"
             >
-              + Add Product
+              <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+              </svg>
+              <span id="notif-badge" class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-error text-[9px] font-bold text-white">3</span>
             </button>
-          </div>
-
-          <!-- Product cards grid -->
-          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            <div
-              class="demo-target rounded-lg border border-border bg-bg-muted p-4 transition-colors"
-              data-component="ProductCard"
-              data-file="src/components/ProductCard.tsx"
-              data-line="22"
-              data-tag="div.product-card"
-            >
-              <div class="mb-3 flex h-20 items-center justify-center rounded-md bg-bg-raised text-2xl">
-                <span class="opacity-50">&#128722;</span>
+            <!-- Popover — animates open/closed -->
+            <div id="notif-popover" class="absolute right-0 top-full z-30 mt-2 hidden w-64 origin-top-right scale-95 rounded-lg border border-border bg-bg-muted opacity-0 shadow-xl transition-all duration-200">
+              <div class="border-b border-border px-3 py-2">
+                <span class="text-xs font-semibold text-text-heading">Notifications</span>
               </div>
-              <div class="text-sm font-medium text-text-heading">Wireless Headphones</div>
-              <div class="mt-1 text-xs text-text-faint">$129.99</div>
-              <div class="mt-3 flex gap-2">
-                <button
-                  class="demo-target rounded bg-bg-raised px-2 py-1 text-[10px] text-text-muted transition-colors hover:text-text"
-                  data-component="Button"
-                  data-file="src/components/ui/Button.tsx"
-                  data-line="15"
-                  data-tag="button.btn-ghost"
-                >Edit</button>
-                <button
-                  class="demo-target rounded bg-bg-raised px-2 py-1 text-[10px] text-error/70 transition-colors hover:text-error"
-                  data-component="Button"
-                  data-file="src/components/ui/Button.tsx"
-                  data-line="15"
-                  data-tag="button.btn-danger"
-                >Delete</button>
+              <div class="divide-y divide-border/50">
+                <div class="flex items-start gap-2.5 px-3 py-2.5">
+                  <span class="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-pointgrab-blue"></span>
+                  <div>
+                    <p class="text-xs text-text">New order <span class="text-text-faint">#1847</span> received</p>
+                    <p class="mt-0.5 text-[10px] text-text-faint">2 min ago</p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-2.5 px-3 py-2.5">
+                  <span class="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-amber"></span>
+                  <div>
+                    <p class="text-xs text-text">Inventory low on <span class="text-text-faint">SKU-2291</span></p>
+                    <p class="mt-0.5 text-[10px] text-text-faint">18 min ago</p>
+                  </div>
+                </div>
+                <div class="flex items-start gap-2.5 px-3 py-2.5">
+                  <span class="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-success"></span>
+                  <div>
+                    <p class="text-xs text-text">Deployment <span class="text-text-faint">v2.4.1</span> succeeded</p>
+                    <p class="mt-0.5 text-[10px] text-text-faint">1 hr ago</p>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <div
-              class="demo-target rounded-lg border border-border bg-bg-muted p-4 transition-colors"
-              data-component="ProductCard"
-              data-file="src/components/ProductCard.tsx"
-              data-line="22"
-              data-tag="div.product-card"
-            >
-              <div class="mb-3 flex h-20 items-center justify-center rounded-md bg-bg-raised text-2xl">
-                <span class="opacity-50">&#9000;</span>
-              </div>
-              <div class="text-sm font-medium text-text-heading">Mechanical Keyboard</div>
-              <div class="mt-1 text-xs text-text-faint">$89.99</div>
-              <div class="mt-3 flex gap-2">
-                <button
-                  class="demo-target rounded bg-bg-raised px-2 py-1 text-[10px] text-text-muted transition-colors hover:text-text"
-                  data-component="Button"
-                  data-file="src/components/ui/Button.tsx"
-                  data-line="15"
-                  data-tag="button.btn-ghost"
-                >Edit</button>
-                <button
-                  class="demo-target rounded bg-bg-raised px-2 py-1 text-[10px] text-error/70 transition-colors hover:text-error"
-                  data-component="Button"
-                  data-file="src/components/ui/Button.tsx"
-                  data-line="15"
-                  data-tag="button.btn-danger"
-                >Delete</button>
-              </div>
-            </div>
-
-            <div
-              class="demo-target rounded-lg border border-border bg-bg-muted p-4 transition-colors"
-              data-component="ProductCard"
-              data-file="src/components/ProductCard.tsx"
-              data-line="22"
-              data-tag="div.product-card"
-            >
-              <div class="mb-3 flex h-20 items-center justify-center rounded-md bg-bg-raised text-2xl">
-                <span class="opacity-50">&#128187;</span>
-              </div>
-              <div class="text-sm font-medium text-text-heading">USB-C Monitor</div>
-              <div class="mt-1 text-xs text-text-faint">$349.99</div>
-              <div class="mt-3 flex gap-2">
-                <button
-                  class="demo-target rounded bg-bg-raised px-2 py-1 text-[10px] text-text-muted transition-colors hover:text-text"
-                  data-component="Button"
-                  data-file="src/components/ui/Button.tsx"
-                  data-line="15"
-                  data-tag="button.btn-ghost"
-                >Edit</button>
-                <button
-                  class="demo-target rounded bg-bg-raised px-2 py-1 text-[10px] text-error/70 transition-colors hover:text-error"
-                  data-component="Button"
-                  data-file="src/components/ui/Button.tsx"
-                  data-line="15"
-                  data-tag="button.btn-danger"
-                >Delete</button>
+              <div class="border-t border-border px-3 py-2 text-center">
+                <button class="text-[10px] font-medium text-pointgrab-blue hover:underline">View all</button>
               </div>
             </div>
           </div>
+          <div class="h-8 w-8 rounded-full bg-gradient-to-br from-pointgrab-blue to-[#a78bfa]"></div>
+        </div>
+      </div>
 
-          <!-- Status bar -->
-          <div
-            class="demo-target mt-4 flex items-center justify-between rounded-lg border border-border/50 bg-bg px-4 py-2"
-            data-component="StatusBar"
-            data-file="src/components/StatusBar.tsx"
-            data-line="7"
-            data-tag="div.status-bar"
-          >
-            <span class="text-xs text-text-faint">3 products</span>
-            <span
-              class="demo-target inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-[10px] font-medium text-success"
-              data-component="Badge"
-              data-file="src/components/ui/Badge.tsx"
-              data-line="4"
-              data-tag="span.badge-success"
-            >
-              <span class="h-1 w-1 rounded-full bg-success"></span>
-              Synced
-            </span>
+      <!-- Stats row with animated progress -->
+      <div class="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div class="rounded-lg border border-border bg-bg-muted p-3">
+          <div class="text-[10px] font-medium uppercase tracking-wider text-text-faint">Revenue</div>
+          <div class="mt-1 text-lg font-bold text-text-heading">$12,847</div>
+          <div class="mt-1 text-[10px] text-success">+14.2%</div>
+        </div>
+        <div class="rounded-lg border border-border bg-bg-muted p-3">
+          <div class="text-[10px] font-medium uppercase tracking-wider text-text-faint">Orders</div>
+          <div class="mt-1 text-lg font-bold text-text-heading">284</div>
+          <div class="mt-1 text-[10px] text-success">+8.1%</div>
+        </div>
+        <div class="rounded-lg border border-border bg-bg-muted p-3">
+          <div class="text-[10px] font-medium uppercase tracking-wider text-text-faint">Fulfillment</div>
+          <!-- Animated progress bar -->
+          <div class="mt-2 h-2 overflow-hidden rounded-full bg-bg-raised">
+            <div id="progress-bar" class="h-full rounded-full bg-pointgrab-blue transition-all duration-1000 ease-in-out" style="width: 0%"></div>
+          </div>
+          <div class="mt-1 flex items-center justify-between">
+            <span id="progress-label" class="text-[10px] text-text-faint">0%</span>
+            <span class="text-[10px] text-text-faint">target: 95%</span>
+          </div>
+        </div>
+        <div class="rounded-lg border border-border bg-bg-muted p-3">
+          <div class="text-[10px] font-medium uppercase tracking-wider text-text-faint">Processing</div>
+          <!-- Loading skeleton animation -->
+          <div id="skeleton-container" class="mt-2 space-y-1.5">
+            <div class="h-2.5 w-full animate-pulse rounded bg-bg-raised"></div>
+            <div class="h-2.5 w-3/4 animate-pulse rounded bg-bg-raised"></div>
+          </div>
+          <!-- Loaded state (hidden initially) -->
+          <div id="skeleton-loaded" class="mt-1 hidden">
+            <div class="text-lg font-bold text-text-heading">12</div>
+            <div class="text-[10px] text-amber">in queue</div>
           </div>
         </div>
       </div>
 
-      <!-- Toast (hidden by default) -->
-      <div id="demo-toast" class="absolute bottom-4 right-4 z-40 flex translate-y-2 items-center gap-2 rounded-lg border border-success/30 bg-bg/95 px-4 py-2.5 opacity-0 shadow-lg backdrop-blur-sm transition-all duration-300 sm:bottom-6 sm:right-6">
-        <svg class="h-4 w-4 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M20 6L9 17l-5-5" />
-        </svg>
-        <span id="demo-toast-text" class="text-xs text-text">Copied to clipboard</span>
+      <!-- Table with live-updating row -->
+      <div class="overflow-hidden rounded-lg border border-border">
+        <div class="flex items-center justify-between border-b border-border bg-bg-muted px-4 py-2">
+          <span class="text-xs font-semibold text-text-heading">Recent Orders</span>
+          <button class="rounded-md bg-pointgrab-blue px-2.5 py-1 text-[10px] font-medium text-white transition-colors hover:bg-pointgrab-blue-bright">
+            + New Order
+          </button>
+        </div>
+        <table class="w-full text-left text-xs">
+          <thead>
+            <tr class="border-b border-border/50 text-text-faint">
+              <th class="px-4 py-2 font-medium">Order</th>
+              <th class="px-4 py-2 font-medium">Customer</th>
+              <th class="hidden px-4 py-2 font-medium sm:table-cell">Amount</th>
+              <th class="px-4 py-2 font-medium">Status</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-border/30">
+            <tr class="transition-colors hover:bg-bg-muted/50">
+              <td class="px-4 py-2.5 font-mono text-text-muted">#1847</td>
+              <td class="px-4 py-2.5 text-text">Sarah Chen</td>
+              <td class="hidden px-4 py-2.5 text-text-muted sm:table-cell">$249.00</td>
+              <td class="px-4 py-2.5">
+                <span class="inline-flex items-center gap-1 rounded-full bg-amber/10 px-2 py-0.5 text-[10px] font-medium text-amber">
+                  <span class="h-1 w-1 rounded-full bg-amber"></span>
+                  Processing
+                </span>
+              </td>
+            </tr>
+            <tr class="transition-colors hover:bg-bg-muted/50">
+              <td class="px-4 py-2.5 font-mono text-text-muted">#1846</td>
+              <td class="px-4 py-2.5 text-text">Mike Johnson</td>
+              <td class="hidden px-4 py-2.5 text-text-muted sm:table-cell">$89.50</td>
+              <td class="px-4 py-2.5">
+                <span class="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-[10px] font-medium text-success">
+                  <span class="h-1 w-1 rounded-full bg-success"></span>
+                  Shipped
+                </span>
+              </td>
+            </tr>
+            <!-- Animating row — flickers between states -->
+            <tr id="live-row" class="transition-colors hover:bg-bg-muted/50">
+              <td class="px-4 py-2.5 font-mono text-text-muted">#1845</td>
+              <td class="px-4 py-2.5 text-text">Alex Rivera</td>
+              <td class="hidden px-4 py-2.5 text-text-muted sm:table-cell">$412.00</td>
+              <td class="px-4 py-2.5">
+                <span id="live-status" class="inline-flex items-center gap-1 rounded-full bg-pointgrab-blue/10 px-2 py-0.5 text-[10px] font-medium text-pointgrab-blue transition-all duration-300">
+                  <span class="h-1 w-1 animate-pulse rounded-full bg-pointgrab-blue"></span>
+                  <span id="live-status-text">Syncing...</span>
+                </span>
+              </td>
+            </tr>
+            <tr class="transition-colors hover:bg-bg-muted/50">
+              <td class="px-4 py-2.5 font-mono text-text-muted">#1844</td>
+              <td class="px-4 py-2.5 text-text">Priya Patel</td>
+              <td class="hidden px-4 py-2.5 text-text-muted sm:table-cell">$175.25</td>
+              <td class="px-4 py-2.5">
+                <span class="inline-flex items-center gap-1 rounded-full bg-success/10 px-2 py-0.5 text-[10px] font-medium text-success">
+                  <span class="h-1 w-1 rounded-full bg-success"></span>
+                  Delivered
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Freeze mode hint badge — overlays bottom-left -->
+      <div id="freeze-hint" class="absolute bottom-3 left-3 z-20 flex items-center gap-2 rounded-lg border border-border/50 bg-bg/90 px-3 py-1.5 opacity-0 backdrop-blur-sm transition-opacity duration-500 sm:bottom-4 sm:left-4">
+        <kbd class="rounded border border-border bg-bg-muted px-1.5 py-0.5 font-mono text-[10px] text-text-muted">F</kbd>
+        <span class="text-[10px] text-text-faint">Freeze animations to inspect moving elements</span>
       </div>
     </div>
 
-    <!-- Output panel -->
+    <!-- Output panel — shows real pointgrab clipboard output -->
     <div id="demo-output" class="border-t border-border bg-bg-muted transition-all duration-300" style="max-height: 0; overflow: hidden;">
       <div class="flex items-center justify-between border-b border-border/50 px-4 py-2">
         <div class="flex items-center gap-2 text-xs text-text-faint">
@@ -293,224 +199,212 @@
         </div>
         <span class="rounded border border-border px-2 py-0.5 text-[10px] text-text-faint">clipboard</span>
       </div>
-      <pre id="demo-output-code" class="overflow-x-auto p-4 text-sm leading-relaxed"></pre>
+      <pre id="demo-output-code" class="overflow-x-auto p-4 text-xs leading-relaxed sm:text-sm"></pre>
     </div>
   </div>
 
-  <!-- Hint -->
-  <p class="mt-6 text-center text-sm text-text-faint">
-    Hover over any element above, then click to capture. Try <strong class="text-text-muted">Add comment</strong> to attach AI instructions.
-  </p>
+  <!-- Instructions -->
+  <div class="mt-6 flex flex-col items-center gap-2 text-center">
+    <p class="text-sm text-text-faint">
+      <span class="hidden sm:inline">Hold <kbd class="rounded border border-border bg-bg-muted px-1.5 py-0.5 font-mono text-[10px] text-text-muted">&#8984;C</kbd> (Mac) or <kbd class="rounded border border-border bg-bg-muted px-1.5 py-0.5 font-mono text-[10px] text-text-muted">Ctrl+C</kbd> (Win) and hover, then click to capture. Or use the toolbar below.</span>
+      <span class="sm:hidden">Use the toolbar to enter grab mode, then tap any element to inspect it.</span>
+    </p>
+    <p class="text-xs text-text-faint/70">
+      Try the <kbd class="rounded border border-border bg-bg-muted px-1 py-0.5 font-mono text-[10px] text-text-muted">freeze</kbd> button on the toolbar to pause animations, then inspect the progress bar or syncing row.
+    </p>
+  </div>
 </div>
 
-<script>
-  const container = document.getElementById("demo-container");
-  const label = document.getElementById("demo-label");
-  const toast = document.getElementById("demo-toast");
-  const toastText = document.getElementById("demo-toast-text");
-  const output = document.getElementById("demo-output");
-  const outputCode = document.getElementById("demo-output-code");
-  const actionsMenu = document.getElementById("demo-actions");
-  const actionCopy = document.getElementById("action-copy");
-  const actionComment = document.getElementById("action-comment");
-  const actionStyles = document.getElementById("action-styles");
-  const commentPopover = document.getElementById("demo-comment-popover");
-  const commentInput = document.getElementById("demo-comment-input") as HTMLTextAreaElement | null;
-  const commentCancel = document.getElementById("comment-cancel");
-  const commentSubmit = document.getElementById("comment-submit");
+<!-- Load the real pointgrab from npm -->
+<script is:inline src="https://unpkg.com/pointgrab@0.1.1/dist/index.global.js"></script>
 
-  if (container && label && toast && toastText && output && outputCode && actionsMenu && commentPopover && commentInput) {
-    let toastTimeout: ReturnType<typeof setTimeout>;
-    let currentTarget: HTMLElement | null = null;
-    let selectedTarget: HTMLElement | null = null;
-    let selectedData: { comp: string; file: string; line: string; tag: string } | null = null;
+<script is:inline>
+(function () {
+  // --- Animations ---
 
-    function clearSelection() {
-      if (currentTarget) {
-        currentTarget.style.outline = "";
-        currentTarget.style.outlineOffset = "";
-        currentTarget = null;
-      }
-      label.classList.add("hidden");
+  // Progress bar: loops 0% → 87% → reset
+  var progressBar = document.getElementById('progress-bar');
+  var progressLabel = document.getElementById('progress-label');
+  var progressValue = 0;
+  var progressDirection = 1;
+
+  function tickProgress() {
+    if (!progressBar || !progressLabel) return;
+    progressValue += progressDirection * (2 + Math.random() * 3);
+    if (progressValue >= 87) { progressValue = 87; progressDirection = 0; }
+    // Reset after pause at top
+    if (progressDirection === 0) {
+      setTimeout(function () {
+        progressValue = 0;
+        progressDirection = 1;
+        progressBar.style.width = '0%';
+        progressLabel.textContent = '0%';
+      }, 2000);
+      progressDirection = -1; // mark as pausing
     }
-
-    function hideActions(clearData = true) {
-      actionsMenu.classList.add("hidden");
-      if (clearData) {
-        selectedTarget = null;
-        selectedData = null;
-      }
+    if (progressDirection === 1) {
+      progressBar.style.width = Math.round(progressValue) + '%';
+      progressLabel.textContent = Math.round(progressValue) + '%';
     }
+  }
+  setInterval(tickProgress, 400);
 
-    function hideComment() {
-      commentPopover.classList.add("hidden");
-      commentInput.value = "";
+  // Skeleton loader: flips between loading and loaded every 4s
+  var skeletonContainer = document.getElementById('skeleton-container');
+  var skeletonLoaded = document.getElementById('skeleton-loaded');
+  var skeletonVisible = true;
+
+  setInterval(function () {
+    if (!skeletonContainer || !skeletonLoaded) return;
+    skeletonVisible = !skeletonVisible;
+    if (skeletonVisible) {
+      skeletonContainer.classList.remove('hidden');
+      skeletonLoaded.classList.add('hidden');
+    } else {
+      skeletonContainer.classList.add('hidden');
+      skeletonLoaded.classList.remove('hidden');
     }
+  }, 4000);
 
-    function showToast(message: string) {
-      clearTimeout(toastTimeout);
-      toastText.textContent = message;
-      toast.style.opacity = "1";
-      toast.style.transform = "translateY(0)";
-      toastTimeout = setTimeout(() => {
-        toast.style.opacity = "0";
-        toast.style.transform = "translateY(0.5rem)";
-      }, 2500);
+  // Live status row: cycles through states
+  var liveStatusText = document.getElementById('live-status-text');
+  var liveStatus = document.getElementById('live-status');
+  var statusStates = [
+    { text: 'Syncing...', bg: 'bg-pointgrab-blue/10', fg: 'text-pointgrab-blue', dot: 'bg-pointgrab-blue' },
+    { text: 'Validating', bg: 'bg-amber/10', fg: 'text-amber', dot: 'bg-amber' },
+    { text: 'Confirmed', bg: 'bg-success/10', fg: 'text-success', dot: 'bg-success' },
+    { text: 'Syncing...', bg: 'bg-pointgrab-blue/10', fg: 'text-pointgrab-blue', dot: 'bg-pointgrab-blue' },
+  ];
+  var statusIndex = 0;
+  var allStatusBgs = ['bg-pointgrab-blue/10', 'bg-amber/10', 'bg-success/10'];
+  var allStatusFgs = ['text-pointgrab-blue', 'text-amber', 'text-success'];
+  var allDotColors = ['bg-pointgrab-blue', 'bg-amber', 'bg-success'];
+
+  setInterval(function () {
+    if (!liveStatusText || !liveStatus) return;
+    statusIndex = (statusIndex + 1) % statusStates.length;
+    var s = statusStates[statusIndex];
+    liveStatusText.textContent = s.text;
+
+    // Remove all, add current
+    allStatusBgs.forEach(function (c) { liveStatus.classList.remove(c); });
+    allStatusFgs.forEach(function (c) { liveStatus.classList.remove(c); });
+    liveStatus.classList.add(s.bg, s.fg);
+
+    var dot = liveStatus.querySelector('span');
+    if (dot) {
+      allDotColors.forEach(function (c) { dot.classList.remove(c); });
+      dot.classList.add(s.dot);
     }
+  }, 2500);
 
-    function buildSnippet(data: typeof selectedData, comment?: string) {
-      if (!data) return "";
-      const tagParts = data.tag.split(".");
-      const elTag = tagParts[0] || "div";
-      const classes = tagParts.slice(1).join(" ");
+  // Notification popover toggle
+  var notifBell = document.getElementById('notif-bell');
+  var notifPopover = document.getElementById('notif-popover');
 
-      let html =
-        `<span class="text-zinc-500">&lt;</span><span class="text-blue-400">${elTag}</span>` +
-        (classes ? ` <span class="text-amber-400">class</span><span class="text-zinc-500">=</span><span class="text-green-400">"${classes}"</span>` : "") +
-        `<span class="text-zinc-500">&gt;</span>\n` +
-        `  ...\n` +
-        `<span class="text-zinc-500">&lt;/${elTag}&gt;</span>\n\n` +
-        `<span class="text-zinc-400">in</span> <span class="text-purple-400">${data.comp}</span> <span class="text-zinc-400">at</span> <span class="text-zinc-200">${data.file}</span><span class="text-zinc-500">:</span><span class="text-amber-400">${data.line}</span>`;
-
-      if (comment) {
-        html += `\n\n<span class="text-zinc-500">/*</span> <span class="text-amber-300">Comment:</span> <span class="text-zinc-300">${comment}</span> <span class="text-zinc-500">*/</span>`;
-      }
-
-      return html;
-    }
-
-    // Hover handling
-    container.addEventListener("mouseover", (e) => {
-      if (!actionsMenu.classList.contains("hidden") || !commentPopover.classList.contains("hidden")) return;
-
-      const target = (e.target as HTMLElement).closest(".demo-target") as HTMLElement | null;
-      if (!target || target === currentTarget) return;
-
-      clearSelection();
-      currentTarget = target;
-
-      target.style.outline = "2px solid #3b82f6";
-      target.style.outlineOffset = "2px";
-
-      const comp = target.dataset.component || "Unknown";
-      const file = target.dataset.file || "";
-      const line = target.dataset.line || "";
-      const tag = target.dataset.tag || "";
-
-      label.innerHTML = `&lt;${tag}&gt; in <strong>${comp}</strong> &middot; ${file}:${line}`;
-      label.classList.remove("hidden");
-
-      const rect = target.getBoundingClientRect();
-      const labelH = 28;
-      let top = rect.top - labelH - 8;
-      let left = rect.left;
-      if (top < 0) top = rect.bottom + 8;
-      if (left + 300 > window.innerWidth) left = window.innerWidth - 310;
-      if (left < 10) left = 10;
-      label.style.top = `${top}px`;
-      label.style.left = `${left}px`;
-    });
-
-    container.addEventListener("mouseleave", () => {
-      if (actionsMenu.classList.contains("hidden") && commentPopover.classList.contains("hidden")) {
-        clearSelection();
+  if (notifBell && notifPopover) {
+    notifBell.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var isHidden = notifPopover.classList.contains('hidden');
+      if (isHidden) {
+        notifPopover.classList.remove('hidden');
+        requestAnimationFrame(function () {
+          notifPopover.classList.remove('scale-95', 'opacity-0');
+          notifPopover.classList.add('scale-100', 'opacity-100');
+        });
+      } else {
+        notifPopover.classList.add('scale-95', 'opacity-0');
+        notifPopover.classList.remove('scale-100', 'opacity-100');
+        setTimeout(function () { notifPopover.classList.add('hidden'); }, 200);
       }
     });
 
-    // Click → show actions menu
-    container.addEventListener("click", (e) => {
-      const el = e.target as HTMLElement;
-      if (el.closest("#demo-actions") || el.closest("#demo-comment-popover")) return;
-
-      if (!actionsMenu.classList.contains("hidden")) {
-        hideActions();
-        clearSelection();
-        return;
-      }
-
-      const target = el.closest(".demo-target") as HTMLElement | null;
-      if (!target) return;
-      e.preventDefault();
-
-      selectedTarget = target;
-      selectedData = {
-        comp: target.dataset.component || "Unknown",
-        file: target.dataset.file || "",
-        line: target.dataset.line || "",
-        tag: target.dataset.tag || "",
-      };
-
-      const rect = target.getBoundingClientRect();
-      const containerRect = container.getBoundingClientRect();
-      let menuTop = rect.bottom - containerRect.top + 8;
-      let menuLeft = rect.left - containerRect.left;
-
-      const menuW = 176;
-      if (menuLeft + menuW > containerRect.width - 16) menuLeft = containerRect.width - menuW - 16;
-      if (menuLeft < 8) menuLeft = 8;
-      if (menuTop + 120 > containerRect.height) menuTop = rect.top - containerRect.top - 128;
-
-      actionsMenu.style.top = `${menuTop}px`;
-      actionsMenu.style.left = `${menuLeft}px`;
-      actionsMenu.classList.remove("hidden");
-    });
-
-    // Action: Copy element
-    actionCopy?.addEventListener("click", (e) => {
-      e.stopPropagation();
-      if (!selectedData) return;
-      outputCode.innerHTML = buildSnippet(selectedData);
-      output.style.maxHeight = "200px";
-      hideActions();
-      clearSelection();
-      showToast("Copied to clipboard");
-    });
-
-    // Action: Add comment → show popover (preserve selectedData)
-    actionComment?.addEventListener("click", (e) => {
-      e.stopPropagation();
-      hideActions(false);
-      commentPopover.classList.remove("hidden");
-      commentInput.focus();
-    });
-
-    // Action: Copy styles (simplified)
-    actionStyles?.addEventListener("click", (e) => {
-      e.stopPropagation();
-      hideActions();
-      clearSelection();
-      showToast("Styles copied to clipboard");
-    });
-
-    // Comment: cancel
-    commentCancel?.addEventListener("click", (e) => {
-      e.stopPropagation();
-      hideComment();
-      clearSelection();
-    });
-
-    // Comment: submit
-    commentSubmit?.addEventListener("click", (e) => {
-      e.stopPropagation();
-      const comment = commentInput.value.trim();
-      if (!comment || !selectedData) return;
-      outputCode.innerHTML = buildSnippet(selectedData, comment);
-      output.style.maxHeight = "240px";
-      hideComment();
-      clearSelection();
-      showToast("Copied with comment");
-    });
-
-    // Enter in textarea submits
-    commentInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        commentSubmit?.click();
-      }
-      if (e.key === "Escape") {
-        e.preventDefault();
-        commentCancel?.click();
+    document.addEventListener('click', function () {
+      if (!notifPopover.classList.contains('hidden')) {
+        notifPopover.classList.add('scale-95', 'opacity-0');
+        notifPopover.classList.remove('scale-100', 'opacity-100');
+        setTimeout(function () { notifPopover.classList.add('hidden'); }, 200);
       }
     });
   }
+
+  // Show freeze hint after a few seconds
+  var freezeHint = document.getElementById('freeze-hint');
+  if (freezeHint) {
+    setTimeout(function () {
+      freezeHint.style.opacity = '1';
+    }, 3000);
+  }
+
+  // --- Initialize real pointgrab ---
+
+  var output = document.getElementById('demo-output');
+  var outputCode = document.getElementById('demo-output-code');
+
+  if (typeof PointGrab !== 'undefined' && output && outputCode) {
+    var pg = PointGrab.init({
+      activationMode: 'hold',
+      showToolbar: true,
+      enabled: true,
+      devOnly: false,
+    });
+
+    // Show toolbar immediately so visitors can interact with it
+    pg.showToolbar();
+
+    pg.registerPlugin({
+      name: 'demo-output',
+      hooks: {
+        onCopySuccess: function (context) {
+          // Format the context nicely for display
+          var html = '';
+          if (context.html) {
+            html += escapeAndHighlight(context.html);
+          }
+          if (context.componentName) {
+            html += '\n\n<span class="text-zinc-400">Component:</span> <span class="text-purple-400">' + esc(context.componentName) + '</span>';
+          }
+          if (context.filePath) {
+            html += '\n<span class="text-zinc-400">Source:</span>    <span class="text-zinc-200">' + esc(context.filePath) + '</span>';
+            if (context.line) html += '<span class="text-zinc-500">:</span><span class="text-amber-400">' + context.line + '</span>';
+          }
+          if (context.selector) {
+            html += '\n<span class="text-zinc-400">Selector:</span>  <span class="text-green-400">' + esc(context.selector) + '</span>';
+          }
+          if (context.componentStack && context.componentStack.length > 1) {
+            html += '\n\n<span class="text-zinc-500">--- component stack ---</span>';
+            context.componentStack.forEach(function (entry) {
+              html += '\n<span class="text-purple-400">' + esc(entry.name) + '</span>';
+              if (entry.filePath) {
+                html += ' <span class="text-zinc-400">at</span> <span class="text-zinc-300">' + esc(entry.filePath) + '</span>';
+              }
+            });
+          }
+
+          outputCode.innerHTML = html;
+          output.style.maxHeight = '260px';
+          output.style.overflow = 'auto';
+        },
+      },
+    });
+  }
+
+  function esc(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function escapeAndHighlight(rawHtml) {
+    var escaped = esc(rawHtml);
+    // Highlight tags
+    escaped = escaped.replace(/&lt;(\/?)([\w-]+)/g, '<span class="text-zinc-500">&lt;$1</span><span class="text-blue-400">$2</span>');
+    escaped = escaped.replace(/&gt;/g, '<span class="text-zinc-500">&gt;</span>');
+    // Highlight attributes
+    escaped = escaped.replace(/ ([\w-]+)=/g, ' <span class="text-amber-400">$1</span>=');
+    // Highlight strings
+    escaped = escaped.replace(/&quot;([^&]*)&quot;/g, '<span class="text-green-400">"$1"</span>');
+    return escaped;
+  }
+})();
 </script>

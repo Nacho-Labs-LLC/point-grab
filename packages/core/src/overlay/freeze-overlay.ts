@@ -183,6 +183,85 @@ export function createFreezeOverlay(): FreezeOverlay {
     animStyleEl = null;
   }
 
+  // --- DOM mutation freezing ---
+  // Reverts JS-driven DOM changes (setInterval, setTimeout, rAF callbacks)
+  // by observing and undoing mutations while the page is frozen.
+
+  let mutationObserver: MutationObserver | null = null;
+
+  function isPointGrabNode(node: Node): boolean {
+    if (node instanceof HTMLElement) {
+      const id = node.id || '';
+      if (id.startsWith('__pointgrab')) return true;
+    }
+    // Walk up to check if the mutation target is inside a pointgrab element
+    let current: Node | null = node;
+    while (current) {
+      if (current instanceof HTMLElement && (current.id || '').startsWith('__pointgrab')) return true;
+      current = current.parentNode;
+    }
+    return false;
+  }
+
+  function freezeDom(): void {
+    if (mutationObserver) return;
+
+    mutationObserver = new MutationObserver((mutations) => {
+      // Temporarily disconnect to avoid infinite loop while reverting
+      mutationObserver?.disconnect();
+
+      for (const mutation of mutations) {
+        if (isPointGrabNode(mutation.target)) continue;
+
+        if (mutation.type === 'characterData') {
+          mutation.target.textContent = mutation.oldValue;
+        } else if (mutation.type === 'attributes') {
+          const el = mutation.target as Element;
+          if (mutation.attributeName === HOVER_ATTR) continue;
+          if (mutation.oldValue === null) {
+            el.removeAttribute(mutation.attributeName!);
+          } else {
+            el.setAttribute(mutation.attributeName!, mutation.oldValue);
+          }
+        } else if (mutation.type === 'childList') {
+          for (const added of Array.from(mutation.addedNodes)) {
+            if (isPointGrabNode(added)) continue;
+            added.parentNode?.removeChild(added);
+          }
+          for (const removed of Array.from(mutation.removedNodes)) {
+            if (isPointGrabNode(removed)) continue;
+            if (mutation.nextSibling) {
+              mutation.target.insertBefore(removed, mutation.nextSibling);
+            } else {
+              mutation.target.appendChild(removed);
+            }
+          }
+        }
+      }
+
+      // Re-observe after reverting
+      observeBody();
+    });
+
+    observeBody();
+  }
+
+  function observeBody(): void {
+    mutationObserver?.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeOldValue: true,
+      characterData: true,
+      characterDataOldValue: true,
+    });
+  }
+
+  function unfreezeDom(): void {
+    mutationObserver?.disconnect();
+    mutationObserver = null;
+  }
+
   return {
     show(hoveredElement?: Element | null): void {
       // 1. Block mouse/focus events to prevent hover state changes
@@ -194,8 +273,9 @@ export function createFreezeOverlay(): FreezeOverlay {
         injectHoverRules();
       }
 
-      // 3. Freeze animations so nothing moves while page is frozen
+      // 3. Freeze CSS animations and DOM mutations
       freezeAnimations();
+      freezeDom();
 
       // 4. Show overlay to block clicks/scrolls
       const el = ensureOverlay();
@@ -209,6 +289,7 @@ export function createFreezeOverlay(): FreezeOverlay {
       clearHoverMarks();
       removeHoverRules();
       unfreezeAnimations();
+      unfreezeDom();
       unblockEvents();
     },
 
@@ -228,6 +309,7 @@ export function createFreezeOverlay(): FreezeOverlay {
       clearHoverMarks();
       removeHoverRules();
       unfreezeAnimations();
+      unfreezeDom();
       unblockEvents();
       overlay?.remove();
       document.getElementById(FREEZE_STYLE_ID)?.remove();

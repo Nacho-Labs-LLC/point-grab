@@ -1,0 +1,16 @@
+{
+  "name": "pointgrab-example-web-components",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "pointgrab": "^0.1.0",
+    "@point-grab/web-components": "^0.1.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

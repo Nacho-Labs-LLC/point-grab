@@ -541,8 +541,8 @@ interface PluginHooks {
 ## Contributing
 
 ```bash
-git clone https://github.com/your-org/pointgrab.git
-cd pointgrab
+git clone https://github.com/Nacho-Labs-LLC/point-grab.git
+cd point-grab
 pnpm install
 pnpm build
 pnpm test

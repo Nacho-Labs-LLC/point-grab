@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pointgrab — Vanilla JS Example</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header>
+    <h1>pointgrab <span class="accent">vanilla</span></h1>
+    <p class="subtitle">Hold <kbd>Cmd+C</kbd> (Mac) or <kbd>Ctrl+C</kbd> (Win) and hover over any element. Click to capture. Press <kbd>F</kbd> to freeze animations.</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Dashboard</h2>
+      <div class="stats">
+        <div class="stat">
+          <span class="stat-label">Revenue</span>
+          <span class="stat-value">$12,847</span>
+          <span class="stat-change positive">+14.2%</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Orders</span>
+          <span class="stat-value">284</span>
+          <span class="stat-change positive">+8.1%</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Fulfillment</span>
+          <div class="progress-track">
+            <div id="progress-bar" class="progress-fill"></div>
+          </div>
+          <span id="progress-label" class="stat-change">0%</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2>Recent Orders</h2>
+        <button class="btn-primary">+ New Order</button>
+      </div>
+      <table>
+        <thead>
+          <tr><th>Order</th><th>Customer</th><th>Amount</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>#1847</td><td>Sarah Chen</td><td>$249.00</td><td><span class="badge warning">Processing</span></td></tr>
+          <tr><td>#1846</td><td>Mike Johnson</td><td>$89.50</td><td><span class="badge success">Shipped</span></td></tr>
+          <tr id="live-row"><td>#1845</td><td>Alex Rivera</td><td>$412.00</td><td><span id="live-status" class="badge info">Syncing...</span></td></tr>
+          <tr><td>#1844</td><td>Priya Patel</td><td>$175.25</td><td><span class="badge success">Delivered</span></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Notification popover demo -->
+    <section class="card">
+      <div class="card-header">
+        <h2>Notifications</h2>
+        <button id="notif-toggle" class="btn-secondary">Show popover</button>
+      </div>
+      <div id="notif-popover" class="popover hidden">
+        <div class="popover-item"><span class="dot blue"></span> New order #1847 received <small>2 min ago</small></div>
+        <div class="popover-item"><span class="dot amber"></span> Inventory low on SKU-2291 <small>18 min ago</small></div>
+        <div class="popover-item"><span class="dot green"></span> Deployment v2.4.1 succeeded <small>1 hr ago</small></div>
+      </div>
+    </section>
+
+    <!-- Skeleton loader demo -->
+    <section class="card">
+      <h2>Processing Queue</h2>
+      <div id="skeleton" class="skeleton">
+        <div class="skeleton-line wide"></div>
+        <div class="skeleton-line medium"></div>
+        <div class="skeleton-line narrow"></div>
+      </div>
+      <div id="skeleton-loaded" class="hidden">
+        <p class="stat-value">12</p>
+        <p class="stat-change warning">items in queue</p>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/main.js"></script>
+</body>
+</html>

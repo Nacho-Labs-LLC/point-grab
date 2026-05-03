@@ -1,6 +1,6 @@
 {
   "name": "@point-grab/mcp-server",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP stdio + webhook server for pointgrab",
   "author": {
     "name": "Nate Richardson",

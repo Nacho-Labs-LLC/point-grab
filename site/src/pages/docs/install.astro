@@ -3,8 +3,66 @@ import Base from "../../layouts/Base.astro";
 import Section from "../../components/Section.astro";
 import CodeBlock from "../../components/CodeBlock.astro";
 
-// Break import strings so Vite's scanner doesn't try to resolve them
-const from = "from";
+// Code samples as variables so Vite's dep scanner doesn't try to resolve them
+const vanillaCode = `import { init } from 'pointgrab';
+
+const inspector = init();
+
+// Or with options
+const inspector = init({
+  activationMode: 'toggle',
+  themeMode: 'light',
+});`;
+
+const reactCode = `import { usePointGrab } from '@point-grab/react';
+
+function App() {
+  usePointGrab();
+  // or: usePointGrab({ activationMode: 'toggle' })
+
+  return <div>...</div>;
+}`;
+
+const angularCode = `import { providePointGrab } from '@point-grab/angular';
+
+export const appConfig = {
+  providers: [
+    providePointGrab(),
+    // or: providePointGrab({ activationMode: 'toggle' })
+  ],
+};`;
+
+const vueCode = `import { createApp } from 'vue';
+import { PointGrabPlugin } from '@point-grab/vue';
+import App from './App.vue';
+
+const app = createApp(App);
+app.use(PointGrabPlugin);
+// or: app.use(PointGrabPlugin, { activationMode: 'toggle' })
+app.mount('#app');`;
+
+const svelteCode = `<script>
+  import { pointgrab } from '@point-grab/svelte';
+</script>
+
+<div use:pointgrab>
+  <slot />
+</div>`;
+
+const wcCode = `import { initPointGrabWebComponents } from '@point-grab/web-components';
+
+initPointGrabWebComponents();
+// or: initPointGrabWebComponents({ activationMode: 'toggle' })`;
+
+const configCode = `import { init } from 'pointgrab';
+
+const inspector = init({
+  activationKey: 'Alt+I',
+  activationMode: 'toggle',
+  maxContextLines: 40,
+  themeMode: 'system',
+  mcpWebhook: true,
+});`;
 ---
 
 <Base title="Installation — pointgrab" description="Get started with pointgrab in under a minute.">
@@ -69,15 +127,7 @@ yarn add pointgrab`} lang="bash" />
 <script src="https://unpkg.com/pointgrab/dist/index.global.js"></script>`} />
 
         <p class="mt-4 text-text-muted">Or use the ES module import for bundler setups:</p>
-        <CodeBlock class="mt-3" lang="typescript" filename="main.ts" code={`import { init } ${from} 'pointgrab';
-
-const inspector = init();
-
-// Or with options
-const inspector = init({
-  activationMode: 'toggle',
-  themeMode: 'light',
-});`} />
+        <CodeBlock class="mt-3" lang="typescript" filename="main.ts" code={vanillaCode} />
       </div>
 
       <!-- React -->
@@ -90,14 +140,7 @@ const inspector = init({
         <p class="mt-4 text-text-muted">
           Add the <code class="text-amber">usePointGrab()</code> hook to your root component:
         </p>
-        <CodeBlock class="mt-3" lang="tsx" filename="App.tsx" code={`import { usePointGrab } ${from} '@point-grab/react';
-
-function App() {
-  usePointGrab();
-  // or: usePointGrab({ activationMode: 'toggle' })
-
-  return <div>...</div>;
-}`} />
+        <CodeBlock class="mt-3" lang="tsx" filename="App.tsx" code={reactCode} />
         <p class="mt-3 text-sm text-text-faint">
           Resolves component names from React fiber tree, source locations from <code class="text-amber">_debugSource</code>.
           Strips <code class="text-amber">data-reactroot</code> and <code class="text-amber">data-reactid</code> attributes.
@@ -114,14 +157,7 @@ function App() {
         <p class="mt-4 text-text-muted">
           Add <code class="text-amber">providePointGrab()</code> to your application config:
         </p>
-        <CodeBlock class="mt-3" lang="typescript" filename="app.config.ts" code={`import { providePointGrab } ${from} '@point-grab/angular';
-
-export const appConfig = {
-  providers: [
-    providePointGrab(),
-    // or: providePointGrab({ activationMode: 'toggle' })
-  ],
-};`} />
+        <CodeBlock class="mt-3" lang="typescript" filename="app.config.ts" code={angularCode} />
         <p class="mt-3 text-sm text-text-faint">
           Uses <code class="text-amber">window.ng.getComponent()</code> and <code class="text-amber">window.ng.getOwningComponent()</code> for resolution.
           Strips <code class="text-amber">ng-*</code> classes and <code class="text-amber">_nghost-*</code> / <code class="text-amber">_ngcontent-*</code> attributes.
@@ -139,14 +175,7 @@ export const appConfig = {
         <p class="mt-4 text-text-muted">
           Register the plugin in your <code class="text-amber">main.ts</code>:
         </p>
-        <CodeBlock class="mt-3" lang="typescript" filename="main.ts" code={`import { createApp } ${from} 'vue';
-import { PointGrabPlugin } ${from} '@point-grab/vue';
-import App ${from} './App.vue';
-
-const app = createApp(App);
-app.use(PointGrabPlugin);
-// or: app.use(PointGrabPlugin, { activationMode: 'toggle' })
-app.mount('#app');`} />
+        <CodeBlock class="mt-3" lang="typescript" filename="main.ts" code={vueCode} />
         <p class="mt-3 text-sm text-text-faint">
           Resolves components via <code class="text-amber">__vueParentComponent</code>.
           Source paths from <code class="text-amber">type.__file</code>.
@@ -164,13 +193,7 @@ app.mount('#app');`} />
         <p class="mt-4 text-text-muted">
           Use the <code class="text-amber">use:pointgrab</code> action in your root layout:
         </p>
-        <CodeBlock class="mt-3" lang="svelte" filename="+layout.svelte" code={`<script>
-  import { pointgrab } ${from} '@point-grab/svelte';
-</script>
-
-<div use:pointgrab>
-  <slot />
-</div>`} />
+        <CodeBlock class="mt-3" lang="svelte" filename="+layout.svelte" code={svelteCode} />
         <p class="mt-3 text-sm text-text-faint">
           Svelte 5: reads <code class="text-amber">__svelte_meta</code> for component names and source locations.
           Svelte 4: uses <code class="text-amber">__svelte_component</code>.
@@ -186,10 +209,7 @@ app.mount('#app');`} />
         </h3>
         <CodeBlock class="mt-4" code="npm install @point-grab/web-components" />
         <p class="mt-4 text-text-muted">Initialize in your app entry point:</p>
-        <CodeBlock class="mt-3" lang="typescript" filename="main.ts" code={`import { initPointGrabWebComponents } ${from} '@point-grab/web-components';
-
-initPointGrabWebComponents();
-// or: initPointGrabWebComponents({ activationMode: 'toggle' })`} />
+        <CodeBlock class="mt-3" lang="typescript" filename="main.ts" code={wcCode} />
         <p class="mt-3 text-sm text-text-faint">
           Detects custom elements via <code class="text-amber">customElements.get()</code>.
           Pierces Shadow DOM boundaries using <code class="text-amber">deepElementFromPoint()</code>.
@@ -335,15 +355,7 @@ initPointGrabWebComponents();
       </div>
 
       <p class="mt-6 text-text-muted">Example with multiple options:</p>
-      <CodeBlock class="mt-3" lang="typescript" code={`import { init } ${from} 'pointgrab';
-
-const inspector = init({
-  activationKey: 'Alt+I',
-  activationMode: 'toggle',
-  maxContextLines: 40,
-  themeMode: 'system',
-  mcpWebhook: true,
-});`} />
+      <CodeBlock class="mt-3" lang="typescript" code={configCode} />
     </div>
   </Section>
 

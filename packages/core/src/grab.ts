@@ -102,7 +102,7 @@ export function createNoopApi(): PointGrabAPI {
   };
 }
 
-export function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrabAPI {
+function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrabAPI {
   const defaults = getDefaultOptions();
   const merged: PointGrabOptions = { ...defaults, ...options };
 

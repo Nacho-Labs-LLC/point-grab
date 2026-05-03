@@ -30,7 +30,7 @@ import LiveDemo from "../components/LiveDemo.astro";
         </h1>
 
         <p class="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-text-muted sm:text-xl">
-          Grab any element's full context — HTML, component name, source file, styles — and hand it to your AI agent. Works with every framework.
+          Your AI agent can't see your screen. Point at the element, grab its full context — HTML, component name, source file, line number — and hand it over. Works with every framework.
         </p>
 
         <div class="mt-10 flex flex-col items-center gap-4 sm:flex-row">
@@ -40,7 +40,7 @@ import LiveDemo from "../components/LiveDemo.astro";
             class="shadow-[var(--shadow-glow-blue)] hover:shadow-[var(--shadow-glow-blue-strong)] border-pointgrab-blue/50 hover:border-pointgrab-blue"
           />
           <a
-            href="https://github.com/pointgrab/pointgrab"
+            href="https://github.com/Nacho-Labs-LLC/point-grab"
             class="inline-flex items-center gap-2 rounded-xl border border-border px-5 py-3 text-sm text-text-muted transition-all hover:border-border-bright hover:text-text-heading"
           >
             View on GitHub
@@ -59,113 +59,67 @@ import LiveDemo from "../components/LiveDemo.astro";
   </section>
 
   <!-- ═══════════════════════════════════════════
-       FRAMEWORK SHOWCASE
+       THE PROBLEM — WITHOUT vs WITH
        ═══════════════════════════════════════════ -->
-  <Section id="frameworks" background="raised">
+  <Section id="features" background="raised">
     <div class="text-center">
-      <Badge variant="blue" class="mb-4">Frameworks</Badge>
+      <Badge variant="amber" class="mb-4">The problem</Badge>
       <h2 class="text-3xl font-bold md:text-4xl">
-        Every framework. One tool.
+        Your agent is coding blind.
       </h2>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-text-muted">
+        You see a broken button. Your agent sees a thousand files. The gap between what you're looking at and what your agent can act on is the bottleneck.
+      </p>
     </div>
 
-    <div class="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <!-- Angular -->
-      <div class="group rounded-xl border border-border bg-bg p-6 transition-all hover:border-border-bright hover:shadow-[var(--shadow-glow-blue)]">
-        <div class="mb-4 flex items-center gap-3">
-          <FrameworkIcon name="angular" size={36} />
-          <div>
-            <h3 class="font-semibold text-text-heading">Angular</h3>
-            <code class="text-xs text-text-faint">@point-grab/angular</code>
+    <div class="mx-auto mt-16 max-w-[var(--width-narrow)]">
+      <div class="grid gap-6 md:grid-cols-2">
+        <!-- Without -->
+        <div class="rounded-xl border border-border bg-bg p-6">
+          <div class="mb-4 flex items-center gap-2">
+            <div class="flex h-6 w-6 items-center justify-center rounded bg-error/10 text-error">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </div>
+            <span class="text-xs font-semibold uppercase tracking-wider text-text-faint">Without pointgrab</span>
           </div>
+          <div class="space-y-3 text-sm text-text-muted">
+            <p class="italic">"The submit button in the checkout form is broken — it's the blue one near the bottom"</p>
+            <p class="italic">"Something's wrong with the sidebar, the third item from the top"</p>
+            <p class="italic">"The loading spinner on the dashboard keeps showing"</p>
+          </div>
+          <p class="mt-4 text-xs text-text-faint">Your agent has to guess which file, which component, which element you mean.</p>
         </div>
-        <p class="text-sm leading-relaxed text-text-muted">
-          Reads the component tree via NgZone for component names, template references, and source locations.
-        </p>
-      </div>
 
-      <!-- React -->
-      <div class="group rounded-xl border border-border bg-bg p-6 transition-all hover:border-border-bright hover:shadow-[var(--shadow-glow-blue)]">
-        <div class="mb-4 flex items-center gap-3">
-          <FrameworkIcon name="react" size={36} />
-          <div>
-            <h3 class="font-semibold text-text-heading">React</h3>
-            <code class="text-xs text-text-faint">@point-grab/react</code>
+        <!-- With -->
+        <div class="rounded-xl border border-pointgrab-blue/30 bg-pointgrab-blue/5 p-6 shadow-[var(--shadow-glow-blue)]">
+          <div class="mb-4 flex items-center gap-2">
+            <div class="flex h-6 w-6 items-center justify-center rounded bg-pointgrab-blue/10 text-pointgrab-blue">
+              <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+              </svg>
+            </div>
+            <span class="text-xs font-semibold uppercase tracking-wider text-pointgrab-blue">With pointgrab</span>
           </div>
-        </div>
-        <p class="text-sm leading-relaxed text-text-muted">
-          Walks the fiber tree for component names and source file paths with line numbers.
-        </p>
-      </div>
+          <pre class="overflow-x-auto rounded-lg bg-bg-muted p-4 text-xs leading-relaxed"><code><span class="text-text-faint">&lt;</span><span class="text-pointgrab-blue">button</span> <span class="text-amber">class</span><span class="text-text-faint">=</span><span class="text-success">"btn-primary"</span><span class="text-text-faint">&gt;</span>
+  Submit Order
+<span class="text-text-faint">&lt;/</span><span class="text-pointgrab-blue">button</span><span class="text-text-faint">&gt;</span>
 
-      <!-- Vue -->
-      <div class="group rounded-xl border border-border bg-bg p-6 transition-all hover:border-border-bright hover:shadow-[var(--shadow-glow-blue)]">
-        <div class="mb-4 flex items-center gap-3">
-          <FrameworkIcon name="vue" size={36} />
-          <div>
-            <h3 class="font-semibold text-text-heading">Vue</h3>
-            <code class="text-xs text-text-faint">@point-grab/vue</code>
-          </div>
+<span class="text-text-faint">in</span> <span class="text-[#a78bfa]">SubmitButton</span> <span class="text-text-faint">at</span> <span class="text-text-muted">src/components/SubmitButton.tsx</span><span class="text-text-faint">:</span><span class="text-amber">24</span>
+<span class="text-text-faint">in</span> <span class="text-[#a78bfa]">CheckoutForm</span> <span class="text-text-faint">at</span> <span class="text-text-muted">src/components/CheckoutForm.tsx</span><span class="text-text-faint">:</span><span class="text-amber">8</span></code></pre>
+          <p class="mt-4 text-xs text-pointgrab-blue">Exact element, exact file, exact line. No guessing.</p>
         </div>
-        <p class="text-sm leading-relaxed text-text-muted">
-          Traverses the Vue instance tree, resolving SFC file paths and stripping <code class="text-text-faint">data-v-*</code> scoped hashes.
-        </p>
-      </div>
-
-      <!-- Svelte -->
-      <div class="group rounded-xl border border-border bg-bg p-6 transition-all hover:border-border-bright hover:shadow-[var(--shadow-glow-blue)]">
-        <div class="mb-4 flex items-center gap-3">
-          <FrameworkIcon name="svelte" size={36} />
-          <div>
-            <h3 class="font-semibold text-text-heading">Svelte</h3>
-            <code class="text-xs text-text-faint">@point-grab/svelte</code>
-          </div>
-        </div>
-        <p class="text-sm leading-relaxed text-text-muted">
-          Uses Svelte's internal component context to extract component boundaries and source mappings.
-        </p>
-      </div>
-
-      <!-- Web Components -->
-      <div class="group rounded-xl border border-border bg-bg p-6 transition-all hover:border-border-bright hover:shadow-[var(--shadow-glow-blue)]">
-        <div class="mb-4 flex items-center gap-3">
-          <FrameworkIcon name="webcomponents" size={36} />
-          <div>
-            <h3 class="font-semibold text-text-heading">Web Components</h3>
-            <code class="text-xs text-text-faint">@point-grab/web-components</code>
-          </div>
-        </div>
-        <p class="text-sm leading-relaxed text-text-muted">
-          Pierces shadow DOM boundaries and maps custom element tag names back to their class definitions.
-        </p>
-      </div>
-
-      <!-- Vanilla JS -->
-      <div class="group rounded-xl border border-border bg-bg p-6 transition-all hover:border-border-bright hover:shadow-[var(--shadow-glow-blue)]">
-        <div class="mb-4 flex items-center gap-3">
-          <FrameworkIcon name="html" size={36} />
-          <div>
-            <h3 class="font-semibold text-text-heading">Vanilla JS</h3>
-            <code class="text-xs text-text-faint">pointgrab</code>
-          </div>
-        </div>
-        <p class="text-sm leading-relaxed text-text-muted">
-          Pure DOM inspection with CSS selector generation. Zero dependencies, works in any page.
-        </p>
       </div>
     </div>
-
-    <p class="mt-10 text-center text-sm text-text-faint">
-      Or use the core <code class="rounded bg-bg-muted px-1.5 py-0.5 text-text-muted">pointgrab</code> package directly — zero dependencies, works everywhere.
-    </p>
   </Section>
 
   <!-- ═══════════════════════════════════════════
        HOW IT WORKS
        ═══════════════════════════════════════════ -->
-  <Section id="features">
+  <Section>
     <div class="text-center">
-      <Badge variant="amber" class="mb-4">How it works</Badge>
+      <Badge variant="blue" class="mb-4">How it works</Badge>
       <h2 class="text-3xl font-bold md:text-4xl">
         Three steps. Zero guesswork.
       </h2>
@@ -191,14 +145,14 @@ import LiveDemo from "../components/LiveDemo.astro";
           </div>
         </div>
         <p class="text-sm leading-relaxed text-text-muted">
-          Hold your activation key and hover. PointGrab highlights the element and shows its component name in a floating label.
+          Hold <kbd class="rounded border border-border bg-bg-muted px-1 py-0.5 text-[10px] text-text-muted">&#8984;C</kbd> and hover. A highlight overlay tracks your cursor with the component name in a floating label.
         </p>
       </div>
 
       <!-- Step 2: Grab -->
       <div class="rounded-xl border border-border bg-bg-raised p-8">
         <div class="mb-4 flex items-center gap-4">
-          <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-pointgrab-blue/10 text-pointgrab-blue">
+          <div class="flex h-10 w-10 items-center justify-content rounded-lg bg-pointgrab-blue/10 text-pointgrab-blue">
             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
@@ -210,7 +164,7 @@ import LiveDemo from "../components/LiveDemo.astro";
           </div>
         </div>
         <p class="text-sm leading-relaxed text-text-muted">
-          Click to capture. HTML, CSS selector, component stack, source file path — all copied instantly.
+          Click to capture. Cleaned HTML, CSS selector, component ancestry, source file with line number — all on your clipboard instantly.
         </p>
       </div>
 
@@ -229,7 +183,7 @@ import LiveDemo from "../components/LiveDemo.astro";
           </div>
         </div>
         <p class="text-sm leading-relaxed text-text-muted">
-          Paste into Claude Code, Cursor, or any AI agent. Or let the MCP server send it automatically.
+          Paste into Claude Code, Cursor, or Windsurf. Or connect the MCP server and let your agent query grabs directly — no paste needed.
         </p>
       </div>
     </div>
@@ -245,7 +199,7 @@ import LiveDemo from "../components/LiveDemo.astro";
         Point at a bug. Tell your agent what to fix.
       </h2>
       <p class="mx-auto mt-4 max-w-2xl text-lg text-text-muted">
-        Don't just capture what's there — tell your AI agent what to change. Attach natural language instructions directly to any element.
+        Don't just capture what's there — attach natural language instructions directly to any element. Your agent gets the context <em>and</em> your intent in one payload.
       </p>
     </div>
 
@@ -306,30 +260,22 @@ import LiveDemo from "../components/LiveDemo.astro";
           <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-pointgrab-blue/10 text-xs font-bold text-pointgrab-blue">2</div>
           <div>
             <div class="text-sm font-medium text-text-heading">Type your instruction</div>
-            <p class="mt-1 text-xs text-text-faint">Natural language — anything your AI agent should know</p>
+            <p class="mt-1 text-xs text-text-faint">Natural language — "fix this", "make it responsive", "add a loading state"</p>
           </div>
         </div>
         <div class="flex items-start gap-3 rounded-lg border border-border bg-bg p-4">
           <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-pointgrab-blue/10 text-xs font-bold text-pointgrab-blue">3</div>
           <div>
             <div class="text-sm font-medium text-text-heading">Paste or auto-send</div>
-            <p class="mt-1 text-xs text-text-faint">Comment is in your clipboard and flows through MCP to your agent</p>
+            <p class="mt-1 text-xs text-text-faint">Element + instruction on your clipboard and through MCP to your agent</p>
           </div>
         </div>
-      </div>
-
-      <!-- Callout -->
-      <div class="mt-8 rounded-lg border border-amber/20 bg-amber/5 p-4">
-        <p class="text-sm text-text-muted">
-          <span class="font-semibold text-amber">MCP integration:</span>
-          Comments automatically flow through the <code class="rounded bg-bg-muted px-1 text-xs text-text-faint">onCopySuccess</code> hook with the <code class="rounded bg-bg-muted px-1 text-xs text-text-faint">prompt</code> parameter — your MCP server receives both the element context and your instruction in one payload.
-        </p>
       </div>
     </div>
   </Section>
 
   <!-- ═══════════════════════════════════════════
-       WHAT GETS CAPTURED
+       WHAT YOUR AGENT SEES
        ═══════════════════════════════════════════ -->
   <Section>
     <div class="text-center">
@@ -364,24 +310,16 @@ import LiveDemo from "../components/LiveDemo.astro";
       <div class="mt-8 grid gap-4 sm:grid-cols-3">
         <div class="rounded-lg border border-border bg-bg p-4">
           <div class="mb-1 text-xs font-semibold uppercase tracking-wider text-pointgrab-blue">Cleaned HTML</div>
-          <p class="text-sm text-text-muted">Framework-specific attributes stripped. Just the markup your agent needs.</p>
+          <p class="text-sm text-text-muted">Framework attributes stripped automatically. <code class="text-text-faint">_nghost-*</code>, <code class="text-text-faint">data-v-*</code>, <code class="text-text-faint">data-reactid</code> — gone.</p>
         </div>
         <div class="rounded-lg border border-border bg-bg p-4">
           <div class="mb-1 text-xs font-semibold uppercase tracking-wider text-[#a78bfa]">Component + Source</div>
-          <p class="text-sm text-text-muted">Component name and the exact source file path with line number.</p>
+          <p class="text-sm text-text-muted">Component name and exact source file with line number. Your agent opens the right file on the first try.</p>
         </div>
         <div class="rounded-lg border border-border bg-bg p-4">
           <div class="mb-1 text-xs font-semibold uppercase tracking-wider text-amber">Ancestor Chain</div>
-          <p class="text-sm text-text-muted">Full component ancestry from the target up to the root, each with file paths.</p>
+          <p class="text-sm text-text-muted">Full component stack from target to root. Your agent understands where the element lives in the tree.</p>
         </div>
-      </div>
-
-      <!-- Callout -->
-      <div class="mt-8 rounded-lg border border-pointgrab-blue/20 bg-pointgrab-blue/5 p-4">
-        <p class="text-sm text-text-muted">
-          <span class="font-semibold text-text">Automatic cleanup:</span>
-          Framework-specific adapters strip internal attributes (<code class="rounded bg-bg-muted px-1 text-xs text-text-faint">_nghost-*</code>, <code class="rounded bg-bg-muted px-1 text-xs text-text-faint">data-v-*</code>, <code class="rounded bg-bg-muted px-1 text-xs text-text-faint">data-reactid</code>, etc.) automatically.
-        </p>
       </div>
     </div>
   </Section>
@@ -389,38 +327,42 @@ import LiveDemo from "../components/LiveDemo.astro";
   <!-- ═══════════════════════════════════════════
        MCP INTEGRATION
        ═══════════════════════════════════════════ -->
-  <Section id="mcp">
+  <Section id="mcp" background="raised">
     <div class="text-center">
       <Badge variant="amber" class="mb-4">MCP Integration</Badge>
       <h2 class="text-3xl font-bold md:text-4xl">
-        Agents that see what you see.
+        Your agent queries. You don't paste.
       </h2>
       <p class="mx-auto mt-4 max-w-2xl text-lg text-text-muted">
-        Connect pointgrab to your AI agent via MCP. Every grab is instantly searchable.
+        Connect the MCP server and every grab is instantly searchable by your AI agent. Claude Code, Cursor, Windsurf — anything that speaks MCP.
       </p>
     </div>
 
     <div class="mx-auto mt-16 max-w-[var(--width-narrow)]">
+      <!-- Setup snippet -->
+      <div class="mb-8 overflow-hidden rounded-xl border border-border bg-bg-muted">
+        <div class="border-b border-border px-4 py-2.5">
+          <span class="text-xs text-text-faint">terminal</span>
+        </div>
+        <pre class="overflow-x-auto p-4 text-sm"><code><span class="text-text-faint">$</span> <span class="text-text">claude mcp add pointgrab -- npx @point-grab/mcp-server</span></code></pre>
+      </div>
+
       <div class="grid gap-3">
-        <div class="flex items-start gap-4 rounded-lg border border-border bg-bg-raised p-4">
+        <div class="flex items-start gap-4 rounded-lg border border-border bg-bg p-4">
           <code class="shrink-0 rounded bg-bg-muted px-2 py-1 text-sm text-pointgrab-blue">pointgrab_search</code>
-          <p class="text-sm text-text-muted">Search grabs by text, component, file, or framework</p>
+          <p class="text-sm text-text-muted">"Find the button I just clicked" — search by text, component, file, or framework</p>
         </div>
-        <div class="flex items-start gap-4 rounded-lg border border-border bg-bg-raised p-4">
+        <div class="flex items-start gap-4 rounded-lg border border-border bg-bg p-4">
           <code class="shrink-0 rounded bg-bg-muted px-2 py-1 text-sm text-pointgrab-blue">pointgrab_recent</code>
-          <p class="text-sm text-text-muted">Get the latest grabs from your session</p>
+          <p class="text-sm text-text-muted">Get the latest grabs from your session — your agent sees what you just pointed at</p>
         </div>
-        <div class="flex items-start gap-4 rounded-lg border border-border bg-bg-raised p-4">
+        <div class="flex items-start gap-4 rounded-lg border border-border bg-bg p-4">
           <code class="shrink-0 rounded bg-bg-muted px-2 py-1 text-sm text-pointgrab-blue">pointgrab_get</code>
-          <p class="text-sm text-text-muted">Get full context for a specific grab by ID</p>
+          <p class="text-sm text-text-muted">Full context for a specific grab — HTML, selector, component stack, source location</p>
         </div>
-        <div class="flex items-start gap-4 rounded-lg border border-border bg-bg-raised p-4">
+        <div class="flex items-start gap-4 rounded-lg border border-border bg-bg p-4">
           <code class="shrink-0 rounded bg-bg-muted px-2 py-1 text-sm text-pointgrab-blue">pointgrab_stats</code>
-          <p class="text-sm text-text-muted">Usage statistics across your inspection sessions</p>
-        </div>
-        <div class="flex items-start gap-4 rounded-lg border border-border bg-bg-raised p-4">
-          <code class="shrink-0 rounded bg-bg-muted px-2 py-1 text-sm text-pointgrab-blue">pointgrab_frameworks</code>
-          <p class="text-sm text-text-muted">Framework breakdown across inspected elements</p>
+          <p class="text-sm text-text-muted">Session stats — total grabs, unique components, unique files, framework breakdown</p>
         </div>
       </div>
 
@@ -439,64 +381,133 @@ import LiveDemo from "../components/LiveDemo.astro";
   </Section>
 
   <!-- ═══════════════════════════════════════════
-       COMPARISON TABLE
+       FRAMEWORK SHOWCASE
        ═══════════════════════════════════════════ -->
-  <Section background="raised">
+  <Section id="frameworks">
     <div class="text-center">
+      <Badge variant="blue" class="mb-4">Frameworks</Badge>
       <h2 class="text-3xl font-bold md:text-4xl">
-        Built different.
+        Every framework. One tool.
       </h2>
+      <p class="mx-auto mt-4 max-w-2xl text-lg text-text-muted">
+        Framework adapters add rich metadata — component names, source file paths, ancestor chains — on top of the core inspector. Or skip the adapter and use the core package anywhere.
+      </p>
     </div>
 
-    <div class="mx-auto mt-16 max-w-[var(--width-narrow)] overflow-x-auto">
-      <table class="w-full text-left text-sm">
-        <thead>
-          <tr class="border-b border-border">
-            <th class="pb-4 pr-8 font-medium text-text-faint">Feature</th>
-            <th class="pb-4 pr-8 font-semibold text-pointgrab-blue">pointgrab</th>
-            <th class="pb-4 font-medium text-text-faint">React-only tools</th>
-          </tr>
-        </thead>
-        <tbody class="text-text-muted">
-          <tr class="border-b border-border/50">
-            <td class="py-4 pr-8 text-text">Frameworks</td>
-            <td class="py-4 pr-8">Angular, React, Vue, Svelte, Web Components, Vanilla</td>
-            <td class="py-4">React only</td>
-          </tr>
-          <tr class="border-b border-border/50">
-            <td class="py-4 pr-8 text-text">Runtime deps</td>
-            <td class="py-4 pr-8">Zero</td>
-            <td class="py-4">Requires React 18+</td>
-          </tr>
-          <tr class="border-b border-border/50">
-            <td class="py-4 pr-8 text-text">MCP integration</td>
-            <td class="py-4 pr-8">Built-in</td>
-            <td class="py-4">Yes</td>
-          </tr>
-          <tr class="border-b border-border/50">
-            <td class="py-4 pr-8 text-text">Source location</td>
-            <td class="py-4 pr-8">All frameworks</td>
-            <td class="py-4">React only</td>
-          </tr>
-          <tr class="border-b border-border/50">
-            <td class="py-4 pr-8 text-text">Component tree</td>
-            <td class="py-4 pr-8">Full stack with file paths</td>
-            <td class="py-4">React components only</td>
-          </tr>
-          <tr>
-            <td class="py-4 pr-8 text-text">Dark mode</td>
-            <td class="py-4 pr-8">Yes</td>
-            <td class="py-4 text-text-faint">&mdash;</td>
-          </tr>
-        </tbody>
-      </table>
+    <div class="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <!-- Angular -->
+      <div class="group rounded-xl border border-border bg-bg-raised p-6 transition-all hover:border-border-bright hover:shadow-[var(--shadow-glow-blue)]">
+        <div class="mb-4 flex items-center gap-3">
+          <FrameworkIcon name="angular" size={36} />
+          <div>
+            <h3 class="font-semibold text-text-heading">Angular</h3>
+            <code class="text-xs text-text-faint">@point-grab/angular</code>
+          </div>
+        </div>
+        <p class="text-sm leading-relaxed text-text-muted">
+          Reads the component tree via <code class="text-text-faint">window.ng</code> for component names, template references, and source locations.
+        </p>
+        <a href="/docs/install#angular" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-pointgrab-blue transition-colors hover:text-pointgrab-blue-bright">
+          Get started →
+        </a>
+      </div>
+
+      <!-- React -->
+      <div class="group rounded-xl border border-border bg-bg-raised p-6 transition-all hover:border-border-bright hover:shadow-[var(--shadow-glow-blue)]">
+        <div class="mb-4 flex items-center gap-3">
+          <FrameworkIcon name="react" size={36} />
+          <div>
+            <h3 class="font-semibold text-text-heading">React</h3>
+            <code class="text-xs text-text-faint">@point-grab/react</code>
+          </div>
+        </div>
+        <p class="text-sm leading-relaxed text-text-muted">
+          Walks the fiber tree via <code class="text-text-faint">__reactFiber$</code> for component names and <code class="text-text-faint">_debugSource</code> for file paths with line numbers.
+        </p>
+        <a href="https://stackblitz.com/github/nacho-labs-llc/point-grab/tree/main/examples/react" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-pointgrab-blue transition-colors hover:text-pointgrab-blue-bright">
+          <svg class="h-3.5 w-3.5" viewBox="0 0 28 28" fill="currentColor"><path d="M12.747 16.273h-7.46L18.925 1.5l-3.671 10.227h7.46L9.075 26.5l3.672-10.227z"/></svg>
+          StackBlitz demo
+        </a>
+      </div>
+
+      <!-- Vue -->
+      <div class="group rounded-xl border border-border bg-bg-raised p-6 transition-all hover:border-border-bright hover:shadow-[var(--shadow-glow-blue)]">
+        <div class="mb-4 flex items-center gap-3">
+          <FrameworkIcon name="vue" size={36} />
+          <div>
+            <h3 class="font-semibold text-text-heading">Vue</h3>
+            <code class="text-xs text-text-faint">@point-grab/vue</code>
+          </div>
+        </div>
+        <p class="text-sm leading-relaxed text-text-muted">
+          Traverses the Vue instance tree, resolving SFC file paths and stripping <code class="text-text-faint">data-v-*</code> scoped hashes.
+        </p>
+        <a href="https://stackblitz.com/github/nacho-labs-llc/point-grab/tree/main/examples/vue" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-pointgrab-blue transition-colors hover:text-pointgrab-blue-bright">
+          <svg class="h-3.5 w-3.5" viewBox="0 0 28 28" fill="currentColor"><path d="M12.747 16.273h-7.46L18.925 1.5l-3.671 10.227h7.46L9.075 26.5l3.672-10.227z"/></svg>
+          StackBlitz demo
+        </a>
+      </div>
+
+      <!-- Svelte -->
+      <div class="group rounded-xl border border-border bg-bg-raised p-6 transition-all hover:border-border-bright hover:shadow-[var(--shadow-glow-blue)]">
+        <div class="mb-4 flex items-center gap-3">
+          <FrameworkIcon name="svelte" size={36} />
+          <div>
+            <h3 class="font-semibold text-text-heading">Svelte</h3>
+            <code class="text-xs text-text-faint">@point-grab/svelte</code>
+          </div>
+        </div>
+        <p class="text-sm leading-relaxed text-text-muted">
+          Reads <code class="text-text-faint">__svelte_meta</code> for component boundaries and <code class="text-text-faint">loc</code> for source mappings.
+        </p>
+        <a href="https://stackblitz.com/github/nacho-labs-llc/point-grab/tree/main/examples/svelte" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-pointgrab-blue transition-colors hover:text-pointgrab-blue-bright">
+          <svg class="h-3.5 w-3.5" viewBox="0 0 28 28" fill="currentColor"><path d="M12.747 16.273h-7.46L18.925 1.5l-3.671 10.227h7.46L9.075 26.5l3.672-10.227z"/></svg>
+          StackBlitz demo
+        </a>
+      </div>
+
+      <!-- Web Components -->
+      <div class="group rounded-xl border border-border bg-bg-raised p-6 transition-all hover:border-border-bright hover:shadow-[var(--shadow-glow-blue)]">
+        <div class="mb-4 flex items-center gap-3">
+          <FrameworkIcon name="webcomponents" size={36} />
+          <div>
+            <h3 class="font-semibold text-text-heading">Web Components</h3>
+            <code class="text-xs text-text-faint">@point-grab/web-components</code>
+          </div>
+        </div>
+        <p class="text-sm leading-relaxed text-text-muted">
+          Pierces Shadow DOM boundaries and maps custom element tags back to their class definitions.
+        </p>
+        <a href="https://stackblitz.com/github/nacho-labs-llc/point-grab/tree/main/examples/web-components" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-pointgrab-blue transition-colors hover:text-pointgrab-blue-bright">
+          <svg class="h-3.5 w-3.5" viewBox="0 0 28 28" fill="currentColor"><path d="M12.747 16.273h-7.46L18.925 1.5l-3.671 10.227h7.46L9.075 26.5l3.672-10.227z"/></svg>
+          StackBlitz demo
+        </a>
+      </div>
+
+      <!-- Vanilla JS -->
+      <div class="group rounded-xl border border-border bg-bg-raised p-6 transition-all hover:border-border-bright hover:shadow-[var(--shadow-glow-blue)]">
+        <div class="mb-4 flex items-center gap-3">
+          <FrameworkIcon name="html" size={36} />
+          <div>
+            <h3 class="font-semibold text-text-heading">Vanilla JS</h3>
+            <code class="text-xs text-text-faint">pointgrab</code>
+          </div>
+        </div>
+        <p class="text-sm leading-relaxed text-text-muted">
+          Pure DOM inspection with CSS selector generation. Zero dependencies, works in any page.
+        </p>
+        <a href="https://stackblitz.com/github/nacho-labs-llc/point-grab/tree/main/examples/vanilla" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-pointgrab-blue transition-colors hover:text-pointgrab-blue-bright">
+          <svg class="h-3.5 w-3.5" viewBox="0 0 28 28" fill="currentColor"><path d="M12.747 16.273h-7.46L18.925 1.5l-3.671 10.227h7.46L9.075 26.5l3.672-10.227z"/></svg>
+          StackBlitz demo
+        </a>
+      </div>
     </div>
   </Section>
 
   <!-- ═══════════════════════════════════════════
        QUICK START
        ═══════════════════════════════════════════ -->
-  <Section>
+  <Section background="raised">
     <div class="text-center">
       <Badge variant="blue" class="mb-4">Quick start</Badge>
       <h2 class="text-3xl font-bold md:text-4xl">
@@ -506,7 +517,7 @@ import LiveDemo from "../components/LiveDemo.astro";
 
     <div class="mx-auto mt-16 max-w-[var(--width-narrow)]">
       <!-- Tab buttons -->
-      <div class="flex flex-wrap gap-1 rounded-lg border border-border bg-bg-raised p-1" role="tablist" id="framework-tabs">
+      <div class="flex flex-wrap gap-1 rounded-lg border border-border bg-bg p-1" role="tablist" id="framework-tabs">
         <button role="tab" aria-selected="true" data-tab="vanilla" class="tab-btn rounded-md bg-bg-muted px-3 py-1.5 text-sm font-medium text-text-heading transition-colors">Vanilla</button>
         <button role="tab" aria-selected="false" data-tab="react" class="tab-btn rounded-md px-3 py-1.5 text-sm font-medium text-text-faint transition-colors hover:text-text-muted">React</button>
         <button role="tab" aria-selected="false" data-tab="angular" class="tab-btn rounded-md px-3 py-1.5 text-sm font-medium text-text-faint transition-colors hover:text-text-muted">Angular</button>
@@ -522,11 +533,9 @@ import LiveDemo from "../components/LiveDemo.astro";
             <div class="border-b border-border px-4 py-2.5">
               <span class="text-xs text-text-faint">index.html</span>
             </div>
-            <pre class="overflow-x-auto p-6 text-sm leading-relaxed"><code><span class="text-text-faint">&lt;</span><span class="text-pointgrab-blue">script</span> <span class="text-amber">src</span><span class="text-text-faint">=</span><span class="text-success">"https://unpkg.com/pointgrab/dist/global.js"</span><span class="text-text-faint">&gt;&lt;/</span><span class="text-pointgrab-blue">script</span><span class="text-text-faint">&gt;</span>
-<span class="text-text-faint">&lt;</span><span class="text-pointgrab-blue">script</span><span class="text-text-faint">&gt;</span>
-  <span class="text-text">PointGrab</span><span class="text-text-faint">.</span><span class="text-pointgrab-blue">init</span><span class="text-text-faint">()</span>
-<span class="text-text-faint">&lt;/</span><span class="text-pointgrab-blue">script</span><span class="text-text-faint">&gt;</span></code></pre>
+            <pre class="overflow-x-auto p-6 text-sm leading-relaxed"><code><span class="text-text-faint">&lt;</span><span class="text-pointgrab-blue">script</span> <span class="text-amber">src</span><span class="text-text-faint">=</span><span class="text-success">"https://unpkg.com/pointgrab/dist/global.js"</span><span class="text-text-faint">&gt;&lt;/</span><span class="text-pointgrab-blue">script</span><span class="text-text-faint">&gt;</span></code></pre>
           </div>
+          <p class="mt-3 text-xs text-text-faint">That's it. One script tag. The IIFE bundle auto-initializes — hold <kbd class="rounded border border-border bg-bg-muted px-1 py-0.5 text-[10px] text-text-muted">&#8984;C</kbd> and hover.</p>
         </div>
 
         <!-- React -->
@@ -614,8 +623,11 @@ import LiveDemo from "../components/LiveDemo.astro";
   <Section padding="xl" class="border-t border-border/50">
     <div class="flex flex-col items-center text-center">
       <h2 class="text-3xl font-bold md:text-4xl lg:text-5xl">
-        Ready to inspect?
+        Stop describing. Start pointing.
       </h2>
+      <p class="mx-auto mt-4 max-w-lg text-lg text-text-muted">
+        One package. Every framework. Zero runtime dependencies.
+      </p>
 
       <div class="mt-10">
         <CopyButton
@@ -626,7 +638,7 @@ import LiveDemo from "../components/LiveDemo.astro";
       </div>
 
       <div class="mt-8 flex items-center gap-6">
-        <a href="https://github.com/pointgrab/pointgrab" class="text-sm text-text-faint transition-colors hover:text-text-heading">GitHub</a>
+        <a href="https://github.com/Nacho-Labs-LLC/point-grab" class="text-sm text-text-faint transition-colors hover:text-text-heading">GitHub</a>
         <a href="https://npmjs.com/package/pointgrab" class="text-sm text-text-faint transition-colors hover:text-text-heading">npm</a>
         <a href="/docs/install" class="text-sm text-text-faint transition-colors hover:text-text-heading">Docs</a>
       </div>
