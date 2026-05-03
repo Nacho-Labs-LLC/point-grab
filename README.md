@@ -56,12 +56,12 @@ const inspector = init({
 ### Angular
 
 ```bash
-npm install pointgrab @pointgrab/angular
+npm install pointgrab @point-grab/angular
 ```
 
 ```typescript
 // app.config.ts
-import { providePointGrab } from '@pointgrab/angular';
+import { providePointGrab } from '@point-grab/angular';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -76,7 +76,7 @@ Inject the API anywhere via the `POINTGRAB_API` token:
 
 ```typescript
 import { inject } from '@angular/core';
-import { POINTGRAB_API } from '@pointgrab/angular';
+import { POINTGRAB_API } from '@point-grab/angular';
 
 const api = inject(POINTGRAB_API);
 api.setThemeMode('light');
@@ -85,12 +85,12 @@ api.setThemeMode('light');
 ### React
 
 ```bash
-npm install pointgrab @pointgrab/react
+npm install pointgrab @point-grab/react
 ```
 
 ```typescript
 // App.tsx
-import { usePointGrab } from '@pointgrab/react';
+import { usePointGrab } from '@point-grab/react';
 
 function App() {
   usePointGrab({ activationMode: 'toggle' });
@@ -106,13 +106,13 @@ The React adapter walks the fiber tree via `__reactFiber$` and reads `_debugSour
 ### Vue
 
 ```bash
-npm install pointgrab @pointgrab/vue
+npm install pointgrab @point-grab/vue
 ```
 
 ```typescript
 // main.ts
 import { createApp } from 'vue';
-import { PointGrabPlugin } from '@pointgrab/vue';
+import { PointGrabPlugin } from '@point-grab/vue';
 import App from './App.vue';
 
 const app = createApp(App);
@@ -131,13 +131,13 @@ const pointgrab = inject('$pointgrab');
 ### Svelte
 
 ```bash
-npm install pointgrab @pointgrab/svelte
+npm install pointgrab @point-grab/svelte
 ```
 
 ```svelte
 <!-- +layout.svelte or App.svelte -->
 <script lang="ts">
-  import { pointgrab } from '@pointgrab/svelte';
+  import { pointgrab } from '@point-grab/svelte';
 </script>
 
 <div use:pointgrab>
@@ -158,11 +158,11 @@ The Svelte adapter reads `__svelte_meta` (Svelte 5) and `__svelte_component` (Sv
 ### Web Components
 
 ```bash
-npm install pointgrab @pointgrab/web-components
+npm install pointgrab @point-grab/web-components
 ```
 
 ```typescript
-import { initPointGrabWebComponents } from '@pointgrab/web-components';
+import { initPointGrabWebComponents } from '@point-grab/web-components';
 
 const inspector = initPointGrabWebComponents({
   activationMode: 'toggle',
@@ -194,20 +194,20 @@ The HTML is cleaned: framework-internal attributes (`_ngcontent-*`, `data-reacti
 
 ## MCP Integration
 
-The `@pointgrab/mcp-server` package exposes pointgrab's capture history as an MCP tool server. AI agents like Claude Code, Cursor, and Windsurf can query it directly.
+The `@point-grab/mcp-server` package exposes pointgrab's capture history as an MCP tool server. AI agents like Claude Code, Cursor, and Windsurf can query it directly.
 
 By default, the core engine auto-registers an MCP webhook plugin (`mcpWebhook: true`) that POSTs every capture to `http://localhost:3456/inspect`.
 
 ### Setup
 
 ```bash
-npm install -g @pointgrab/mcp-server
+npm install -g @point-grab/mcp-server
 ```
 
 #### Claude Code
 
 ```bash
-claude mcp add pointgrab -- npx @pointgrab/mcp-server
+claude mcp add pointgrab -- npx @point-grab/mcp-server
 ```
 
 #### Cursor / Windsurf
@@ -219,7 +219,7 @@ Add to your MCP config (`.cursor/mcp.json` or equivalent):
   "mcpServers": {
     "pointgrab": {
       "command": "npx",
-      "args": ["@pointgrab/mcp-server"]
+      "args": ["@point-grab/mcp-server"]
     }
   }
 }
@@ -529,12 +529,12 @@ interface PluginHooks {
 | Package | Description |
 |---|---|
 | [`pointgrab`](./packages/core) | Core engine -- picker, overlays, toolbar, keyboard, clipboard, plugins, reactive store |
-| [`@pointgrab/angular`](./packages/angular) | Angular adapter -- `window.ng` debug API, `providePointGrab()` |
-| [`@pointgrab/react`](./packages/react) | React adapter -- fiber tree, `_debugSource`, `usePointGrab()` hook |
-| [`@pointgrab/vue`](./packages/vue) | Vue adapter -- component tree, `__file`, `PointGrabPlugin` for `app.use()` |
-| [`@pointgrab/svelte`](./packages/svelte) | Svelte adapter -- `__svelte_meta`, `use:pointgrab` action |
-| [`@pointgrab/web-components`](./packages/web-components) | Web Components adapter -- Shadow DOM traversal, custom element detection |
-| [`@pointgrab/mcp-server`](./packages/mcp-server) | MCP server -- stdio transport for AI agents + HTTP webhook for browser |
+| [`@point-grab/angular`](./packages/angular) | Angular adapter -- `window.ng` debug API, `providePointGrab()` |
+| [`@point-grab/react`](./packages/react) | React adapter -- fiber tree, `_debugSource`, `usePointGrab()` hook |
+| [`@point-grab/vue`](./packages/vue) | Vue adapter -- component tree, `__file`, `PointGrabPlugin` for `app.use()` |
+| [`@point-grab/svelte`](./packages/svelte) | Svelte adapter -- `__svelte_meta`, `use:pointgrab` action |
+| [`@point-grab/web-components`](./packages/web-components) | Web Components adapter -- Shadow DOM traversal, custom element detection |
+| [`@point-grab/mcp-server`](./packages/mcp-server) | MCP server -- stdio transport for AI agents + HTTP webhook for browser |
 
 ---
 
@@ -553,7 +553,7 @@ The repo uses [pnpm workspaces](https://pnpm.io/workspaces) + [Turborepo](https:
 To work on a specific package:
 
 ```bash
-pnpm --filter @pointgrab/react dev
+pnpm --filter @point-grab/react dev
 ```
 
 Run the full suite:

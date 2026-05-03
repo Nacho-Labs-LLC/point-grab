@@ -1,5 +1,5 @@
 {
-  "name": "@pointgrab/svelte",
+  "name": "@point-grab/svelte",
   "version": "0.1.0",
   "description": "Svelte adapter for pointgrab",
   "author": {

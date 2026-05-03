@@ -18,7 +18,7 @@ Browser                                          AI Agent
 |  | Plugin     |--->|  Clipboard      |   |             |
 |  | (optional) |    |  Store          |   |    +--------+--------+
 |  +------------+    +--------+--------+   |    |                 |
-|                             |            |    | @pointgrab/       |
+|                             |            |    | @point-grab/       |
 |                    +--------v--------+   |    | mcp-server      |
 |                    |   Output        |   |    |                 |
 |                    |                 |   |    | - HTTP webhook  |
@@ -179,7 +179,7 @@ These are plain functions, not class instances. The core engine calls them on ho
 
 ### How Each Adapter Works
 
-**Angular** (`@pointgrab/angular`):
+**Angular** (`@point-grab/angular`):
 - Uses `window.ng.getComponent(element)` to find the component instance on the element
 - Falls back to `window.ng.getOwningComponent(element)` for elements inside component templates
 - Walks `element.parentElement` collecting every component host for the stack
@@ -188,7 +188,7 @@ These are plain functions, not class instances. The core engine calls them on ho
 - Class filter: strips classes starting with `ng-` or `_ng`
 - HTML cleaners: strips `_nghost-*` and `_ngcontent-*` attributes
 
-**React** (`@pointgrab/react`):
+**React** (`@point-grab/react`):
 - Finds the fiber node via `element[__reactFiber$...]` or `element[__reactInternalInstance$...]`
 - Walks fiber tree via `.return` collecting function/class component fibers (tag 0 or 1)
 - Component names from `fiber.type.displayName || fiber.type.name`
@@ -197,7 +197,7 @@ These are plain functions, not class instances. The core engine calls them on ho
 - Class filter: strips classes starting with `r-`
 - HTML cleaners: strips `data-reactroot` and `data-reactid` attributes
 
-**Vue** (`@pointgrab/vue`):
+**Vue** (`@point-grab/vue`):
 - Finds component instance via `element.__vueParentComponent` or `element.__vnode.component`
 - Walks the Vue `parent` chain for ancestor resolution
 - Component names from `type.__name || type.name`, or derived from `type.__file` path
@@ -205,14 +205,14 @@ These are plain functions, not class instances. The core engine calls them on ho
 - Class filter: pass-through (Vue doesn't inject framework classes)
 - HTML cleaners: strips `data-v-*` scoped style attributes
 
-**Svelte** (`@pointgrab/svelte`):
+**Svelte** (`@point-grab/svelte`):
 - Svelte 5: reads `element.__svelte_meta.{ loc, name }`
 - Svelte 4: reads `element.__svelte_component.constructor.name`
 - Source locations from `__svelte_meta.loc.{ file, line, column }`
 - Class filter: strips `s-*` and `svelte-*` prefixed classes
 - HTML cleaners: strips `svelte-*` attributes
 
-**Web Components** (`@pointgrab/web-components`):
+**Web Components** (`@point-grab/web-components`):
 - Detects custom elements: `element.tagName.includes('-')` and `customElements.get(tagName) !== undefined`
 - Walks Shadow DOM boundaries via `element.getRootNode()` -> `ShadowRoot.host`
 - Component name from constructor class name, falling back to tag name
@@ -382,13 +382,13 @@ The IIFE build (`index.global.ts`) auto-initializes with default options and exp
 ### Dependency Graph
 
 ```
-@pointgrab/angular   ─┐
-@pointgrab/react     ─┤
-@pointgrab/vue       ─┼──> pointgrab (core, peerDependency)
-@pointgrab/svelte    ─┤
-@pointgrab/web-comp. ─┘
+@point-grab/angular   ─┐
+@point-grab/react     ─┤
+@point-grab/vue       ─┼──> pointgrab (core, peerDependency)
+@point-grab/svelte    ─┤
+@point-grab/web-comp. ─┘
 
-@pointgrab/mcp-server  (standalone, depends on @modelcontextprotocol/sdk)
+@point-grab/mcp-server  (standalone, depends on @modelcontextprotocol/sdk)
 ```
 
 Adapter packages list `pointgrab` as a `peerDependency`. The MCP server is fully standalone -- it receives data over HTTP and has no browser-side code.
@@ -422,7 +422,7 @@ All source location data is stripped in production builds. The adapters graceful
        { html, componentName, filePath, line, column,
          componentStack, selector, cssClasses, framework, snippet }
        |
-5. @pointgrab/mcp-server receives POST:
+5. @point-grab/mcp-server receives POST:
    - Validates payload (requires html + componentName)
    - Appends to history (memory + ~/.pointgrab/history.json)
    - Returns 200 OK

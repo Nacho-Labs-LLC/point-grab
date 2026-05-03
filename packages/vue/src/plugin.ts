@@ -8,7 +8,7 @@ import { initPointGrabVue, disposePointGrab } from './init';
  * @example
  * ```ts
  * import { createApp } from 'vue';
- * import { PointGrabPlugin } from '@pointgrab/vue';
+ * import { PointGrabPlugin } from '@point-grab/vue';
  *
  * const app = createApp(App);
  * app.use(PointGrabPlugin, { activationMode: 'toggle' });

@@ -11,7 +11,7 @@ interface ActionReturn {
  * @example
  * ```svelte
  * <script>
- *   import { pointgrab } from '@pointgrab/svelte';
+ *   import { pointgrab } from '@point-grab/svelte';
  * </script>
  *
  * <div use:pointgrab>

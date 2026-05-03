@@ -86,11 +86,11 @@ const inspector = init({
           <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-pointgrab-blue/10 text-xs font-bold text-pointgrab-blue">Re</span>
           React
         </h3>
-        <CodeBlock class="mt-4" code="npm install @pointgrab/react" />
+        <CodeBlock class="mt-4" code="npm install @point-grab/react" />
         <p class="mt-4 text-text-muted">
           Add the <code class="text-amber">usePointGrab()</code> hook to your root component:
         </p>
-        <CodeBlock class="mt-3" lang="tsx" filename="App.tsx" code={`import { usePointGrab } ${from} '@pointgrab/react';
+        <CodeBlock class="mt-3" lang="tsx" filename="App.tsx" code={`import { usePointGrab } ${from} '@point-grab/react';
 
 function App() {
   usePointGrab();
@@ -110,11 +110,11 @@ function App() {
           <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-error/10 text-xs font-bold text-error">Ng</span>
           Angular
         </h3>
-        <CodeBlock class="mt-4" code="npm install @pointgrab/angular" />
+        <CodeBlock class="mt-4" code="npm install @point-grab/angular" />
         <p class="mt-4 text-text-muted">
           Add <code class="text-amber">providePointGrab()</code> to your application config:
         </p>
-        <CodeBlock class="mt-3" lang="typescript" filename="app.config.ts" code={`import { providePointGrab } ${from} '@pointgrab/angular';
+        <CodeBlock class="mt-3" lang="typescript" filename="app.config.ts" code={`import { providePointGrab } ${from} '@point-grab/angular';
 
 export const appConfig = {
   providers: [
@@ -135,12 +135,12 @@ export const appConfig = {
           <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-success/10 text-xs font-bold text-success">Vu</span>
           Vue
         </h3>
-        <CodeBlock class="mt-4" code="npm install @pointgrab/vue" />
+        <CodeBlock class="mt-4" code="npm install @point-grab/vue" />
         <p class="mt-4 text-text-muted">
           Register the plugin in your <code class="text-amber">main.ts</code>:
         </p>
         <CodeBlock class="mt-3" lang="typescript" filename="main.ts" code={`import { createApp } ${from} 'vue';
-import { PointGrabPlugin } ${from} '@pointgrab/vue';
+import { PointGrabPlugin } ${from} '@point-grab/vue';
 import App ${from} './App.vue';
 
 const app = createApp(App);
@@ -160,12 +160,12 @@ app.mount('#app');`} />
           <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-amber/10 text-xs font-bold text-amber-bright">Sv</span>
           Svelte
         </h3>
-        <CodeBlock class="mt-4" code="npm install @pointgrab/svelte" />
+        <CodeBlock class="mt-4" code="npm install @point-grab/svelte" />
         <p class="mt-4 text-text-muted">
           Use the <code class="text-amber">use:pointgrab</code> action in your root layout:
         </p>
         <CodeBlock class="mt-3" lang="svelte" filename="+layout.svelte" code={`<script>
-  import { pointgrab } ${from} '@pointgrab/svelte';
+  import { pointgrab } ${from} '@point-grab/svelte';
 </script>
 
 <div use:pointgrab>
@@ -184,9 +184,9 @@ app.mount('#app');`} />
           <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-pointgrab-blue/10 text-xs font-bold text-pointgrab-blue-bright">WC</span>
           Web Components
         </h3>
-        <CodeBlock class="mt-4" code="npm install @pointgrab/web-components" />
+        <CodeBlock class="mt-4" code="npm install @point-grab/web-components" />
         <p class="mt-4 text-text-muted">Initialize in your app entry point:</p>
-        <CodeBlock class="mt-3" lang="typescript" filename="main.ts" code={`import { initPointGrabWebComponents } ${from} '@pointgrab/web-components';
+        <CodeBlock class="mt-3" lang="typescript" filename="main.ts" code={`import { initPointGrabWebComponents } ${from} '@point-grab/web-components';
 
 initPointGrabWebComponents();
 // or: initPointGrabWebComponents({ activationMode: 'toggle' })`} />
@@ -207,17 +207,17 @@ initPointGrabWebComponents();
       <p class="mt-3 text-text-muted">
         The MCP server connects pointgrab to AI coding agents. Install globally or use <code class="text-amber">npx</code>:
       </p>
-      <CodeBlock class="mt-4" code="npm install -g @pointgrab/mcp-server" />
+      <CodeBlock class="mt-4" code="npm install -g @point-grab/mcp-server" />
 
       <h3 class="text-lg font-semibold mt-8">Claude Code</h3>
-      <CodeBlock class="mt-3" code="claude mcp add pointgrab -- npx @pointgrab/mcp-server" />
+      <CodeBlock class="mt-3" code="claude mcp add pointgrab -- npx @point-grab/mcp-server" />
 
       <p class="mt-4 text-text-muted">Or add to your project's <code class="text-amber">.mcp.json</code>:</p>
       <CodeBlock class="mt-3" lang="json" filename=".mcp.json" code={`{
   "mcpServers": {
     "pointgrab": {
       "command": "npx",
-      "args": ["@pointgrab/mcp-server"]
+      "args": ["@point-grab/mcp-server"]
     }
   }
 }`} />
@@ -228,7 +228,7 @@ initPointGrabWebComponents();
   "mcpServers": {
     "pointgrab": {
       "command": "npx",
-      "args": ["@pointgrab/mcp-server"]
+      "args": ["@point-grab/mcp-server"]
     }
   }
 }`} />

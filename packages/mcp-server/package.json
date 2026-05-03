@@ -1,5 +1,5 @@
 {
-  "name": "@pointgrab/mcp-server",
+  "name": "@point-grab/mcp-server",
   "version": "0.1.0",
   "description": "MCP stdio + webhook server for pointgrab",
   "author": {

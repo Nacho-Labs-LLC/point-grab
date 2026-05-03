@@ -1,10 +1,10 @@
 # MCP Server
 
-The `@pointgrab/mcp-server` package exposes pointgrab's capture history to AI coding agents via the [Model Context Protocol](https://modelcontextprotocol.io/).
+The `@point-grab/mcp-server` package exposes pointgrab's capture history to AI coding agents via the [Model Context Protocol](https://modelcontextprotocol.io/).
 
 ## What is MCP?
 
-MCP (Model Context Protocol) is a standard for connecting AI agents to external tools and data sources. An MCP server exposes "tools" that agents can call. The `@pointgrab/mcp-server` exposes tools that let an agent query element captures from your running web app.
+MCP (Model Context Protocol) is a standard for connecting AI agents to external tools and data sources. An MCP server exposes "tools" that agents can call. The `@point-grab/mcp-server` exposes tools that let an agent query element captures from your running web app.
 
 The flow: you inspect an element in the browser, pointgrab's webhook plugin POSTs the capture to the MCP server, and your AI agent queries the MCP server to get the context it needs to make changes.
 
@@ -13,19 +13,19 @@ The flow: you inspect an element in the browser, pointgrab's webhook plugin POST
 ### Install
 
 ```bash
-npm install -g @pointgrab/mcp-server
+npm install -g @point-grab/mcp-server
 ```
 
 Or use `npx` without installing:
 
 ```bash
-npx @pointgrab/mcp-server
+npx @point-grab/mcp-server
 ```
 
 ### Claude Code
 
 ```bash
-claude mcp add pointgrab -- npx @pointgrab/mcp-server
+claude mcp add pointgrab -- npx @point-grab/mcp-server
 ```
 
 ### Cursor
@@ -37,7 +37,7 @@ Add to `.cursor/mcp.json`:
   "mcpServers": {
     "pointgrab": {
       "command": "npx",
-      "args": ["@pointgrab/mcp-server"]
+      "args": ["@point-grab/mcp-server"]
     }
   }
 }
@@ -52,7 +52,7 @@ Add to your Windsurf MCP configuration:
   "mcpServers": {
     "pointgrab": {
       "command": "npx",
-      "args": ["@pointgrab/mcp-server"]
+      "args": ["@point-grab/mcp-server"]
     }
   }
 }
@@ -226,7 +226,7 @@ Get capture counts grouped by detected framework.
 ```bash
 POINTGRAB_PORT=4000 \
 POINTGRAB_HISTORY_PATH=/tmp/pointgrab-history.json \
-npx @pointgrab/mcp-server
+npx @point-grab/mcp-server
 ```
 
 Or in your MCP config:
@@ -236,7 +236,7 @@ Or in your MCP config:
   "mcpServers": {
     "pointgrab": {
       "command": "npx",
-      "args": ["@pointgrab/mcp-server"],
+      "args": ["@point-grab/mcp-server"],
       "env": {
         "POINTGRAB_PORT": "4000",
         "POINTGRAB_HISTORY_PATH": "/Users/you/.pointgrab/history.json"
