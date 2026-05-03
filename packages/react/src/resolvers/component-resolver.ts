@@ -25,7 +25,7 @@ function getFiber(element: Element): FiberNode | null {
     (k) => k.startsWith('__reactFiber$') || k.startsWith('__reactInternalInstance$'),
   );
   if (!fiberKey) return null;
-  return (element as Record<string, unknown>)[fiberKey] as FiberNode ?? null;
+  return (element as unknown as Record<string, unknown>)[fiberKey] as FiberNode ?? null;
 }
 
 function getComponentName(fiber: FiberNode): string | null {

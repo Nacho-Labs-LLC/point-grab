@@ -207,6 +207,10 @@ function startWebhookServer(port: number): void {
             line: entry.line ?? null,
             column: entry.column ?? null,
           })),
+          textContent: data.textContent ?? null,
+          ariaLabel: data.ariaLabel ?? null,
+          role: data.role ?? null,
+          elementDescription: data.elementDescription ?? null,
           framework: data.framework ?? null,
           computedStyles: data.computedStyles ?? undefined,
         };

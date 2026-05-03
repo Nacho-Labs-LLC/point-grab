@@ -1,5 +1,6 @@
 node_modules/
 dist/
 .turbo/
+.cache/
 *.tsbuildinfo
 .DS_Store

@@ -5,15 +5,31 @@
   "author": "Nate Richardson",
   "license": "MIT",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nacho-Labs-LLC/point-grab.git",
+    "directory": "packages/react"
+  },
+  "homepage": "https://point-grab.com",
+  "bugs": "https://github.com/Nacho-Labs-LLC/point-grab/issues",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     }
   },
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "pointgrab",
+    "react",
+    "element-picker",
+    "developer-tools",
+    "ai"
+  ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
@@ -30,6 +46,7 @@
     }
   },
   "devDependencies": {
+    "@types/react": "^19.2.14",
     "tsup": "^8.3.0",
     "typescript": "^5.7.0"
   }

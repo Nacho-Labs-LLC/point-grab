@@ -14,15 +14,15 @@ interface SourceResult {
 }
 
 function getVueInstance(element: Element): VueComponentInstance | null {
-  const vueParent = (element as Record<string, unknown>).__vueParentComponent as
+  const vueParent = (element as unknown as Record<string, unknown>).__vueParentComponent as
     VueComponentInstance | undefined;
   if (vueParent) return vueParent;
 
-  const vnode = (element as Record<string, unknown>).__vnode as
+  const vnode = (element as unknown as Record<string, unknown>).__vnode as
     { component?: VueComponentInstance } | undefined;
   if (vnode?.component) return vnode.component;
 
-  const vnodeDirect = (element as Record<string, unknown>)._vnode as
+  const vnodeDirect = (element as unknown as Record<string, unknown>)._vnode as
     { component?: VueComponentInstance } | undefined;
   if (vnodeDirect?.component) return vnodeDirect.component;
 

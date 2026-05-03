@@ -18,17 +18,17 @@ interface ComponentResult {
 
 function getVueInstance(element: Element): VueComponentInstance | null {
   // Vue 3: __vueParentComponent is set on the host element
-  const vueParent = (element as Record<string, unknown>).__vueParentComponent as
+  const vueParent = (element as unknown as Record<string, unknown>).__vueParentComponent as
     VueComponentInstance | undefined;
   if (vueParent) return vueParent;
 
   // Vue 3 alternative: vnode.component
-  const vnode = (element as Record<string, unknown>).__vnode as
+  const vnode = (element as unknown as Record<string, unknown>).__vnode as
     { component?: VueComponentInstance } | undefined;
   if (vnode?.component) return vnode.component;
 
   // Vue 3: walk up until we find an element with a component reference
-  const vnodeDirect = (element as Record<string, unknown>)._vnode as
+  const vnodeDirect = (element as unknown as Record<string, unknown>)._vnode as
     { component?: VueComponentInstance } | undefined;
   if (vnodeDirect?.component) return vnodeDirect.component;
 

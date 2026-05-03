@@ -11,13 +11,13 @@ interface SourceResult {
 }
 
 function getWcSourceMap(): Record<string, SourceMapEntry> | null {
-  return (globalThis as Record<string, unknown>).__POINTGRAB_WC_SOURCE_MAP__ as
+  return (globalThis as unknown as Record<string, unknown>).__POINTGRAB_WC_SOURCE_MAP__ as
     Record<string, SourceMapEntry> | undefined ?? null;
 }
 
 export function resolveSource(element: Element): SourceResult {
   // Check for __source on the constructor (build-time injected)
-  const ctorSource = (element.constructor as Record<string, unknown>).__source as
+  const ctorSource = (element.constructor as unknown as Record<string, unknown>).__source as
     { file?: string; line?: number; column?: number } | undefined;
   if (ctorSource?.file) {
     return {

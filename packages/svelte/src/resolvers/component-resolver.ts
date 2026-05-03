@@ -23,11 +23,11 @@ interface ComponentResult {
 }
 
 function getSvelte5Meta(element: Element): SvelteMeta | null {
-  return (element as Record<string, unknown>).__svelte_meta as SvelteMeta | undefined ?? null;
+  return (element as unknown as Record<string, unknown>).__svelte_meta as SvelteMeta | undefined ?? null;
 }
 
 function getSvelte4Component(element: Element): SvelteComponent | null {
-  return (element as Record<string, unknown>).__svelte_component as
+  return (element as unknown as Record<string, unknown>).__svelte_component as
     SvelteComponent | undefined ?? null;
 }
 

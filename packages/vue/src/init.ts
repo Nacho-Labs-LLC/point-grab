@@ -15,7 +15,7 @@ export function initPointGrabVue(options?: Partial<PointGrabOptions>): PointGrab
 
   // No-op in production when devOnly is requested
   if (options?.devOnly !== false && typeof process !== 'undefined' &&
-      (process as Record<string, unknown>).env &&
+      (process as unknown as Record<string, unknown>).env &&
       (process.env as Record<string, string>).NODE_ENV === 'production') {
     instance = createNoopApi();
     return instance;

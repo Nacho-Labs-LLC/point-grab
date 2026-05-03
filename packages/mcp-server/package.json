@@ -5,18 +5,26 @@
   "author": "Nate Richardson",
   "license": "MIT",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nacho-Labs-LLC/point-grab.git",
+    "directory": "packages/mcp-server"
+  },
+  "homepage": "https://point-grab.com",
+  "bugs": "https://github.com/Nacho-Labs-LLC/point-grab/issues",
   "bin": {
-    "pointgrab-mcp": "./dist/index.mjs"
+    "pointgrab-mcp": "./dist/index.js"
   },
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     }
   },
-  "module": "./dist/index.mjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": ["dist"],
+  "keywords": ["pointgrab", "mcp", "mcp-server", "ai", "developer-tools"],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",

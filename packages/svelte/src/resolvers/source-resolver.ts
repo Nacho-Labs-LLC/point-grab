@@ -16,7 +16,7 @@ interface SourceResult {
 }
 
 function getSvelte5Meta(element: Element): SvelteMeta | null {
-  return (element as Record<string, unknown>).__svelte_meta as SvelteMeta | undefined ?? null;
+  return (element as unknown as Record<string, unknown>).__svelte_meta as SvelteMeta | undefined ?? null;
 }
 
 export function resolveSource(element: Element): SourceResult {

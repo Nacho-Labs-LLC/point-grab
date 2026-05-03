@@ -6,7 +6,7 @@ export interface NgDebugApi {
 
 export function getNgApi(): NgDebugApi | null {
   if (typeof window === 'undefined') return null;
-  return (window as Record<string, unknown>).ng as NgDebugApi | undefined ?? null;
+  return (window as unknown as Record<string, unknown>).ng as NgDebugApi | undefined ?? null;
 }
 
 export function cleanComponentName(name: string): string {

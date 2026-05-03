@@ -14,7 +14,7 @@ export function initPointGrabWebComponents(options?: Partial<PointGrabOptions>):
   if (instance) return instance;
 
   // No-op in production when devOnly is requested
-  const devFlag = (globalThis as Record<string, unknown>).__POINTGRAB_DEV__;
+  const devFlag = (globalThis as unknown as Record<string, unknown>).__POINTGRAB_DEV__;
   if (options?.devOnly !== false && typeof devFlag !== 'undefined' && !devFlag) {
     instance = createNoopApi();
     return instance;
