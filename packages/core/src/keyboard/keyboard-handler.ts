@@ -1,4 +1,4 @@
-export interface ParsedKey {
+interface ParsedKey {
   key: string;
   meta: boolean;
   ctrl: boolean;
