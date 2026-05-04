@@ -8,17 +8,17 @@ function injectStyles(): void {
   const style = document.createElement('style');
   style.id = STYLE_ID;
   style.textContent = `
-    @keyframes pointgrab-flash {
+    @keyframes point-grab-flash {
       0%   { opacity: 1; }
       100% { opacity: 0; transform: scale(1.02); }
     }
-    @keyframes pointgrab-pill-in {
+    @keyframes point-grab-pill-in {
       0%   { opacity: 0; transform: translateY(4px) scale(0.9); }
       30%  { opacity: 1; transform: translateY(0) scale(1); }
       70%  { opacity: 1; transform: translateY(0) scale(1); }
       100% { opacity: 0; transform: translateY(-8px) scale(0.95); }
     }
-    .pointgrab-select-flash {
+    .point-grab-select-flash {
       position: fixed;
       pointer-events: none;
       z-index: ${Z_INDEX_OVERLAY};
@@ -26,9 +26,9 @@ function injectStyles(): void {
       background: rgba(34, 197, 94, 0.12);
       border-radius: 3px;
       box-sizing: border-box;
-      animation: pointgrab-flash 0.45s ease-out forwards;
+      animation: point-grab-flash 0.45s ease-out forwards;
     }
-    .pointgrab-select-pill {
+    .point-grab-select-pill {
       position: fixed;
       pointer-events: none;
       z-index: ${Z_INDEX_LABEL};
@@ -44,9 +44,9 @@ function injectStyles(): void {
       letter-spacing: 0.03em;
       text-transform: uppercase;
       box-shadow: 0 2px 8px rgba(34, 197, 94, 0.35);
-      animation: pointgrab-pill-in 0.9s ease-out forwards;
+      animation: point-grab-pill-in 0.9s ease-out forwards;
     }
-    .pointgrab-select-pill svg {
+    .point-grab-select-pill svg {
       width: 10px;
       height: 10px;
       flex-shrink: 0;
@@ -64,7 +64,7 @@ export function showSelectFeedback(element: Element): void {
 
   // Green flash overlay on the element
   const flash = document.createElement('div');
-  flash.className = 'pointgrab-select-flash';
+  flash.className = 'point-grab-select-flash';
   flash.style.top = `${rect.top}px`;
   flash.style.left = `${rect.left}px`;
   flash.style.width = `${rect.width}px`;
@@ -73,7 +73,7 @@ export function showSelectFeedback(element: Element): void {
 
   // "Copied" pill above the element
   const pill = document.createElement('div');
-  pill.className = 'pointgrab-select-pill';
+  pill.className = 'point-grab-select-pill';
   pill.innerHTML = `${CHECK_SVG} Copied`;
   document.body.appendChild(pill);
 

@@ -1,4 +1,4 @@
-import type { ClassFilter, HtmlCleaner } from 'pointgrab';
+import type { ClassFilter, HtmlCleaner } from 'point-grab';
 
 /**
  * Vue does not add framework-specific CSS classes by default.

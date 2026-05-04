@@ -1,4 +1,4 @@
-import type { PointGrabOptions } from 'pointgrab';
+import type { PointGrabOptions } from 'point-grab';
 import { initPointGrabSvelte, disposePointGrab } from './init';
 
 interface ActionReturn {
@@ -6,20 +6,20 @@ interface ActionReturn {
 }
 
 /**
- * Svelte action for component-level opt-in to pointgrab.
+ * Svelte action for component-level opt-in to point-grab.
  *
  * @example
  * ```svelte
  * <script>
- *   import { pointgrab } from '@point-grab/svelte';
+ *   import { point-grab } from '@point-grab/svelte';
  * </script>
  *
- * <div use:pointgrab>
+ * <div use:point-grab>
  *   ...
  * </div>
  * ```
  */
-export function pointgrab(
+export function point-grab(
   _node: HTMLElement,
   options?: Partial<PointGrabOptions>,
 ): ActionReturn {

@@ -1,10 +1,10 @@
-# pointgrab
+# point-grab
 
 **Platform-agnostic web element inspector for AI coding agents.**
 
-[![npm version](https://img.shields.io/npm/v/pointgrab)](https://www.npmjs.com/package/pointgrab)
-[![license](https://img.shields.io/npm/l/pointgrab)](./LICENSE)
-[![bundle size](https://img.shields.io/bundlephobia/minzip/pointgrab)](https://bundlephobia.com/package/pointgrab)
+[![npm version](https://img.shields.io/npm/v/point-grab)](https://www.npmjs.com/package/point-grab)
+[![license](https://img.shields.io/npm/l/point-grab)](./LICENSE)
+[![bundle size](https://img.shields.io/bundlephobia/minzip/point-grab)](https://bundlephobia.com/package/point-grab)
 
 Point at any element in a running web app. Get its full context -- cleaned HTML, component name, source file with line number, ancestor chain -- copied to clipboard and sent to your AI coding agent via MCP.
 
@@ -15,21 +15,21 @@ Point at any element in a running web app. Get its full context -- cleaned HTML,
 ### Script Tag (simplest)
 
 ```html
-<script src="https://unpkg.com/pointgrab/global"></script>
+<script src="https://unpkg.com/point-grab/global"></script>
 ```
 
 That's it. Hold `Cmd+C` (Mac) or `Ctrl+C` (Windows/Linux), hover over any element, and click. The context is on your clipboard.
 
-The IIFE bundle auto-initializes and exposes `window.__POINTGRAB__` for programmatic access.
+The IIFE bundle auto-initializes and exposes `window.__POINT_GRAB__` for programmatic access.
 
 ### npm
 
 ```bash
-npm install pointgrab
+npm install point-grab
 ```
 
 ```typescript
-import { init } from 'pointgrab';
+import { init } from 'point-grab';
 
 const inspector = init();
 // Hold Cmd+C (Mac) / Ctrl+C (Win), hover, click
@@ -44,7 +44,7 @@ The core engine works on any page out of the box. Framework adapters add rich me
 ### Vanilla JS
 
 ```typescript
-import { init } from 'pointgrab';
+import { init } from 'point-grab';
 
 const inspector = init({
   activationMode: 'toggle',  // toggle instead of hold
@@ -56,7 +56,7 @@ const inspector = init({
 ### Angular
 
 ```bash
-npm install pointgrab @point-grab/angular
+npm install point-grab @point-grab/angular
 ```
 
 ```typescript
@@ -72,20 +72,20 @@ export const appConfig: ApplicationConfig = {
 
 The Angular adapter uses `window.ng.getComponent()` and `window.ng.getOwningComponent()` to resolve component names and walks the DOM to build the component ancestor chain. It strips `_nghost-*`, `_ngcontent-*` attributes and `ng-*` / `_ng*` CSS classes from captured HTML.
 
-Inject the API anywhere via the `POINTGRAB_API` token:
+Inject the API anywhere via the `POINT_GRAB_API` token:
 
 ```typescript
 import { inject } from '@angular/core';
-import { POINTGRAB_API } from '@point-grab/angular';
+import { POINT_GRAB_API } from '@point-grab/angular';
 
-const api = inject(POINTGRAB_API);
+const api = inject(POINT_GRAB_API);
 api.setThemeMode('light');
 ```
 
 ### React
 
 ```bash
-npm install pointgrab @point-grab/react
+npm install point-grab @point-grab/react
 ```
 
 ```typescript
@@ -106,7 +106,7 @@ The React adapter walks the fiber tree via `__reactFiber$` and reads `_debugSour
 ### Vue
 
 ```bash
-npm install pointgrab @point-grab/vue
+npm install point-grab @point-grab/vue
 ```
 
 ```typescript
@@ -125,22 +125,22 @@ The Vue adapter finds component instances via `__vueParentComponent` / `__vnode`
 The API is available via Vue's inject:
 
 ```typescript
-const pointgrab = inject('$pointgrab');
+const point-grab = inject('$point-grab');
 ```
 
 ### Svelte
 
 ```bash
-npm install pointgrab @point-grab/svelte
+npm install point-grab @point-grab/svelte
 ```
 
 ```svelte
 <!-- +layout.svelte or App.svelte -->
 <script lang="ts">
-  import { pointgrab } from '@point-grab/svelte';
+  import { point-grab } from '@point-grab/svelte';
 </script>
 
-<div use:pointgrab>
+<div use:point-grab>
   <slot />
 </div>
 ```
@@ -148,7 +148,7 @@ npm install pointgrab @point-grab/svelte
 Or pass options:
 
 ```svelte
-<div use:pointgrab={{ activationMode: 'toggle' }}>
+<div use:point-grab={{ activationMode: 'toggle' }}>
   <slot />
 </div>
 ```
@@ -158,7 +158,7 @@ The Svelte adapter reads `__svelte_meta` (Svelte 5) and `__svelte_component` (Sv
 ### Web Components
 
 ```bash
-npm install pointgrab @point-grab/web-components
+npm install point-grab @point-grab/web-components
 ```
 
 ```typescript
@@ -175,7 +175,7 @@ The Web Components adapter detects custom elements (tags containing `-`), traver
 
 ## What Gets Captured
 
-When you click an element, pointgrab copies a structured context snippet:
+When you click an element, point-grab copies a structured context snippet:
 
 ```
 <div class="profile-card">
@@ -194,7 +194,7 @@ The HTML is cleaned: framework-internal attributes (`_ngcontent-*`, `data-reacti
 
 ## MCP Integration
 
-The `@point-grab/mcp-server` package exposes pointgrab's capture history as an MCP tool server. AI agents like Claude Code, Cursor, and Windsurf can query it directly.
+The `@point-grab/mcp-server` package exposes point-grab's capture history as an MCP tool server. AI agents like Claude Code, Cursor, and Windsurf can query it directly.
 
 By default, the core engine auto-registers an MCP webhook plugin (`mcpWebhook: true`) that POSTs every capture to `http://localhost:3456/inspect`.
 
@@ -207,7 +207,7 @@ npm install -g @point-grab/mcp-server
 #### Claude Code
 
 ```bash
-claude mcp add pointgrab -- npx @point-grab/mcp-server
+claude mcp add point-grab -- npx @point-grab/mcp-server
 ```
 
 #### Cursor / Windsurf
@@ -217,7 +217,7 @@ Add to your MCP config (`.cursor/mcp.json` or equivalent):
 ```json
 {
   "mcpServers": {
-    "pointgrab": {
+    "point-grab": {
       "command": "npx",
       "args": ["@point-grab/mcp-server"]
     }
@@ -237,11 +237,11 @@ const inspector = init({ mcpWebhook: false });
 
 | Tool | Description |
 |---|---|
-| `pointgrab_search` | Search history by text, component name, file path, or framework |
-| `pointgrab_recent` | Get the N most recent captures |
-| `pointgrab_get` | Get a specific capture by ID |
-| `pointgrab_stats` | Summary stats: total grabs, unique components, unique files, framework breakdown |
-| `pointgrab_frameworks` | Grab counts grouped by detected framework |
+| `point_grab_search` | Search history by text, component name, file path, or framework |
+| `point_grab_recent` | Get the N most recent captures |
+| `point_grab_get` | Get a specific capture by ID |
+| `point_grab_stats` | Summary stats: total grabs, unique components, unique files, framework breakdown |
+| `point_grab_frameworks` | Grab counts grouped by detected framework |
 
 See [docs/mcp.md](./docs/mcp.md) for full tool schemas and example responses.
 
@@ -259,7 +259,7 @@ See [docs/mcp.md](./docs/mcp.md) for full tool schemas and example responses.
 | `maxContextLines` | `number` | `20` | Max lines of HTML in the copied snippet |
 | `enabled` | `boolean` | `true` | Master on/off switch |
 | `enableInInputs` | `boolean` | `false` | Allow activation while focused in input/textarea |
-| `devOnly` | `boolean` | `true` | Only activate in dev mode (checks `ngDevMode`, `NODE_ENV`, `__POINTGRAB_DEV__`) |
+| `devOnly` | `boolean` | `true` | Only activate in dev mode (checks `ngDevMode`, `NODE_ENV`, `__POINT_GRAB_DEV__`) |
 | `showToolbar` | `boolean` | `true` | Show the floating mini toolbar |
 | `themeMode` | `ThemeMode` | `'dark'` | `'light'`, `'dark'`, or `'system'` |
 | `mcpWebhook` | `boolean` | `true` | Auto-register MCP webhook plugin (POSTs to localhost:3456) |
@@ -282,10 +282,10 @@ type HtmlCleaner = { pattern: RegExp; replacement: string };
 
 ## Plugin System
 
-Plugins extend pointgrab's behavior at well-defined hook points.
+Plugins extend point-grab's behavior at well-defined hook points.
 
 ```typescript
-import { init, type Plugin } from 'pointgrab';
+import { init, type Plugin } from 'point-grab';
 
 const logPlugin: Plugin = {
   name: 'log',
@@ -528,11 +528,11 @@ interface PluginHooks {
 
 | Package | Description |
 |---|---|
-| [`pointgrab`](./packages/core) | Core engine -- picker, overlays, toolbar, keyboard, clipboard, plugins, reactive store |
+| [`point-grab`](./packages/core) | Core engine -- picker, overlays, toolbar, keyboard, clipboard, plugins, reactive store |
 | [`@point-grab/angular`](./packages/angular) | Angular adapter -- `window.ng` debug API, `providePointGrab()` |
 | [`@point-grab/react`](./packages/react) | React adapter -- fiber tree, `_debugSource`, `usePointGrab()` hook |
 | [`@point-grab/vue`](./packages/vue) | Vue adapter -- component tree, `__file`, `PointGrabPlugin` for `app.use()` |
-| [`@point-grab/svelte`](./packages/svelte) | Svelte adapter -- `__svelte_meta`, `use:pointgrab` action |
+| [`@point-grab/svelte`](./packages/svelte) | Svelte adapter -- `__svelte_meta`, `use:point-grab` action |
 | [`@point-grab/web-components`](./packages/web-components) | Web Components adapter -- Shadow DOM traversal, custom element detection |
 | [`@point-grab/mcp-server`](./packages/mcp-server) | MCP server -- stdio transport for AI agents + HTTP webhook for browser |
 

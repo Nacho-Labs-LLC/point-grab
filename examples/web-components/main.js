@@ -42,7 +42,7 @@ class AppShell extends HTMLElement {
         }
       </style>
       <header>
-        <h1>pointgrab web-components</h1>
+        <h1>point-grab web-components</h1>
         <p>Hold Cmd+C (Mac) or Ctrl+C (Win) and hover over any element. Click to capture. Press F to freeze animations.</p>
       </header>
       <div class="dashboard">

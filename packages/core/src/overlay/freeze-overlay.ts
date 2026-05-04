@@ -4,7 +4,7 @@ const FREEZE_ID = '__pointgrab-freeze-overlay__';
 const FREEZE_STYLE_ID = '__pointgrab-freeze-styles__';
 const HOVER_STYLE_ID = '__pointgrab-freeze-hover-styles__';
 const ANIM_STYLE_ID = '__pointgrab-freeze-anim-styles__';
-const HOVER_ATTR = 'data-pointgrab-hover';
+const HOVER_ATTR = 'data-point-grab-hover';
 
 /**
  * Events to block during freeze to prevent hover state changes.
@@ -94,7 +94,7 @@ export function createFreezeOverlay(): FreezeOverlay {
 
   // --- Hover preservation via CSS rule cloning ---
 
-  /** Mark the hovered element and all ancestors with [data-pointgrab-hover]. */
+  /** Mark the hovered element and all ancestors with [data-point-grab-hover]. */
   function markHoverChain(element: Element): void {
     let current: Element | null = element;
     while (current && current !== document.documentElement) {
@@ -112,7 +112,7 @@ export function createFreezeOverlay(): FreezeOverlay {
   }
 
   /**
-   * Walk all stylesheets and clone :hover rules as [data-pointgrab-hover] rules.
+   * Walk all stylesheets and clone :hover rules as [data-point-grab-hover] rules.
    * This preserves hover-dependent visibility of child elements
    * (e.g. `.trigger:hover .tooltip { display: block }`) which
    * computed-style snapshotting alone cannot handle.
@@ -194,7 +194,7 @@ export function createFreezeOverlay(): FreezeOverlay {
       const id = node.id || '';
       if (id.startsWith('__pointgrab')) return true;
     }
-    // Walk up to check if the mutation target is inside a pointgrab element
+    // Walk up to check if the mutation target is inside a point-grab element
     let current: Node | null = node;
     while (current) {
       if (current instanceof HTMLElement && (current.id || '').startsWith('__pointgrab')) return true;

@@ -11,7 +11,7 @@ interface SourceResult {
 }
 
 function getWcSourceMap(): Record<string, SourceMapEntry> | null {
-  return (globalThis as unknown as Record<string, unknown>).__POINTGRAB_WC_SOURCE_MAP__ as
+  return (globalThis as unknown as Record<string, unknown>).__POINT_GRAB_WC_SOURCE_MAP__ as
     Record<string, SourceMapEntry> | undefined ?? null;
 }
 

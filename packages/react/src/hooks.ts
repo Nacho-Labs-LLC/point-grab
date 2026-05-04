@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react';
-import type { PointGrabAPI, PointGrabOptions } from 'pointgrab';
+import type { PointGrabAPI, PointGrabOptions } from 'point-grab';
 import { initPointGrabReact, disposePointGrab } from './init';
 
 /**
- * React hook that initializes pointgrab on mount and disposes on unmount.
+ * React hook that initializes point-grab on mount and disposes on unmount.
  *
  * @example
  * ```tsx

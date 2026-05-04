@@ -1,5 +1,5 @@
-import { init, createNoopApi } from 'pointgrab';
-import type { PointGrabAPI, PointGrabOptions, Plugin } from 'pointgrab';
+import { init, createNoopApi } from 'point-grab';
+import type { PointGrabAPI, PointGrabOptions, Plugin } from 'point-grab';
 import { resolveComponent } from './resolvers/component-resolver';
 import { resolveSource } from './resolvers/source-resolver';
 import { svelteClassFilter, svelteHtmlCleaners } from './filters';
@@ -7,7 +7,7 @@ import { svelteClassFilter, svelteHtmlCleaners } from './filters';
 let instance: PointGrabAPI | null = null;
 
 /**
- * Initialize pointgrab with Svelte-specific resolvers and filters.
+ * Initialize point-grab with Svelte-specific resolvers and filters.
  * Idempotent -- subsequent calls return the same instance.
  */
 export function initPointGrabSvelte(options?: Partial<PointGrabOptions>): PointGrabAPI {
@@ -42,7 +42,7 @@ export function registerPointGrabPlugin(plugin: Plugin): void {
   instance?.registerPlugin(plugin);
 }
 
-/** Tear down the pointgrab instance. */
+/** Tear down the point-grab instance. */
 export function disposePointGrab(): void {
   instance?.dispose();
   instance = null;

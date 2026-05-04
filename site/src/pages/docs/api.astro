@@ -24,22 +24,22 @@ import {
 } from "../../data/api-code";
 ---
 
-<Base title="API Reference — pointgrab" description="Complete API reference for pointgrab.">
+<Base title="API Reference — point-grab" description="Complete API reference for point-grab.">
   <Section padding="md">
     <div class="mx-auto max-w-3xl">
       <h1 class="text-4xl font-bold">API Reference</h1>
       <p class="mt-4 text-lg text-text-muted">
-        Complete API reference for the pointgrab core library.
+        Complete API reference for the point-grab core library.
       </p>
 
       <!-- Table of contents -->
       <nav class="mt-8 rounded-xl border border-border bg-bg-raised p-6">
         <h2 class="text-xs font-semibold uppercase tracking-wider text-text-faint mb-3">On this page</h2>
         <ul class="space-y-1 text-sm">
-          <li><a href="#core-api" class="text-pointgrab-blue hover:underline">Core API</a></li>
-          <li><a href="#types" class="text-pointgrab-blue hover:underline">Types</a></li>
-          <li><a href="#plugins" class="text-pointgrab-blue hover:underline">Plugins</a></li>
-          <li><a href="#custom-adapters" class="text-pointgrab-blue hover:underline">Custom adapters</a></li>
+          <li><a href="#core-api" class="text-point-grab-blue hover:underline">Core API</a></li>
+          <li><a href="#types" class="text-point-grab-blue hover:underline">Types</a></li>
+          <li><a href="#plugins" class="text-point-grab-blue hover:underline">Plugins</a></li>
+          <li><a href="#custom-adapters" class="text-point-grab-blue hover:underline">Custom adapters</a></li>
         </ul>
       </nav>
     </div>
@@ -50,16 +50,16 @@ import {
     <div class="mx-auto max-w-3xl">
       <h2 class="text-2xl font-bold">Core API</h2>
       <p class="mt-3 text-text-muted">
-        The <code class="text-amber font-mono">PointGrabAPI</code> interface is returned by <code class="text-amber font-mono">init()</code> and is the primary way to interact with pointgrab.
+        The <code class="text-amber font-mono">PointGrabAPI</code> interface is returned by <code class="text-amber font-mono">init()</code> and is the primary way to interact with point-grab.
       </p>
 
       <!-- init -->
       <div class="mt-8 rounded-xl border border-border bg-bg p-5">
         <div class="font-mono text-sm">
-          <span class="text-pointgrab-blue">init</span>(options?: <span class="text-text-faint">Partial&lt;PointGrabOptions&gt;</span>): <span class="text-amber">PointGrabAPI</span>
+          <span class="text-point-grab-blue">init</span>(options?: <span class="text-text-faint">Partial&lt;PointGrabOptions&gt;</span>): <span class="text-amber">PointGrabAPI</span>
         </div>
         <p class="mt-2 text-sm text-text-muted">
-          Create a new pointgrab instance. Accepts optional configuration. Returns a no-op API in production when <code class="text-amber font-mono">devOnly: true</code>.
+          Create a new point-grab instance. Accepts optional configuration. Returns a no-op API in production when <code class="text-amber font-mono">devOnly: true</code>.
         </p>
         <CodeBlock class="mt-3" lang="typescript" code={codeInit} />
       </div>
@@ -67,10 +67,10 @@ import {
       <!-- activate / deactivate / toggle / isActive -->
       <div class="mt-4 rounded-xl border border-border bg-bg p-5">
         <div class="font-mono text-sm space-y-1">
-          <div><span class="text-pointgrab-blue">activate</span>(): <span class="text-text-faint">void</span></div>
-          <div><span class="text-pointgrab-blue">deactivate</span>(): <span class="text-text-faint">void</span></div>
-          <div><span class="text-pointgrab-blue">toggle</span>(): <span class="text-text-faint">void</span></div>
-          <div><span class="text-pointgrab-blue">isActive</span>(): <span class="text-amber">boolean</span></div>
+          <div><span class="text-point-grab-blue">activate</span>(): <span class="text-text-faint">void</span></div>
+          <div><span class="text-point-grab-blue">deactivate</span>(): <span class="text-text-faint">void</span></div>
+          <div><span class="text-point-grab-blue">toggle</span>(): <span class="text-text-faint">void</span></div>
+          <div><span class="text-point-grab-blue">isActive</span>(): <span class="text-amber">boolean</span></div>
         </div>
         <p class="mt-2 text-sm text-text-muted">
           Programmatically control the inspector. <code class="text-amber font-mono">activate()</code> starts element picking, <code class="text-amber font-mono">deactivate()</code> stops it. <code class="text-amber font-mono">toggle()</code> switches between the two states.
@@ -81,7 +81,7 @@ import {
       <!-- setOptions -->
       <div class="mt-4 rounded-xl border border-border bg-bg p-5">
         <div class="font-mono text-sm">
-          <span class="text-pointgrab-blue">setOptions</span>(opts: <span class="text-text-faint">Partial&lt;PointGrabOptions&gt;</span>): <span class="text-text-faint">void</span>
+          <span class="text-point-grab-blue">setOptions</span>(opts: <span class="text-text-faint">Partial&lt;PointGrabOptions&gt;</span>): <span class="text-text-faint">void</span>
         </div>
         <p class="mt-2 text-sm text-text-muted">
           Merge new options into the current configuration. Shallow merge &mdash; arrays are replaced, not concatenated.
@@ -92,8 +92,8 @@ import {
       <!-- registerPlugin / unregisterPlugin -->
       <div class="mt-4 rounded-xl border border-border bg-bg p-5">
         <div class="font-mono text-sm space-y-1">
-          <div><span class="text-pointgrab-blue">registerPlugin</span>(plugin: <span class="text-amber">Plugin</span>): <span class="text-text-faint">void</span></div>
-          <div><span class="text-pointgrab-blue">unregisterPlugin</span>(name: <span class="text-text-faint">string</span>): <span class="text-text-faint">void</span></div>
+          <div><span class="text-point-grab-blue">registerPlugin</span>(plugin: <span class="text-amber">Plugin</span>): <span class="text-text-faint">void</span></div>
+          <div><span class="text-point-grab-blue">unregisterPlugin</span>(name: <span class="text-text-faint">string</span>): <span class="text-text-faint">void</span></div>
         </div>
         <p class="mt-2 text-sm text-text-muted">
           Register or remove a plugin by name. On registration, plugin options and theme overrides are applied, and the <code class="text-amber font-mono">setup()</code> function is called.
@@ -104,8 +104,8 @@ import {
       <!-- setComponentResolver / setSourceResolver -->
       <div class="mt-4 rounded-xl border border-border bg-bg p-5">
         <div class="font-mono text-sm space-y-1">
-          <div><span class="text-pointgrab-blue">setComponentResolver</span>(resolver: <span class="text-amber">ComponentResolver</span>): <span class="text-text-faint">void</span></div>
-          <div><span class="text-pointgrab-blue">setSourceResolver</span>(resolver: <span class="text-amber">SourceResolver</span>): <span class="text-text-faint">void</span></div>
+          <div><span class="text-point-grab-blue">setComponentResolver</span>(resolver: <span class="text-amber">ComponentResolver</span>): <span class="text-text-faint">void</span></div>
+          <div><span class="text-point-grab-blue">setSourceResolver</span>(resolver: <span class="text-amber">SourceResolver</span>): <span class="text-text-faint">void</span></div>
         </div>
         <p class="mt-2 text-sm text-text-muted">
           Set custom resolvers for component names and source file locations. Only one of each can be active &mdash; setting a new one replaces the previous. Framework adapters call these automatically.
@@ -115,9 +115,9 @@ import {
       <!-- showToolbar / hideToolbar / setThemeMode -->
       <div class="mt-4 rounded-xl border border-border bg-bg p-5">
         <div class="font-mono text-sm space-y-1">
-          <div><span class="text-pointgrab-blue">showToolbar</span>(): <span class="text-text-faint">void</span></div>
-          <div><span class="text-pointgrab-blue">hideToolbar</span>(): <span class="text-text-faint">void</span></div>
-          <div><span class="text-pointgrab-blue">setThemeMode</span>(mode: <span class="text-amber">ThemeMode</span>): <span class="text-text-faint">void</span></div>
+          <div><span class="text-point-grab-blue">showToolbar</span>(): <span class="text-text-faint">void</span></div>
+          <div><span class="text-point-grab-blue">hideToolbar</span>(): <span class="text-text-faint">void</span></div>
+          <div><span class="text-point-grab-blue">setThemeMode</span>(mode: <span class="text-amber">ThemeMode</span>): <span class="text-text-faint">void</span></div>
         </div>
         <p class="mt-2 text-sm text-text-muted">
           Control toolbar visibility and theme. <code class="text-amber font-mono">ThemeMode</code> is <code class="text-text-faint font-mono">'dark' | 'light' | 'system'</code>.
@@ -127,8 +127,8 @@ import {
       <!-- getHistory / clearHistory -->
       <div class="mt-4 rounded-xl border border-border bg-bg p-5">
         <div class="font-mono text-sm space-y-1">
-          <div><span class="text-pointgrab-blue">getHistory</span>(): <span class="text-amber">HistoryEntry[]</span></div>
-          <div><span class="text-pointgrab-blue">clearHistory</span>(): <span class="text-text-faint">void</span></div>
+          <div><span class="text-point-grab-blue">getHistory</span>(): <span class="text-amber">HistoryEntry[]</span></div>
+          <div><span class="text-point-grab-blue">clearHistory</span>(): <span class="text-text-faint">void</span></div>
         </div>
         <p class="mt-2 text-sm text-text-muted">
           Access the in-memory capture history (up to 50 entries). Returns a copy of the array.
@@ -138,10 +138,10 @@ import {
       <!-- dispose -->
       <div class="mt-4 rounded-xl border border-border bg-bg p-5">
         <div class="font-mono text-sm">
-          <span class="text-pointgrab-blue">dispose</span>(): <span class="text-text-faint">void</span>
+          <span class="text-point-grab-blue">dispose</span>(): <span class="text-text-faint">void</span>
         </div>
         <p class="mt-2 text-sm text-text-muted">
-          Tear down the entire pointgrab instance. Removes all event listeners, DOM elements, and calls plugin cleanup functions.
+          Tear down the entire point-grab instance. Removes all event listeners, DOM elements, and calls plugin cleanup functions.
         </p>
       </div>
     </div>
@@ -151,7 +151,7 @@ import {
   <Section id="types" padding="md">
     <div class="mx-auto max-w-3xl">
       <h2 class="text-2xl font-bold">Types</h2>
-      <p class="mt-3 text-text-muted">Key interfaces exported from the <code class="text-amber font-mono">pointgrab</code> package.</p>
+      <p class="mt-3 text-text-muted">Key interfaces exported from the <code class="text-amber font-mono">point-grab</code> package.</p>
 
       <!-- PointGrabOptions -->
       <div class="mt-8">
@@ -208,7 +208,7 @@ import {
     <div class="mx-auto max-w-3xl">
       <h2 class="text-2xl font-bold">Plugins</h2>
       <p class="mt-3 text-text-muted">
-        Plugins extend pointgrab's behavior via lifecycle hooks. All hooks are optional &mdash; implement only the ones you need.
+        Plugins extend point-grab's behavior via lifecycle hooks. All hooks are optional &mdash; implement only the ones you need.
       </p>
 
       <!-- PluginHooks -->
@@ -276,7 +276,7 @@ import {
     <div class="mx-auto max-w-3xl">
       <h2 class="text-2xl font-bold">Custom adapters</h2>
       <p class="mt-3 text-text-muted">
-        Adapters teach pointgrab how to extract component metadata from a specific framework. Implement two resolver functions and register them with the core engine.
+        Adapters teach point-grab how to extract component metadata from a specific framework. Implement two resolver functions and register them with the core engine.
       </p>
 
       <h3 class="text-lg font-semibold mt-8">ComponentResolver</h3>
@@ -335,7 +335,7 @@ import {
   <!-- Page nav -->
   <Section padding="sm">
     <div class="mx-auto max-w-3xl flex items-center justify-between border-t border-border pt-8">
-      <a href="/docs/mcp" class="text-pointgrab-blue hover:underline text-sm font-medium">&larr; MCP Integration</a>
+      <a href="/docs/mcp" class="text-point-grab-blue hover:underline text-sm font-medium">&larr; MCP Integration</a>
       <span></span>
     </div>
   </Section>

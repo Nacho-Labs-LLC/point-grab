@@ -1,7 +1,7 @@
 {
   "name": "@point-grab/svelte",
   "version": "0.1.3",
-  "description": "Svelte adapter for pointgrab",
+  "description": "Svelte adapter for point-grab",
   "author": {
     "name": "Nate Richardson",
     "email": "hello@nacholabs.net",
@@ -28,7 +28,7 @@
     "dist"
   ],
   "keywords": [
-    "pointgrab",
+    "point-grab",
     "svelte",
     "element-picker",
     "developer-tools",
@@ -41,7 +41,7 @@
     "clean": "rm -rf dist .turbo"
   },
   "peerDependencies": {
-    "pointgrab": "workspace:*",
+    "point-grab": "workspace:*",
     "svelte": ">=4.0.0"
   },
   "peerDependenciesMeta": {

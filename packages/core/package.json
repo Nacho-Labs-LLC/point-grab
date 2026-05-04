@@ -1,5 +1,5 @@
 {
-  "name": "pointgrab",
+  "name": "point-grab",
   "version": "0.1.3",
   "description": "Point at any element. Grab its full context. Send it to your AI agent.",
   "author": {
@@ -38,7 +38,7 @@
     "dist"
   ],
   "keywords": [
-    "pointgrab",
+    "point-grab",
     "element-picker",
     "developer-tools",
     "ai",

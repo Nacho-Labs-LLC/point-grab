@@ -1,7 +1,7 @@
 {
   "name": "@point-grab/react",
   "version": "0.1.3",
-  "description": "React adapter for pointgrab",
+  "description": "React adapter for point-grab",
   "author": {
     "name": "Nate Richardson",
     "email": "hello@nacholabs.net",
@@ -28,7 +28,7 @@
     "dist"
   ],
   "keywords": [
-    "pointgrab",
+    "point-grab",
     "react",
     "element-picker",
     "developer-tools",
@@ -41,7 +41,7 @@
     "clean": "rm -rf dist .turbo"
   },
   "peerDependencies": {
-    "pointgrab": "workspace:*",
+    "point-grab": "workspace:*",
     "react": ">=18.0.0"
   },
   "peerDependenciesMeta": {

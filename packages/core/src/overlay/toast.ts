@@ -23,16 +23,16 @@ function injectToastStyles(): void {
   style.textContent = `
     #${TOAST_ID} {
       position: fixed;
-      bottom: var(--pointgrab-toast-bottom, 24px);
+      bottom: var(--point-grab-toast-bottom, 24px);
       left: 50%;
       transform: translateX(-50%) translateY(100%);
       z-index: ${Z_INDEX_TOAST};
-      background: var(--pointgrab-toast-bg, #0f172a);
-      color: var(--pointgrab-toast-text, #e2e8f0);
+      background: var(--point-grab-toast-bg, #0f172a);
+      color: var(--point-grab-toast-text, #e2e8f0);
       font: 500 13px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       padding: 12px 18px;
       border-radius: 10px;
-      box-shadow: 0 8px 24px var(--pointgrab-toast-shadow, rgba(0, 0, 0, 0.4));
+      box-shadow: 0 8px 24px var(--point-grab-toast-shadow, rgba(0, 0, 0, 0.4));
       pointer-events: none;
       opacity: 0;
       transition: transform 0.25s ease, opacity 0.25s ease;
@@ -40,26 +40,26 @@ function injectToastStyles(): void {
       max-width: 480px;
       min-width: 260px;
     }
-    #${TOAST_ID}.pointgrab-toast-visible {
+    #${TOAST_ID}.point-grab-toast-visible {
       transform: translateX(-50%) translateY(0);
       opacity: 1;
     }
-    #${TOAST_ID} .pointgrab-toast-header {
+    #${TOAST_ID} .point-grab-toast-header {
       display: flex;
       align-items: center;
       gap: 8px;
       margin-bottom: 0;
     }
-    #${TOAST_ID} .pointgrab-toast-icon {
+    #${TOAST_ID} .point-grab-toast-icon {
       flex-shrink: 0;
       width: 16px;
       height: 16px;
     }
-    #${TOAST_ID} .pointgrab-toast-title {
+    #${TOAST_ID} .point-grab-toast-title {
       font-weight: 600;
-      color: var(--pointgrab-toast-title, #fff);
+      color: var(--point-grab-toast-title, #fff);
     }
-    #${TOAST_ID} .pointgrab-toast-details {
+    #${TOAST_ID} .point-grab-toast-details {
       margin-top: 8px;
       display: flex;
       flex-direction: column;
@@ -67,24 +67,24 @@ function injectToastStyles(): void {
       font-size: 12px;
       font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
     }
-    #${TOAST_ID} .pointgrab-toast-row {
+    #${TOAST_ID} .point-grab-toast-row {
       display: flex;
       gap: 8px;
       align-items: baseline;
     }
-    #${TOAST_ID} .pointgrab-toast-label {
-      color: var(--pointgrab-toast-label, #64748b);
+    #${TOAST_ID} .point-grab-toast-label {
+      color: var(--point-grab-toast-label, #64748b);
       flex-shrink: 0;
       min-width: 72px;
     }
-    #${TOAST_ID} .pointgrab-toast-value {
-      color: var(--pointgrab-toast-text, #e2e8f0);
+    #${TOAST_ID} .point-grab-toast-value {
+      color: var(--point-grab-toast-text, #e2e8f0);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
-    #${TOAST_ID} .pointgrab-toast-file-link {
-      color: var(--pointgrab-toast-text, #e2e8f0);
+    #${TOAST_ID} .point-grab-toast-file-link {
+      color: var(--point-grab-toast-text, #e2e8f0);
       text-decoration: none;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -92,9 +92,9 @@ function injectToastStyles(): void {
       pointer-events: auto;
       cursor: pointer;
     }
-    #${TOAST_ID} .pointgrab-toast-file-link:hover {
+    #${TOAST_ID} .point-grab-toast-file-link:hover {
       text-decoration: underline;
-      color: var(--pointgrab-accent, #3b82f6);
+      color: var(--point-grab-accent, #3b82f6);
     }
   `;
   document.head.appendChild(style);
@@ -111,18 +111,18 @@ function getOrCreateToast(): HTMLDivElement {
   return toast;
 }
 
-const CHECKMARK_SVG = `<svg class="pointgrab-toast-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7" fill="#22c55e"/><path d="M5 8l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const CHECKMARK_SVG = `<svg class="point-grab-toast-icon" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="7" fill="#22c55e"/><path d="M5 8l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 export function showToast(message: string, detail?: ToastDetail, durationMs = 3500): void {
   const toast = getOrCreateToast();
 
-  let html = `<div class="pointgrab-toast-header">${CHECKMARK_SVG}<span class="pointgrab-toast-title">${escapeHtml(message)}</span></div>`;
+  let html = `<div class="point-grab-toast-header">${CHECKMARK_SVG}<span class="point-grab-toast-title">${escapeHtml(message)}</span></div>`;
 
   if (detail) {
-    html += '<div class="pointgrab-toast-details">';
+    html += '<div class="point-grab-toast-details">';
 
     if (detail.componentName) {
-      html += `<div class="pointgrab-toast-row"><span class="pointgrab-toast-label">Component</span><span class="pointgrab-toast-value">${escapeHtml(detail.componentName)}</span></div>`;
+      html += `<div class="point-grab-toast-row"><span class="point-grab-toast-label">Component</span><span class="point-grab-toast-value">${escapeHtml(detail.componentName)}</span></div>`;
     }
 
     if (detail.filePath) {
@@ -133,14 +133,14 @@ export function showToast(message: string, detail?: ToastDetail, durationMs = 35
       if (detail.line != null) vsCodeUri += `:${detail.line}`;
       if (detail.line != null && detail.column != null) vsCodeUri += `:${detail.column}`;
 
-      html += `<div class="pointgrab-toast-row"><span class="pointgrab-toast-label">File</span>`;
-      html += `<a class="pointgrab-toast-file-link" href="${escapeHtml(vsCodeUri)}" title="Open in VS Code">${escapeHtml(loc)}</a>`;
+      html += `<div class="point-grab-toast-row"><span class="point-grab-toast-label">File</span>`;
+      html += `<a class="point-grab-toast-file-link" href="${escapeHtml(vsCodeUri)}" title="Open in VS Code">${escapeHtml(loc)}</a>`;
       html += `</div>`;
     }
 
     if (detail.cssClasses && detail.cssClasses.length > 0) {
       const classes = detail.cssClasses.map((c) => `.${escapeHtml(c)}`).join(' ');
-      html += `<div class="pointgrab-toast-row"><span class="pointgrab-toast-label">Classes</span><span class="pointgrab-toast-value">${classes}</span></div>`;
+      html += `<div class="point-grab-toast-row"><span class="point-grab-toast-label">Classes</span><span class="point-grab-toast-value">${classes}</span></div>`;
     }
 
     html += '</div>';
@@ -154,13 +154,13 @@ export function showToast(message: string, detail?: ToastDetail, durationMs = 35
   }
 
   // Force reflow to restart animation if already visible
-  toast.classList.remove('pointgrab-toast-visible');
+  toast.classList.remove('point-grab-toast-visible');
   void toast.offsetHeight;
 
-  toast.classList.add('pointgrab-toast-visible');
+  toast.classList.add('point-grab-toast-visible');
 
   activeTimer = setTimeout(() => {
-    toast.classList.remove('pointgrab-toast-visible');
+    toast.classList.remove('point-grab-toast-visible');
     activeTimer = null;
   }, durationMs);
 }

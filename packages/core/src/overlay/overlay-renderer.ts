@@ -30,8 +30,8 @@ export function createOverlayRenderer(): OverlayRenderer {
         position: fixed;
         pointer-events: none;
         z-index: ${Z_INDEX_OVERLAY};
-        border: 2px solid var(--pointgrab-overlay-border, #3b82f6);
-        background: var(--pointgrab-overlay-bg, rgba(59, 130, 246, 0.1));
+        border: 2px solid var(--point-grab-overlay-border, #3b82f6);
+        background: var(--point-grab-overlay-bg, rgba(59, 130, 246, 0.1));
         transition: top 0.05s ease, left 0.05s ease, width 0.05s ease, height 0.05s ease;
         box-sizing: border-box;
       }
@@ -39,8 +39,8 @@ export function createOverlayRenderer(): OverlayRenderer {
         position: fixed;
         pointer-events: none;
         z-index: ${Z_INDEX_LABEL};
-        background: var(--pointgrab-label-bg, #3b82f6);
-        color: var(--pointgrab-label-text, #fff);
+        background: var(--point-grab-label-bg, #3b82f6);
+        color: var(--point-grab-label-text, #fff);
         font: 11px/1.4 monospace;
         padding: 2px 6px;
         border-radius: 3px;

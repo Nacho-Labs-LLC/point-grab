@@ -15,7 +15,7 @@ labels: bug
 3.
 
 **Environment**
-- pointgrab version:
+- point-grab version:
 - Framework + version:
 - Browser:
 - OS:

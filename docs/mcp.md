@@ -1,12 +1,12 @@
 # MCP Server
 
-The `@point-grab/mcp-server` package exposes pointgrab's capture history to AI coding agents via the [Model Context Protocol](https://modelcontextprotocol.io/).
+The `@point-grab/mcp-server` package exposes point-grab's capture history to AI coding agents via the [Model Context Protocol](https://modelcontextprotocol.io/).
 
 ## What is MCP?
 
 MCP (Model Context Protocol) is a standard for connecting AI agents to external tools and data sources. An MCP server exposes "tools" that agents can call. The `@point-grab/mcp-server` exposes tools that let an agent query element captures from your running web app.
 
-The flow: you inspect an element in the browser, pointgrab's webhook plugin POSTs the capture to the MCP server, and your AI agent queries the MCP server to get the context it needs to make changes.
+The flow: you inspect an element in the browser, point-grab's webhook plugin POSTs the capture to the MCP server, and your AI agent queries the MCP server to get the context it needs to make changes.
 
 ## Setup
 
@@ -25,7 +25,7 @@ npx @point-grab/mcp-server
 ### Claude Code
 
 ```bash
-claude mcp add pointgrab -- npx @point-grab/mcp-server
+claude mcp add point-grab -- npx @point-grab/mcp-server
 ```
 
 ### Cursor
@@ -35,7 +35,7 @@ Add to `.cursor/mcp.json`:
 ```json
 {
   "mcpServers": {
-    "pointgrab": {
+    "point-grab": {
       "command": "npx",
       "args": ["@point-grab/mcp-server"]
     }
@@ -50,7 +50,7 @@ Add to your Windsurf MCP configuration:
 ```json
 {
   "mcpServers": {
-    "pointgrab": {
+    "point-grab": {
       "command": "npx",
       "args": ["@point-grab/mcp-server"]
     }
@@ -60,12 +60,12 @@ Add to your Windsurf MCP configuration:
 
 ### Browser Side
 
-By default, `pointgrab` auto-registers an MCP webhook plugin that POSTs every capture to `http://localhost:3456/inspect`. No additional browser configuration is needed.
+By default, `point-grab` auto-registers an MCP webhook plugin that POSTs every capture to `http://localhost:3456/inspect`. No additional browser configuration is needed.
 
 If you disabled the auto-webhook (`mcpWebhook: false`), you can re-enable it or configure a custom URL:
 
 ```typescript
-import { init } from 'pointgrab';
+import { init } from 'point-grab';
 
 // Default behavior -- webhook is auto-registered
 const inspector = init();
@@ -76,7 +76,7 @@ const inspector = init({ mcpWebhook: false });
 
 ## Available Tools
 
-### `pointgrab_search`
+### `point_grab_search`
 
 Search capture history by text, component name, file path, or framework.
 
@@ -94,7 +94,7 @@ Search capture history by text, component name, file path, or framework.
 
 ```json
 {
-  "tool": "pointgrab_search",
+  "tool": "point_grab_search",
   "arguments": {
     "query": "UserCard",
     "limit": 5
@@ -133,7 +133,7 @@ Search capture history by text, component name, file path, or framework.
 }
 ```
 
-### `pointgrab_recent`
+### `point_grab_recent`
 
 Get the N most recent captures.
 
@@ -147,16 +147,16 @@ Get the N most recent captures.
 
 ```json
 {
-  "tool": "pointgrab_recent",
+  "tool": "point_grab_recent",
   "arguments": {
     "limit": 3
   }
 }
 ```
 
-Returns the same response shape as `pointgrab_search`.
+Returns the same response shape as `point_grab_search`.
 
-### `pointgrab_get`
+### `point_grab_get`
 
 Get a specific capture by ID.
 
@@ -166,9 +166,9 @@ Get a specific capture by ID.
 |---|---|---|---|
 | `id` | `string` | **yes** | The capture entry ID (e.g., `"1714200000000-abc123"`) |
 
-Returns a single entry object (same shape as entries in `pointgrab_search` results). Throws an error if the ID is not found.
+Returns a single entry object (same shape as entries in `point_grab_search` results). Throws an error if the ID is not found.
 
-### `pointgrab_stats`
+### `point_grab_stats`
 
 Get summary statistics about the capture history.
 
@@ -194,7 +194,7 @@ Get summary statistics about the capture history.
 }
 ```
 
-### `pointgrab_frameworks`
+### `point_grab_frameworks`
 
 Get capture counts grouped by detected framework.
 
@@ -218,14 +218,14 @@ Get capture counts grouped by detected framework.
 
 | Variable | Default | Description |
 |---|---|---|
-| `POINTGRAB_PORT` | `3456` | HTTP port for the webhook listener |
-| `POINTGRAB_HISTORY_PATH` | `~/.pointgrab/history.json` | File path for persistent history |
+| `POINT_GRAB_PORT` | `3456` | HTTP port for the webhook listener |
+| `POINT_GRAB_HISTORY_PATH` | `~/.point-grab/history.json` | File path for persistent history |
 
 ### Example with Custom Configuration
 
 ```bash
-POINTGRAB_PORT=4000 \
-POINTGRAB_HISTORY_PATH=/tmp/pointgrab-history.json \
+POINT_GRAB_PORT=4000 \
+POINT_GRAB_HISTORY_PATH=/tmp/point-grab-history.json \
 npx @point-grab/mcp-server
 ```
 
@@ -234,12 +234,12 @@ Or in your MCP config:
 ```json
 {
   "mcpServers": {
-    "pointgrab": {
+    "point-grab": {
       "command": "npx",
       "args": ["@point-grab/mcp-server"],
       "env": {
-        "POINTGRAB_PORT": "4000",
-        "POINTGRAB_HISTORY_PATH": "/Users/you/.pointgrab/history.json"
+        "POINT_GRAB_PORT": "4000",
+        "POINT_GRAB_HISTORY_PATH": "/Users/you/.point-grab/history.json"
       }
     }
   }
@@ -255,7 +255,7 @@ Or in your MCP config:
  1. User holds Cmd+C,
     hovers, clicks element
          |
- 2. pointgrab copies snippet
+ 2. point-grab copies snippet
     to clipboard
          |
  3. MCP webhook plugin
@@ -264,11 +264,11 @@ Or in your MCP config:
     (HTTP, port 3456)            (requires html + componentName)
                                  |
                              5. Serialize write to
-                                ~/.pointgrab/history.json
+                                ~/.point-grab/history.json
                                  |
                              6. Return 200 OK
                                                     7. Agent calls
-                                                       pointgrab_recent
+                                                       point_grab_recent
                                                            |
                                               8. MCP server <---- stdio
                                                  reads history
@@ -317,7 +317,7 @@ Content-Type: application/json
 
 ### Persistent History
 
-History is stored as a JSON file at `~/.pointgrab/history.json` (or `POINTGRAB_HISTORY_PATH`). Structure:
+History is stored as a JSON file at `~/.point-grab/history.json` (or `POINT_GRAB_HISTORY_PATH`). Structure:
 
 ```typescript
 interface GrabHistory {
@@ -344,7 +344,7 @@ If the configured port is already in use, the MCP server logs a warning but cont
 4. Hover over the element you want to modify
 5. Click to capture -- it's copied to clipboard and sent to the MCP server
 6. Switch to your AI agent and ask it to modify the captured element
-7. The agent calls `pointgrab_recent` to get the capture context
+7. The agent calls `point_grab_recent` to get the capture context
 8. The agent now knows the component name, source file, line number, HTML structure, and ancestor chain
 
 No copy-pasting file paths. No describing the element in words. Point, click, and talk to your agent.

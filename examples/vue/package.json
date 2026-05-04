@@ -1,5 +1,5 @@
 {
-  "name": "pointgrab-example-vue",
+  "name": "point-grab-example-vue",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "vue": "^3.5.0",
-    "pointgrab": "^0.1.0",
+    "point-grab": "^0.1.0",
     "@point-grab/vue": "^0.1.0"
   },
   "devDependencies": {

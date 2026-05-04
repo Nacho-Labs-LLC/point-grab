@@ -56,7 +56,7 @@ onUnmounted(() => {
 
 <template>
   <header>
-    <h1>pointgrab <span class="accent">vue</span></h1>
+    <h1>point-grab <span class="accent">vue</span></h1>
     <p class="subtitle">
       Hold <kbd>Cmd+C</kbd> (Mac) or <kbd>Ctrl+C</kbd> (Win) and hover over any element.
       Click to capture. Press <kbd>F</kbd> to freeze animations.

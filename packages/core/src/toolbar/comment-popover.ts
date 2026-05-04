@@ -36,10 +36,10 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
         left: 50%;
         transform: translateX(-50%);
         z-index: ${Z_INDEX_POPOVER};
-        background: var(--pointgrab-popover-bg, #0f172a);
-        border: 1px solid var(--pointgrab-popover-border, #1e293b);
+        background: var(--point-grab-popover-bg, #0f172a);
+        border: 1px solid var(--point-grab-popover-border, #1e293b);
         border-radius: 12px;
-        box-shadow: 0 8px 24px var(--pointgrab-popover-shadow, rgba(0, 0, 0, 0.5));
+        box-shadow: 0 8px 24px var(--point-grab-popover-shadow, rgba(0, 0, 0, 0.5));
         width: 340px;
         padding: 14px;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -48,7 +48,7 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
         transition: opacity 0.15s ease, visibility 0.15s ease;
         pointer-events: auto;
       }
-      #${POPOVER_ID}.pointgrab-comment-visible {
+      #${POPOVER_ID}.point-grab-comment-visible {
         opacity: 1;
         visibility: visible;
       }
@@ -56,28 +56,28 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
         width: 100%;
         min-height: 80px;
         padding: 8px 10px;
-        border: 1px solid var(--pointgrab-popover-border, #1e293b);
+        border: 1px solid var(--point-grab-popover-border, #1e293b);
         border-radius: 8px;
-        background: var(--pointgrab-surface, #1e293b);
-        color: var(--pointgrab-popover-text, #e2e8f0);
+        background: var(--point-grab-surface, #1e293b);
+        color: var(--point-grab-popover-text, #e2e8f0);
         font: 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         resize: vertical;
         outline: none;
         box-sizing: border-box;
       }
       #${POPOVER_ID} textarea:focus {
-        border-color: var(--pointgrab-accent, #3b82f6);
+        border-color: var(--point-grab-accent, #3b82f6);
       }
       #${POPOVER_ID} textarea::placeholder {
-        color: var(--pointgrab-text-muted, #64748b);
+        color: var(--point-grab-text-muted, #64748b);
       }
-      #${POPOVER_ID} .pointgrab-comment-footer {
+      #${POPOVER_ID} .point-grab-comment-footer {
         display: flex;
         justify-content: flex-end;
         gap: 8px;
         margin-top: 10px;
       }
-      #${POPOVER_ID} .pointgrab-comment-btn {
+      #${POPOVER_ID} .point-grab-comment-btn {
         padding: 6px 14px;
         border: none;
         border-radius: 6px;
@@ -86,20 +86,20 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
         cursor: pointer;
         transition: background 0.15s ease;
       }
-      #${POPOVER_ID} .pointgrab-comment-cancel {
+      #${POPOVER_ID} .point-grab-comment-cancel {
         background: transparent;
-        color: var(--pointgrab-text-muted, #64748b);
+        color: var(--point-grab-text-muted, #64748b);
       }
-      #${POPOVER_ID} .pointgrab-comment-cancel:hover {
-        background: var(--pointgrab-popover-hover, #1e293b);
-        color: var(--pointgrab-popover-text, #e2e8f0);
+      #${POPOVER_ID} .point-grab-comment-cancel:hover {
+        background: var(--point-grab-popover-hover, #1e293b);
+        color: var(--point-grab-popover-text, #e2e8f0);
       }
-      #${POPOVER_ID} .pointgrab-comment-submit {
-        background: var(--pointgrab-accent, #3b82f6);
+      #${POPOVER_ID} .point-grab-comment-submit {
+        background: var(--point-grab-accent, #3b82f6);
         color: #fff;
       }
-      #${POPOVER_ID} .pointgrab-comment-submit:hover {
-        background: var(--pointgrab-accent-hover, #2563eb);
+      #${POPOVER_ID} .point-grab-comment-submit:hover {
+        background: var(--point-grab-accent-hover, #2563eb);
       }
     `;
     document.head.appendChild(style);
@@ -120,10 +120,10 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
     textarea.rows = 3;
 
     const footer = document.createElement('div');
-    footer.className = 'pointgrab-comment-footer';
+    footer.className = 'point-grab-comment-footer';
 
     const cancelBtn = document.createElement('button');
-    cancelBtn.className = 'pointgrab-comment-btn pointgrab-comment-cancel';
+    cancelBtn.className = 'point-grab-comment-btn point-grab-comment-cancel';
     cancelBtn.textContent = 'Cancel';
     cancelBtn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -133,7 +133,7 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
     });
 
     submitBtn = document.createElement('button');
-    submitBtn.className = 'pointgrab-comment-btn pointgrab-comment-submit';
+    submitBtn.className = 'point-grab-comment-btn point-grab-comment-submit';
     submitBtn.textContent = 'Copy with Comment';
     submitBtn.addEventListener('click', (e) => {
       e.preventDefault();
@@ -143,7 +143,7 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
         doHide();
         callbacks.onSubmit(comment);
       } else {
-        textarea!.style.borderColor = 'var(--pointgrab-accent, #3b82f6)';
+        textarea!.style.borderColor = 'var(--point-grab-accent, #3b82f6)';
         textarea!.setAttribute('placeholder', 'Please enter a comment...');
         textarea!.focus();
         setTimeout(() => {
@@ -191,7 +191,7 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
 
   function doHide(): void {
     visible = false;
-    popover?.classList.remove('pointgrab-comment-visible');
+    popover?.classList.remove('point-grab-comment-visible');
     detachKeydownInterceptor();
   }
 
@@ -205,7 +205,7 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
       }
       visible = true;
       void el.offsetHeight;
-      el.classList.add('pointgrab-comment-visible');
+      el.classList.add('point-grab-comment-visible');
       attachKeydownInterceptor();
       requestAnimationFrame(() => textarea?.focus());
     },

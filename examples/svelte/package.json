@@ -1,5 +1,5 @@
 {
-  "name": "pointgrab-example-svelte",
+  "name": "point-grab-example-svelte",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "svelte": "^5.0.0",
-    "pointgrab": "^0.1.0",
+    "point-grab": "^0.1.0",
     "@point-grab/svelte": "^0.1.0"
   },
   "devDependencies": {

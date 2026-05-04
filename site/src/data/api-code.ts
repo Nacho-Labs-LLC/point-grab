@@ -134,7 +134,7 @@ deactivate()
 dispose()
   -> cleanup functions from setup()`;
 
-export const codeLoggerPlugin = `import type { Plugin, PointGrabAPI } from 'pointgrab';
+export const codeLoggerPlugin = `import type { Plugin, PointGrabAPI } from 'point-grab';
 
 function createLoggerPlugin(endpoint: string): Plugin {
   return {
@@ -192,8 +192,8 @@ export const codeSourceResolver = `const mySourceResolver: SourceResolver = (ele
   return { filePath: null, line: null, column: null };
 };`;
 
-export const codeRegistration = `import { init } from 'pointgrab';
-import type { ClassFilter, HtmlCleaner } from 'pointgrab';
+export const codeRegistration = `import { init } from 'point-grab';
+import type { ClassFilter, HtmlCleaner } from 'point-grab';
 
 const myClassFilter: ClassFilter = (className) =>
   !className.startsWith('fw-');
@@ -210,7 +210,7 @@ inspector.setOptions({
   htmlCleaners: myHtmlCleaners,
 });`;
 
-export const codeInit = `import { init } from 'pointgrab';
+export const codeInit = `import { init } from 'point-grab';
 const inspector = init({ activationMode: 'toggle' });`;
 
 export const codeActivate = `inspector.activate();

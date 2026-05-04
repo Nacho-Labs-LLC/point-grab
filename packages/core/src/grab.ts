@@ -73,7 +73,7 @@ export function init(options?: Partial<PointGrabOptions>): PointGrabAPI {
 /** Check for a generic dev mode flag. Returns true if in dev mode or if the flag is absent. */
 function isDevMode(): boolean {
   try {
-    const flag = (globalThis as any).__POINTGRAB_DEV__;
+    const flag = (globalThis as any).__POINT_GRAB_DEV__;
     return typeof flag === 'undefined' || !!flag;
   } catch {
     return true;
@@ -132,7 +132,7 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
   let commentModeActive = false;
 
   function nextId(): string {
-    return `pointgrab-${++idCounter}-${Date.now()}`;
+    return `point-grab-${++idCounter}-${Date.now()}`;
   }
 
   // Apply initial theme
@@ -522,9 +522,9 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
   // --- Toast offset helper ---
   function updateToastOffset(): void {
     if (store.state.toolbar.visible) {
-      document.documentElement.style.setProperty('--pointgrab-toast-bottom', TOOLBAR_TOAST_OFFSET);
+      document.documentElement.style.setProperty('--point-grab-toast-bottom', TOOLBAR_TOAST_OFFSET);
     } else {
-      document.documentElement.style.removeProperty('--pointgrab-toast-bottom');
+      document.documentElement.style.removeProperty('--point-grab-toast-bottom');
     }
   }
 
@@ -655,7 +655,7 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
       actionsMenu.dispose();
       commentPopover.dispose();
       themeManager.dispose();
-      document.documentElement.style.removeProperty('--pointgrab-toast-bottom');
+      document.documentElement.style.removeProperty('--point-grab-toast-bottom');
     },
   };
 

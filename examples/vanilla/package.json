@@ -1,5 +1,5 @@
 {
-  "name": "pointgrab-example-vanilla",
+  "name": "point-grab-example-vanilla",
   "private": true,
   "type": "module",
   "scripts": {
@@ -10,6 +10,6 @@
     "vite": "^6.0.0"
   },
   "dependencies": {
-    "pointgrab": "^0.1.0"
+    "point-grab": "^0.1.0"
   }
 }

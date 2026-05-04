@@ -22,11 +22,11 @@ export function createCrosshair(): Crosshair {
     const style = document.createElement('style');
     style.id = CROSSHAIR_STYLE_ID;
     style.textContent = `
-      .pointgrab-crosshair-line {
+      .point-grab-crosshair-line {
         position: fixed;
         pointer-events: none;
         z-index: ${Z_INDEX_CROSSHAIR};
-        background: var(--pointgrab-accent, #3b82f6);
+        background: var(--point-grab-accent, #3b82f6);
         opacity: 0.25;
         transition: none;
       }
@@ -40,7 +40,7 @@ export function createCrosshair(): Crosshair {
         bottom: 0;
         width: 1px;
       }
-      body.pointgrab-crosshair-active {
+      body.point-grab-crosshair-active {
         cursor: crosshair !important;
       }
     `;
@@ -52,13 +52,13 @@ export function createCrosshair(): Crosshair {
       injectStyles();
       hLine = document.createElement('div');
       hLine.id = H_LINE_ID;
-      hLine.className = 'pointgrab-crosshair-line';
+      hLine.className = 'point-grab-crosshair-line';
       document.body.appendChild(hLine);
     }
     if (!vLine) {
       vLine = document.createElement('div');
       vLine.id = V_LINE_ID;
-      vLine.className = 'pointgrab-crosshair-line';
+      vLine.className = 'point-grab-crosshair-line';
       document.body.appendChild(vLine);
     }
   }
@@ -77,14 +77,14 @@ export function createCrosshair(): Crosshair {
       if (listening) return;
       listening = true;
       ensureElements();
-      document.body.classList.add('pointgrab-crosshair-active');
+      document.body.classList.add('point-grab-crosshair-active');
       document.addEventListener('mousemove', handleMouseMove, true);
     },
 
     deactivate(): void {
       if (!listening) return;
       listening = false;
-      document.body.classList.remove('pointgrab-crosshair-active');
+      document.body.classList.remove('point-grab-crosshair-active');
       document.removeEventListener('mousemove', handleMouseMove, true);
       if (hLine) hLine.style.top = '-10px';
       if (vLine) vLine.style.left = '-10px';

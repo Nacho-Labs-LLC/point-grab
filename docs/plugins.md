@@ -1,6 +1,6 @@
 # Plugin Development Guide
 
-Plugins extend pointgrab's behavior without modifying the core engine. They can react to lifecycle events, modify copied content, override theme colors, and inject setup/teardown logic.
+Plugins extend point-grab's behavior without modifying the core engine. They can react to lifecycle events, modify copied content, override theme colors, and inject setup/teardown logic.
 
 ## Plugin Interface
 
@@ -104,7 +104,7 @@ dispose()
 ## Registration
 
 ```typescript
-import { init, type Plugin } from 'pointgrab';
+import { init, type Plugin } from 'point-grab';
 
 const myPlugin: Plugin = {
   name: 'my-plugin',
@@ -239,7 +239,7 @@ When multiple plugins implement `transformCopyContent`, they chain: each receive
 The core engine auto-registers an MCP webhook plugin when `mcpWebhook: true` (default). Here is the pattern it follows:
 
 ```typescript
-import type { Plugin, ElementContext } from 'pointgrab';
+import type { Plugin, ElementContext } from 'point-grab';
 
 export function createMcpWebhookPlugin(): Plugin {
   return {
@@ -282,7 +282,7 @@ Key design decisions:
 A plugin that captures a screenshot of the selected element using `html2canvas`:
 
 ```typescript
-import type { Plugin, ElementContext } from 'pointgrab';
+import type { Plugin, ElementContext } from 'point-grab';
 
 interface ScreenshotPluginOptions {
   output?: 'download' | 'clipboard';
@@ -329,7 +329,7 @@ async function captureScreenshot(
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `pointgrab-${name}-${Date.now()}.png`;
+      a.download = `point-grab-${name}-${Date.now()}.png`;
       a.click();
       URL.revokeObjectURL(url);
     } else {
@@ -338,7 +338,7 @@ async function captureScreenshot(
       ]);
     }
   } catch (err) {
-    console.error('[pointgrab:screenshot] Failed:', err);
+    console.error('[point-grab:screenshot] Failed:', err);
   }
 }
 ```
@@ -346,7 +346,7 @@ async function captureScreenshot(
 Usage:
 
 ```typescript
-import { init } from 'pointgrab';
+import { init } from 'point-grab';
 import { createScreenshotPlugin } from './screenshot-plugin';
 
 const inspector = init();
@@ -358,7 +358,7 @@ inspector.registerPlugin(createScreenshotPlugin({ output: 'download' }));
 Track which components are inspected most often:
 
 ```typescript
-import type { Plugin, ElementContext } from 'pointgrab';
+import type { Plugin, ElementContext } from 'point-grab';
 
 export function createAnalyticsPlugin(endpoint: string): Plugin {
   const counts = new Map<string, number>();

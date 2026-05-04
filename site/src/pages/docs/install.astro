@@ -4,7 +4,7 @@ import Section from "../../components/Section.astro";
 import CodeBlock from "../../components/CodeBlock.astro";
 
 // Code samples as variables so Vite's dep scanner doesn't try to resolve them
-const vanillaCode = `import { init } from 'pointgrab';
+const vanillaCode = `import { init } from 'point-grab';
 
 const inspector = init();
 
@@ -42,10 +42,10 @@ app.use(PointGrabPlugin);
 app.mount('#app');`;
 
 const svelteCode = `<script>
-  import { pointgrab } from '@point-grab/svelte';
+  import { point-grab } from '@point-grab/svelte';
 </script>
 
-<div use:pointgrab>
+<div use:point-grab>
   <slot />
 </div>`;
 
@@ -54,7 +54,7 @@ const wcCode = `import { initPointGrabWebComponents } from '@point-grab/web-comp
 initPointGrabWebComponents();
 // or: initPointGrabWebComponents({ activationMode: 'toggle' })`;
 
-const configCode = `import { init } from 'pointgrab';
+const configCode = `import { init } from 'point-grab';
 
 const inspector = init({
   activationKey: 'Alt+I',
@@ -65,23 +65,23 @@ const inspector = init({
 });`;
 ---
 
-<Base title="Installation — pointgrab" description="Get started with pointgrab in under a minute.">
+<Base title="Installation — point-grab" description="Get started with point-grab in under a minute.">
   <Section padding="md">
     <div class="mx-auto max-w-3xl">
       <h1 class="text-4xl font-bold">Installation</h1>
       <p class="mt-4 text-lg text-text-muted">
-        Get pointgrab running in your project in under a minute.
+        Get point-grab running in your project in under a minute.
       </p>
 
       <!-- Table of contents -->
       <nav class="mt-8 rounded-xl border border-border bg-bg-raised p-6">
         <h2 class="text-xs font-semibold uppercase tracking-wider text-text-faint mb-3">On this page</h2>
         <ul class="space-y-1 text-sm">
-          <li><a href="#quick-start" class="text-pointgrab-blue hover:underline">Quick start</a></li>
-          <li><a href="#framework-setup" class="text-pointgrab-blue hover:underline">Framework setup</a></li>
-          <li><a href="#mcp-server" class="text-pointgrab-blue hover:underline">MCP server setup</a></li>
-          <li><a href="#configuration" class="text-pointgrab-blue hover:underline">Configuration</a></li>
-          <li><a href="#build-plugins" class="text-pointgrab-blue hover:underline">Build plugins</a></li>
+          <li><a href="#quick-start" class="text-point-grab-blue hover:underline">Quick start</a></li>
+          <li><a href="#framework-setup" class="text-point-grab-blue hover:underline">Framework setup</a></li>
+          <li><a href="#mcp-server" class="text-point-grab-blue hover:underline">MCP server setup</a></li>
+          <li><a href="#configuration" class="text-point-grab-blue hover:underline">Configuration</a></li>
+          <li><a href="#build-plugins" class="text-point-grab-blue hover:underline">Build plugins</a></li>
         </ul>
       </nav>
     </div>
@@ -94,13 +94,13 @@ const inspector = init({
       <p class="mt-3 text-text-muted">Install the core package:</p>
 
       <CodeBlock class="mt-4" code={`# npm
-npm install pointgrab
+npm install point-grab
 
 # pnpm
-pnpm add pointgrab
+pnpm add point-grab
 
 # yarn
-yarn add pointgrab`} lang="bash" />
+yarn add point-grab`} lang="bash" />
 
       <p class="mt-4 text-sm text-text-faint">
         The core package works with any framework or plain HTML. Framework adapters add component name resolution and source file mapping.
@@ -121,10 +121,10 @@ yarn add pointgrab`} lang="bash" />
         </h3>
         <p class="mt-3 text-text-muted">
           Use a script tag for the simplest setup. Auto-initializes with default options and exposes
-          <code class="text-amber">window.__POINTGRAB__</code>.
+          <code class="text-amber">window.__POINT_GRAB__</code>.
         </p>
         <CodeBlock class="mt-4" lang="html" code={`<!-- CDN script tag (auto-initializes) -->
-<script src="https://unpkg.com/pointgrab/dist/index.global.js"></script>`} />
+<script src="https://unpkg.com/point-grab/dist/index.global.js"></script>`} />
 
         <p class="mt-4 text-text-muted">Or use the ES module import for bundler setups:</p>
         <CodeBlock class="mt-3" lang="typescript" filename="main.ts" code={vanillaCode} />
@@ -133,7 +133,7 @@ yarn add pointgrab`} lang="bash" />
       <!-- React -->
       <div id="react" class="mt-12">
         <h3 class="text-xl font-semibold flex items-center gap-2">
-          <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-pointgrab-blue/10 text-xs font-bold text-pointgrab-blue">Re</span>
+          <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-point-grab-blue/10 text-xs font-bold text-point-grab-blue">Re</span>
           React
         </h3>
         <CodeBlock class="mt-4" code="npm install @point-grab/react" />
@@ -191,7 +191,7 @@ yarn add pointgrab`} lang="bash" />
         </h3>
         <CodeBlock class="mt-4" code="npm install @point-grab/svelte" />
         <p class="mt-4 text-text-muted">
-          Use the <code class="text-amber">use:pointgrab</code> action in your root layout:
+          Use the <code class="text-amber">use:point-grab</code> action in your root layout:
         </p>
         <CodeBlock class="mt-3" lang="svelte" filename="+layout.svelte" code={svelteCode} />
         <p class="mt-3 text-sm text-text-faint">
@@ -204,7 +204,7 @@ yarn add pointgrab`} lang="bash" />
       <!-- Web Components -->
       <div id="web-components" class="mt-12">
         <h3 class="text-xl font-semibold flex items-center gap-2">
-          <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-pointgrab-blue/10 text-xs font-bold text-pointgrab-blue-bright">WC</span>
+          <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-point-grab-blue/10 text-xs font-bold text-point-grab-blue-bright">WC</span>
           Web Components
         </h3>
         <CodeBlock class="mt-4" code="npm install @point-grab/web-components" />
@@ -214,7 +214,7 @@ yarn add pointgrab`} lang="bash" />
           Detects custom elements via <code class="text-amber">customElements.get()</code>.
           Pierces Shadow DOM boundaries using <code class="text-amber">deepElementFromPoint()</code>.
           Serializes shadow trees for captured HTML.
-          Source locations from <code class="text-amber">Constructor.__source</code> or global <code class="text-amber">__POINTGRAB_WC_SOURCE_MAP__</code>.
+          Source locations from <code class="text-amber">Constructor.__source</code> or global <code class="text-amber">__POINT_GRAB_WC_SOURCE_MAP__</code>.
         </p>
       </div>
     </div>
@@ -225,17 +225,17 @@ yarn add pointgrab`} lang="bash" />
     <div class="mx-auto max-w-3xl">
       <h2 class="text-2xl font-bold">MCP server setup</h2>
       <p class="mt-3 text-text-muted">
-        The MCP server connects pointgrab to AI coding agents. Install globally or use <code class="text-amber">npx</code>:
+        The MCP server connects point-grab to AI coding agents. Install globally or use <code class="text-amber">npx</code>:
       </p>
       <CodeBlock class="mt-4" code="npm install -g @point-grab/mcp-server" />
 
       <h3 class="text-lg font-semibold mt-8">Claude Code</h3>
-      <CodeBlock class="mt-3" code="claude mcp add pointgrab -- npx @point-grab/mcp-server" />
+      <CodeBlock class="mt-3" code="claude mcp add point-grab -- npx @point-grab/mcp-server" />
 
       <p class="mt-4 text-text-muted">Or add to your project's <code class="text-amber">.mcp.json</code>:</p>
       <CodeBlock class="mt-3" lang="json" filename=".mcp.json" code={`{
   "mcpServers": {
-    "pointgrab": {
+    "point-grab": {
       "command": "npx",
       "args": ["@point-grab/mcp-server"]
     }
@@ -246,7 +246,7 @@ yarn add pointgrab`} lang="bash" />
       <p class="mt-2 text-text-muted">Add to <code class="text-amber">.cursor/mcp.json</code>:</p>
       <CodeBlock class="mt-3" lang="json" filename=".cursor/mcp.json" code={`{
   "mcpServers": {
-    "pointgrab": {
+    "point-grab": {
       "command": "npx",
       "args": ["@point-grab/mcp-server"]
     }
@@ -254,7 +254,7 @@ yarn add pointgrab`} lang="bash" />
 }`} />
 
       <p class="mt-6 text-sm text-text-faint">
-        See the <a href="/docs/mcp" class="text-pointgrab-blue hover:underline">MCP Integration</a> page for available tools, webhook details, and environment variables.
+        See the <a href="/docs/mcp" class="text-point-grab-blue hover:underline">MCP Integration</a> page for available tools, webhook details, and environment variables.
       </p>
     </div>
   </Section>
@@ -330,7 +330,7 @@ yarn add pointgrab`} lang="bash" />
               <td class="px-4 py-3 font-mono text-amber">themeMode</td>
               <td class="px-4 py-3 font-mono text-text-faint">'dark' | 'light' | 'system'</td>
               <td class="px-4 py-3 font-mono text-text-faint">'dark'</td>
-              <td class="px-4 py-3 text-text-muted">Theme for all pointgrab UI elements</td>
+              <td class="px-4 py-3 text-text-muted">Theme for all point-grab UI elements</td>
             </tr>
             <tr class="border-b border-border/50 bg-bg-raised/50">
               <td class="px-4 py-3 font-mono text-amber">mcpWebhook</td>
@@ -379,7 +379,7 @@ yarn add pointgrab`} lang="bash" />
           <tbody>
             <tr class="border-b border-border/50">
               <td class="px-4 py-3 font-mono text-amber">Angular</td>
-              <td class="px-4 py-3 text-text-muted">Global <code class="text-text-faint font-mono">__POINTGRAB_SOURCE_MAP__</code> injected by build plugin</td>
+              <td class="px-4 py-3 text-text-muted">Global <code class="text-text-faint font-mono">__POINT_GRAB_SOURCE_MAP__</code> injected by build plugin</td>
               <td class="px-4 py-3 text-text-muted">Yes</td>
             </tr>
             <tr class="border-b border-border/50 bg-bg-raised/50">
@@ -399,7 +399,7 @@ yarn add pointgrab`} lang="bash" />
             </tr>
             <tr>
               <td class="px-4 py-3 font-mono text-amber">Web Components</td>
-              <td class="px-4 py-3 text-text-muted"><code class="text-text-faint font-mono">Constructor.__source</code> or <code class="text-text-faint font-mono">__POINTGRAB_WC_SOURCE_MAP__</code></td>
+              <td class="px-4 py-3 text-text-muted"><code class="text-text-faint font-mono">Constructor.__source</code> or <code class="text-text-faint font-mono">__POINT_GRAB_WC_SOURCE_MAP__</code></td>
               <td class="px-4 py-3 text-text-muted">Yes</td>
             </tr>
           </tbody>
@@ -416,7 +416,7 @@ yarn add pointgrab`} lang="bash" />
   <Section padding="sm">
     <div class="mx-auto max-w-3xl flex items-center justify-between border-t border-border pt-8">
       <span></span>
-      <a href="/docs/features" class="text-pointgrab-blue hover:underline text-sm font-medium">Features &rarr;</a>
+      <a href="/docs/features" class="text-point-grab-blue hover:underline text-sm font-medium">Features &rarr;</a>
     </div>
   </Section>
 </Base>

@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { pointgrab } from '@point-grab/svelte';
+  import { point-grab } from '@point-grab/svelte';
   import './app.css';
 
   let progress = $state(0);
@@ -38,9 +38,9 @@
   });
 </script>
 
-<div use:pointgrab={{ activationMode: 'hold' }}>
+<div use:point-grab={{ activationMode: 'hold' }}>
   <header class="header">
-    <h1>pointgrab — Svelte Example</h1>
+    <h1>point-grab — Svelte Example</h1>
     <p>
       Hold Cmd+C (Mac) or Ctrl+C (Win) and hover over any element. Click to capture. Press F to freeze animations.
     </p>

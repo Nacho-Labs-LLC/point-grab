@@ -1,4 +1,4 @@
-# Contributing to pointgrab
+# Contributing to point-grab
 
 Thanks for your interest in contributing! Here's how to get started.
 
@@ -18,7 +18,7 @@ pnpm run test
 
 This is a pnpm + Turborepo monorepo:
 
-- `packages/core` — Framework-agnostic core (`pointgrab` on npm)
+- `packages/core` — Framework-agnostic core (`point-grab` on npm)
 - `packages/angular` — Angular adapter
 - `packages/react` — React adapter
 - `packages/vue` — Vue adapter

@@ -2,7 +2,7 @@
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in pointgrab, please report it responsibly.
+If you discover a security vulnerability in point-grab, please report it responsibly.
 
 **Email:** [hello@nacholabs.net](mailto:hello@nacholabs.net)
 
@@ -16,4 +16,4 @@ Please **do not** open a public GitHub issue for security vulnerabilities.
 
 ## Scope
 
-This policy covers all packages published under the `pointgrab` and `@point-grab/*` npm scopes.
+This policy covers all packages published under the `point-grab` and `@point-grab/*` npm scopes.

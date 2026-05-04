@@ -1,4 +1,4 @@
-import type { ClassFilter, HtmlCleaner } from 'pointgrab';
+import type { ClassFilter, HtmlCleaner } from 'point-grab';
 
 /**
  * React does not inject framework-specific CSS classes by default.

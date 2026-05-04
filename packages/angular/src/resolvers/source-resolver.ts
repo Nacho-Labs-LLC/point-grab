@@ -7,7 +7,7 @@ interface SourceMapEntry {
 }
 
 function getSourceMap(): Record<string, SourceMapEntry> | null {
-  return (globalThis as unknown as Record<string, unknown>).__POINTGRAB_SOURCE_MAP__ as
+  return (globalThis as unknown as Record<string, unknown>).__POINT_GRAB_SOURCE_MAP__ as
     Record<string, SourceMapEntry> | undefined ?? null;
 }
 

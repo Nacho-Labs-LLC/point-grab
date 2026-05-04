@@ -4,13 +4,13 @@ import {
   provideEnvironmentInitializer,
   type EnvironmentProviders,
 } from '@angular/core';
-import type { PointGrabAPI, PointGrabOptions } from 'pointgrab';
+import type { PointGrabAPI, PointGrabOptions } from 'point-grab';
 import { initPointGrabAngular } from './init';
 
-export const POINTGRAB_API = new InjectionToken<PointGrabAPI>('POINTGRAB_API');
+export const POINT_GRAB_API = new InjectionToken<PointGrabAPI>('POINT_GRAB_API');
 
 /**
- * Angular DI provider that initializes pointgrab at environment bootstrap.
+ * Angular DI provider that initializes point-grab at environment bootstrap.
  *
  * @example
  * ```ts
@@ -24,7 +24,7 @@ export function providePointGrab(
 ): EnvironmentProviders {
   return makeEnvironmentProviders([
     {
-      provide: POINTGRAB_API,
+      provide: POINT_GRAB_API,
       useFactory: () => initPointGrabAngular(options),
     },
     provideEnvironmentInitializer(() => initPointGrabAngular(options)),

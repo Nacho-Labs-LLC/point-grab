@@ -1,6 +1,6 @@
 # Writing Custom Adapters
 
-Adapters teach pointgrab how to extract component metadata from a specific framework. If your framework isn't covered by the built-in adapters, you can write your own.
+Adapters teach point-grab how to extract component metadata from a specific framework. If your framework isn't covered by the built-in adapters, you can write your own.
 
 ## The Two Function Types
 
@@ -30,10 +30,10 @@ Both are plain functions that receive an `Element` and return metadata or `null`
 
 ## Wiring Up an Adapter
 
-Register your resolvers with an pointgrab instance:
+Register your resolvers with an point-grab instance:
 
 ```typescript
-import { init } from 'pointgrab';
+import { init } from 'point-grab';
 
 const inspector = init();
 inspector.setComponentResolver((el) => resolveComponent(el));
@@ -51,7 +51,7 @@ Frameworks inject internal attributes and classes that clutter captured HTML. Yo
 A function that returns `true` to keep a class, `false` to strip it:
 
 ```typescript
-import type { ClassFilter } from 'pointgrab';
+import type { ClassFilter } from 'point-grab';
 
 // Strip classes starting with "qwik-" or "q:"
 const qwikClassFilter: ClassFilter = (className: string) =>
@@ -63,7 +63,7 @@ const qwikClassFilter: ClassFilter = (className: string) =>
 A regex/replacer pair applied to the raw `outerHTML` string:
 
 ```typescript
-import type { HtmlCleaner } from 'pointgrab';
+import type { HtmlCleaner } from 'point-grab';
 
 // Strip q:id, q:key, q:container attributes
 const qwikHtmlCleaners: HtmlCleaner[] = [
@@ -181,7 +181,7 @@ export function resolveSource(element: Element): SourceResult {
 
 ```typescript
 // packages/qwik/src/filters.ts
-import type { ClassFilter, HtmlCleaner } from 'pointgrab';
+import type { ClassFilter, HtmlCleaner } from 'point-grab';
 
 export const qwikClassFilter: ClassFilter = (className: string) =>
   !className.startsWith('qwik-') && !className.startsWith('q:');
@@ -198,8 +198,8 @@ Follow the same idempotent singleton pattern as all built-in adapters:
 
 ```typescript
 // packages/qwik/src/init.ts
-import { init, createNoopApi } from 'pointgrab';
-import type { PointGrabAPI, PointGrabOptions, Plugin } from 'pointgrab';
+import { init, createNoopApi } from 'point-grab';
+import type { PointGrabAPI, PointGrabOptions, Plugin } from 'point-grab';
 import { resolveComponent } from './resolvers/component-resolver';
 import { resolveSource } from './resolvers/source-resolver';
 import { qwikClassFilter, qwikHtmlCleaners } from './filters';
@@ -247,9 +247,9 @@ export function disposePointGrab(): void {
 For Qwik, you might expose a hook that integrates with Qwik's lifecycle:
 
 ```typescript
-// packages/qwik/src/use-pointgrab.ts
+// packages/qwik/src/use-point-grab.ts
 import { useVisibleTask$ } from '@builder.io/qwik';
-import type { PointGrabOptions } from 'pointgrab';
+import type { PointGrabOptions } from 'point-grab';
 import { initPointGrabQwik, disposePointGrab } from './init';
 
 export function usePointGrab(options?: Partial<PointGrabOptions>): void {
@@ -315,12 +315,12 @@ Test against a real framework app using Playwright:
 ```typescript
 import { test, expect } from '@playwright/test';
 
-test('pointgrab resolves Qwik components', async ({ page }) => {
+test('point-grab resolves Qwik components', async ({ page }) => {
   await page.goto('http://localhost:5173');
 
-  // Inject and activate pointgrab
+  // Inject and activate point-grab
   await page.evaluate(() => {
-    const { initPointGrabQwik } = (window as any).__pointgrabTest__;
+    const { initPointGrabQwik } = (window as any).__pointGrabTest__;
     const inspector = initPointGrabQwik({ activationMode: 'toggle' });
     inspector.activate();
   });

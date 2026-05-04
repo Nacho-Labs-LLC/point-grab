@@ -1,7 +1,7 @@
 {
   "name": "@point-grab/vue",
   "version": "0.1.3",
-  "description": "Vue adapter for pointgrab",
+  "description": "Vue adapter for point-grab",
   "author": {
     "name": "Nate Richardson",
     "email": "hello@nacholabs.net",
@@ -28,7 +28,7 @@
     "dist"
   ],
   "keywords": [
-    "pointgrab",
+    "point-grab",
     "vue",
     "element-picker",
     "developer-tools",
@@ -41,7 +41,7 @@
     "clean": "rm -rf dist .turbo"
   },
   "peerDependencies": {
-    "pointgrab": "workspace:*",
+    "point-grab": "workspace:*",
     "vue": ">=3.0.0"
   },
   "peerDependenciesMeta": {

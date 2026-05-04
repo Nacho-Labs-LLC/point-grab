@@ -1,4 +1,4 @@
-import { init } from 'pointgrab';
+import { init } from 'point-grab';
 
 const pg = init({ activationMode: 'hold' });
 

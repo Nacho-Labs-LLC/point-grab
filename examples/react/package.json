@@ -1,5 +1,5 @@
 {
-  "name": "pointgrab-example-react",
+  "name": "point-grab-example-react",
   "private": true,
   "type": "module",
   "scripts": {
@@ -9,7 +9,7 @@
   "dependencies": {
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "pointgrab": "^0.1.0",
+    "point-grab": "^0.1.0",
     "@point-grab/react": "^0.1.0"
   },
   "devDependencies": {

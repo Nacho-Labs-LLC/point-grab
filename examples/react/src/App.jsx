@@ -42,7 +42,7 @@ function App() {
       <header className="header">
         <div className="header-content">
           <h1 className="logo">
-            <span className="logo-icon">◎</span> pointgrab
+            <span className="logo-icon">◎</span> point-grab
             <span className="logo-tag">react</span>
           </h1>
           <p className="instructions">
@@ -145,7 +145,7 @@ function App() {
             <div className="card-body">
               <p className="text-muted">
                 Click the bell icon to toggle the notification popover. With
-                pointgrab active, press <kbd>F</kbd> to freeze and inspect
+                point-grab active, press <kbd>F</kbd> to freeze and inspect
                 transient UI.
               </p>
             </div>

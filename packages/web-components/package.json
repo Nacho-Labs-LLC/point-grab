@@ -1,7 +1,7 @@
 {
   "name": "@point-grab/web-components",
   "version": "0.1.3",
-  "description": "Web Components adapter for pointgrab",
+  "description": "Web Components adapter for point-grab",
   "author": {
     "name": "Nate Richardson",
     "email": "hello@nacholabs.net",
@@ -28,7 +28,7 @@
     "dist"
   ],
   "keywords": [
-    "pointgrab",
+    "point-grab",
     "web-components",
     "element-picker",
     "developer-tools",
@@ -41,7 +41,7 @@
     "clean": "rm -rf dist .turbo"
   },
   "peerDependencies": {
-    "pointgrab": "workspace:*"
+    "point-grab": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.3.0",

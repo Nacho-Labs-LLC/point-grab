@@ -1,6 +1,6 @@
 # Architecture
 
-Technical architecture of the pointgrab platform.
+Technical architecture of the point-grab platform.
 
 ## System Overview
 
@@ -24,7 +24,7 @@ Browser                                          AI Agent
 |                    |                 |   |    | - HTTP webhook  |
 |                    | - clipboard     |   |    |   :3456/inspect |
 |                    | - toast         |   |    | - History file  |
-|                    | - webhook ------+---+--->|   ~/.pointgrab/   |
+|                    | - webhook ------+---+--->|   ~/.point-grab/   |
 |                    |   (MCP plugin)  |   |    | - MCP tools     |
 |                    +-----------------+   |    |                 |
 |                                          |    +-----------------+
@@ -33,14 +33,14 @@ Browser                                          AI Agent
 
 ## Core Engine
 
-The core engine (`pointgrab` package, published from `packages/core`) is framework-agnostic pure DOM code. It has no dependencies on any UI framework. Everything operates on raw `Element` references and standard browser APIs.
+The core engine (`point-grab` package, published from `packages/core`) is framework-agnostic pure DOM code. It has no dependencies on any UI framework. Everything operates on raw `Element` references and standard browser APIs.
 
 ### Module Breakdown
 
 ```
 packages/core/src/
   index.ts                      # Public exports: init, createNoopApi, types
-  index.global.ts               # IIFE entry: auto-inits, sets window.__POINTGRAB__
+  index.global.ts               # IIFE entry: auto-inits, sets window.__POINT_GRAB__
   grab.ts                       # createPointGrabInstance(), PointGrabAPI factory
   types.ts                      # All public type definitions
   store.ts                      # Proxy-based reactive state
@@ -79,7 +79,7 @@ packages/core/src/
 
 ## How the Picker Works
 
-The picker is the heart of pointgrab. Here is the full cycle from activation to capture:
+The picker is the heart of point-grab. Here is the full cycle from activation to capture:
 
 ```
 User holds Cmd+C (or configured key)
@@ -184,7 +184,7 @@ These are plain functions, not class instances. The core engine calls them on ho
 - Falls back to `window.ng.getOwningComponent(element)` for elements inside component templates
 - Walks `element.parentElement` collecting every component host for the stack
 - Component names come from `component.constructor.name` (with `_` prefix stripped via `cleanComponentName`)
-- Source locations use a global `__POINTGRAB_SOURCE_MAP__` (component name -> `{ file, line }`)
+- Source locations use a global `__POINT_GRAB_SOURCE_MAP__` (component name -> `{ file, line }`)
 - Class filter: strips classes starting with `ng-` or `_ng`
 - HTML cleaners: strips `_nghost-*` and `_ngcontent-*` attributes
 
@@ -216,7 +216,7 @@ These are plain functions, not class instances. The core engine calls them on ho
 - Detects custom elements: `element.tagName.includes('-')` and `customElements.get(tagName) !== undefined`
 - Walks Shadow DOM boundaries via `element.getRootNode()` -> `ShadowRoot.host`
 - Component name from constructor class name, falling back to tag name
-- Source locations: checks `Constructor.__source` (build-time injected) then global `__POINTGRAB_WC_SOURCE_MAP__`
+- Source locations: checks `Constructor.__source` (build-time injected) then global `__POINT_GRAB_WC_SOURCE_MAP__`
 - Includes `deepElementFromPoint()` that pierces shadow roots
 - Includes `serializeShadowTree()` for rendering shadow DOM content
 - Class filter and HTML cleaners: pass-through (no framework-specific artifacts)
@@ -377,21 +377,21 @@ defineConfig([
 | IIFE | `dist/index.global.js` | CDN script tag |
 | Types | `dist/index.d.ts` | TypeScript declarations |
 
-The IIFE build (`index.global.ts`) auto-initializes with default options and exposes `window.__POINTGRAB__`.
+The IIFE build (`index.global.ts`) auto-initializes with default options and exposes `window.__POINT_GRAB__`.
 
 ### Dependency Graph
 
 ```
 @point-grab/angular   ─┐
 @point-grab/react     ─┤
-@point-grab/vue       ─┼──> pointgrab (core, peerDependency)
+@point-grab/vue       ─┼──> point-grab (core, peerDependency)
 @point-grab/svelte    ─┤
 @point-grab/web-comp. ─┘
 
 @point-grab/mcp-server  (standalone, depends on @modelcontextprotocol/sdk)
 ```
 
-Adapter packages list `pointgrab` as a `peerDependency`. The MCP server is fully standalone -- it receives data over HTTP and has no browser-side code.
+Adapter packages list `point-grab` as a `peerDependency`. The MCP server is fully standalone -- it receives data over HTTP and has no browser-side code.
 
 ## Source Location Strategies
 
@@ -399,11 +399,11 @@ Each adapter uses a different strategy for resolving source locations:
 
 | Adapter | Strategy | Dev-only? |
 |---|---|---|
-| Angular | Global `__POINTGRAB_SOURCE_MAP__` (injected by build plugin) | Yes |
+| Angular | Global `__POINT_GRAB_SOURCE_MAP__` (injected by build plugin) | Yes |
 | React | `fiber._debugSource.{ fileName, lineNumber }` | Yes |
 | Vue | `type.__file` on component options | Yes |
 | Svelte | `__svelte_meta.loc.{ file, line, column }` | Yes |
-| Web Components | `Constructor.__source` or `__POINTGRAB_WC_SOURCE_MAP__` | Yes |
+| Web Components | `Constructor.__source` or `__POINT_GRAB_WC_SOURCE_MAP__` | Yes |
 
 All source location data is stripped in production builds. The adapters gracefully return `null` when source info is unavailable.
 
@@ -424,13 +424,13 @@ All source location data is stripped in production builds. The adapters graceful
        |
 5. @point-grab/mcp-server receives POST:
    - Validates payload (requires html + componentName)
-   - Appends to history (memory + ~/.pointgrab/history.json)
+   - Appends to history (memory + ~/.point-grab/history.json)
    - Returns 200 OK
        |
-6. AI agent calls MCP tool (e.g., pointgrab_recent) over stdio:
+6. AI agent calls MCP tool (e.g., point_grab_recent) over stdio:
    - MCP server reads history from disk
    - Returns matching captures
    - Agent uses context to locate and edit code
 ```
 
-The webhook is simple HTTP POST. The MCP server serializes writes to prevent concurrent data loss. History persists to disk at `~/.pointgrab/history.json` by default (configurable via `POINTGRAB_HISTORY_PATH`).
+The webhook is simple HTTP POST. The MCP server serializes writes to prevent concurrent data loss. History persists to disk at `~/.point-grab/history.json` by default (configurable via `POINT_GRAB_HISTORY_PATH`).

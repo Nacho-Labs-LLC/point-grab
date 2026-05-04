@@ -12,7 +12,7 @@ import { homedir } from 'node:os';
 import { join, dirname } from 'node:path';
 import type { GrabEntry, GrabHistory } from './types.js';
 
-const DEFAULT_HISTORY_PATH = join(homedir(), '.pointgrab', 'history.json');
+const DEFAULT_HISTORY_PATH = join(homedir(), '.point-grab', 'history.json');
 const DEFAULT_WEBHOOK_PORT = 3456;
 
 let historyPath = DEFAULT_HISTORY_PATH;
@@ -221,9 +221,9 @@ function startWebhookServer(port: number): void {
         res.end(JSON.stringify({ success: true }));
 
         const fw = data.framework ? ` [${data.framework}]` : '';
-        console.error(`[pointgrab] Grabbed: ${data.componentName}${fw} at ${data.filePath ?? 'unknown'}:${data.line ?? '?'}`);
+        console.error(`[point-grab] Grabbed: ${data.componentName}${fw} at ${data.filePath ?? 'unknown'}:${data.line ?? '?'}`);
       } catch (error) {
-        console.error('[pointgrab] Failed to process grab:', error);
+        console.error('[point-grab] Failed to process grab:', error);
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Internal server error' }));
       }
@@ -233,18 +233,18 @@ function startWebhookServer(port: number): void {
   httpServer.on('error', (err: NodeJS.ErrnoException) => {
     if (err.code === 'EADDRINUSE') {
       console.error(
-        `[pointgrab] Port ${port} already in use. Webhook disabled — MCP tools still work, but new grabs won't be received.`
+        `[point-grab] Port ${port} already in use. Webhook disabled — MCP tools still work, but new grabs won't be received.`
       );
       console.error(
-        `[pointgrab] To use a different port, set POINTGRAB_PORT env variable.`
+        `[point-grab] To use a different port, set POINT_GRAB_PORT env variable.`
       );
     } else {
-      console.error(`[pointgrab] Webhook server error:`, err);
+      console.error(`[point-grab] Webhook server error:`, err);
     }
   });
 
   httpServer.listen(port, () => {
-    console.error(`[pointgrab] Webhook listener on http://localhost:${port}/inspect`);
+    console.error(`[point-grab] Webhook listener on http://localhost:${port}/inspect`);
   });
 }
 
@@ -252,7 +252,7 @@ function startWebhookServer(port: number): void {
 
 const mcpServer = new Server(
   {
-    name: 'pointgrab-mcp',
+    name: 'point-grab-mcp',
     version: '0.1.0',
   },
   {
@@ -265,9 +265,9 @@ const mcpServer = new Server(
 mcpServer.setRequestHandler(ListToolsRequestSchema, async () => ({
   tools: [
     {
-      name: 'pointgrab_search',
+      name: 'point_grab_search',
       description:
-        'Search pointgrab history. Query grabbed elements by text, component name, file path, or framework. Returns matching elements with HTML, component info, and stack trace.',
+        'Search point-grab history. Query grabbed elements by text, component name, file path, or framework. Returns matching elements with HTML, component info, and stack trace.',
       inputSchema: {
         type: 'object' as const,
         properties: {
@@ -298,7 +298,7 @@ mcpServer.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
-      name: 'pointgrab_recent',
+      name: 'point_grab_recent',
       description:
         'Get the most recent grabbed elements. Returns the latest N inspected elements from history.',
       inputSchema: {
@@ -313,7 +313,7 @@ mcpServer.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
-      name: 'pointgrab_get',
+      name: 'point_grab_get',
       description:
         'Get a specific grabbed element by ID. Returns the full context for a single grab entry.',
       inputSchema: {
@@ -328,16 +328,16 @@ mcpServer.setRequestHandler(ListToolsRequestSchema, async () => ({
       },
     },
     {
-      name: 'pointgrab_stats',
+      name: 'point_grab_stats',
       description:
-        'Get statistics about pointgrab history. Returns total grabs, unique components, unique files, per-framework breakdown, and recent activity.',
+        'Get statistics about point-grab history. Returns total grabs, unique components, unique files, per-framework breakdown, and recent activity.',
       inputSchema: {
         type: 'object' as const,
         properties: {},
       },
     },
     {
-      name: 'pointgrab_frameworks',
+      name: 'point_grab_frameworks',
       description:
         'Get a summary of which frameworks have been detected in the grab history. Returns grab counts grouped by framework.',
       inputSchema: {
@@ -355,7 +355,7 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
     const history = await readHistory();
 
     switch (name) {
-      case 'pointgrab_search': {
+      case 'point_grab_search': {
         const { query, componentName, filePath, framework, limit = 10 } = args as {
           query?: string;
           componentName?: string;
@@ -387,7 +387,7 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
-      case 'pointgrab_recent': {
+      case 'point_grab_recent': {
         const { limit = 5 } = args as { limit?: number };
         const recent = searchHistory(history, undefined, undefined, undefined, undefined, limit);
 
@@ -405,7 +405,7 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
-      case 'pointgrab_get': {
+      case 'point_grab_get': {
         const { id } = args as { id: string };
         const entry = history.entries.find((e) => e.id === id);
 
@@ -426,7 +426,7 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
-      case 'pointgrab_stats': {
+      case 'point_grab_stats': {
         const uniqueComponents = new Set(
           history.entries.map((e) => e.context.componentName).filter(Boolean)
         );
@@ -471,7 +471,7 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
-      case 'pointgrab_frameworks': {
+      case 'point_grab_frameworks': {
         const frameworkBreakdown = getFrameworkBreakdown(history);
 
         return {
@@ -511,12 +511,12 @@ mcpServer.setRequestHandler(CallToolRequestSchema, async (request) => {
 // -- Main --
 
 async function main() {
-  if (process.env.POINTGRAB_HISTORY_PATH) {
-    historyPath = process.env.POINTGRAB_HISTORY_PATH;
+  if (process.env.POINT_GRAB_HISTORY_PATH) {
+    historyPath = process.env.POINT_GRAB_HISTORY_PATH;
   }
 
   const webhookPort = parseInt(
-    process.env.POINTGRAB_PORT || String(DEFAULT_WEBHOOK_PORT)
+    process.env.POINT_GRAB_PORT || String(DEFAULT_WEBHOOK_PORT)
   );
 
   await ensureHistoryFile();
@@ -528,11 +528,11 @@ async function main() {
   const transport = new StdioServerTransport();
   await mcpServer.connect(transport);
 
-  console.error('[pointgrab] MCP server running');
-  console.error(`[pointgrab] History: ${historyPath}`);
+  console.error('[point-grab] MCP server running');
+  console.error(`[point-grab] History: ${historyPath}`);
 }
 
 main().catch((error) => {
-  console.error('[pointgrab] Fatal error:', error);
+  console.error('[point-grab] Fatal error:', error);
   process.exit(1);
 });

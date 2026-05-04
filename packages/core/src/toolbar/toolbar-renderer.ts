@@ -46,15 +46,15 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
         align-items: center;
         gap: 2px;
         padding: 4px 6px;
-        background: var(--pointgrab-toolbar-bg, #0f172a);
-        border: 1px solid var(--pointgrab-toolbar-border, #1e293b);
+        background: var(--point-grab-toolbar-bg, #0f172a);
+        border: 1px solid var(--point-grab-toolbar-border, #1e293b);
         border-radius: 24px;
-        box-shadow: 0 4px 16px var(--pointgrab-toolbar-shadow, rgba(0, 0, 0, 0.5));
+        box-shadow: 0 4px 16px var(--point-grab-toolbar-shadow, rgba(0, 0, 0, 0.5));
         pointer-events: auto;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         transition: opacity 0.2s ease, transform 0.2s ease;
       }
-      #${TOOLBAR_ID}.pointgrab-toolbar-hidden {
+      #${TOOLBAR_ID}.point-grab-toolbar-hidden {
         opacity: 0;
         transform: translateX(-50%) translateY(20px);
         pointer-events: none;
@@ -69,30 +69,30 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
         border: none;
         border-radius: 8px;
         background: transparent;
-        color: var(--pointgrab-toolbar-text, #94a3b8);
+        color: var(--point-grab-toolbar-text, #94a3b8);
         cursor: pointer;
         padding: 0;
         transition: background 0.15s ease, color 0.15s ease;
       }
       #${TOOLBAR_ID} button:hover {
-        background: var(--pointgrab-toolbar-hover, #1e293b);
-        color: var(--pointgrab-accent, #3b82f6);
+        background: var(--point-grab-toolbar-hover, #1e293b);
+        color: var(--point-grab-accent, #3b82f6);
       }
-      #${TOOLBAR_ID} button.pointgrab-btn-active {
-        color: var(--pointgrab-toolbar-active, #3b82f6);
+      #${TOOLBAR_ID} button.point-grab-btn-active {
+        color: var(--point-grab-toolbar-active, #3b82f6);
       }
-      #${TOOLBAR_ID} button.pointgrab-btn-disabled {
+      #${TOOLBAR_ID} button.point-grab-btn-disabled {
         opacity: 0.4;
-        color: var(--pointgrab-toolbar-text, #94a3b8);
+        color: var(--point-grab-toolbar-text, #94a3b8);
       }
-      #${TOOLBAR_ID} .pointgrab-toolbar-divider {
+      #${TOOLBAR_ID} .point-grab-toolbar-divider {
         width: 1px;
         height: 20px;
-        background: var(--pointgrab-toolbar-border, #1e293b);
+        background: var(--point-grab-toolbar-border, #1e293b);
         margin: 0 4px;
         flex-shrink: 0;
       }
-      #${TOOLBAR_ID} .pointgrab-toolbar-left {
+      #${TOOLBAR_ID} .point-grab-toolbar-left {
         display: flex;
         align-items: center;
         gap: 2px;
@@ -101,12 +101,12 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
         opacity: 1;
         transition: max-width 0.25s ease, opacity 0.2s ease, margin 0.25s ease;
       }
-      #${TOOLBAR_ID} .pointgrab-toolbar-left.pointgrab-toolbar-left-hidden {
+      #${TOOLBAR_ID} .point-grab-toolbar-left.point-grab-toolbar-left-hidden {
         max-width: 0;
         opacity: 0;
         pointer-events: none;
       }
-      #${TOOLBAR_ID} .pointgrab-badge {
+      #${TOOLBAR_ID} .point-grab-badge {
         position: absolute;
         top: -2px;
         right: -2px;
@@ -131,7 +131,7 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
     btn.innerHTML = icon;
     btn.title = title;
     btn.setAttribute('aria-label', title);
-    btn.setAttribute('data-pointgrab-btn', name);
+    btn.setAttribute('data-point-grab-btn', name);
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -162,10 +162,10 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
     buttons.copyPrompt.style.display = 'none';
 
     const divider = document.createElement('span');
-    divider.className = 'pointgrab-toolbar-divider';
+    divider.className = 'point-grab-toolbar-divider';
 
     leftGroup = document.createElement('div');
-    leftGroup.className = 'pointgrab-toolbar-left';
+    leftGroup.className = 'point-grab-toolbar-left';
     leftGroup.appendChild(buttons.selection);
     leftGroup.appendChild(buttons.history);
     leftGroup.appendChild(buttons.actions);
@@ -192,12 +192,12 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
   return {
     show(): void {
       ensureContainer();
-      container!.classList.remove('pointgrab-toolbar-hidden');
+      container!.classList.remove('point-grab-toolbar-hidden');
     },
 
     hide(): void {
       if (container) {
-        container.classList.add('pointgrab-toolbar-hidden');
+        container.classList.add('point-grab-toolbar-hidden');
       }
     },
 
@@ -208,10 +208,10 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
       if (buttons.copyPrompt) {
         if (annotationCount && annotationCount > 0) {
           buttons.copyPrompt.style.display = '';
-          let badge = buttons.copyPrompt.querySelector('.pointgrab-badge') as HTMLElement;
+          let badge = buttons.copyPrompt.querySelector('.point-grab-badge') as HTMLElement;
           if (!badge) {
             badge = document.createElement('span');
-            badge.className = 'pointgrab-badge';
+            badge.className = 'point-grab-badge';
             buttons.copyPrompt.appendChild(badge);
           }
           badge.textContent = String(annotationCount);
@@ -222,9 +222,9 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
 
       // Selection mode active state
       if (state.active) {
-        buttons.selection.classList.add('pointgrab-btn-active');
+        buttons.selection.classList.add('point-grab-btn-active');
       } else {
-        buttons.selection.classList.remove('pointgrab-btn-active');
+        buttons.selection.classList.remove('point-grab-btn-active');
       }
 
       // Theme icon
@@ -237,18 +237,18 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
 
       // Freeze button active state
       if (state.frozen) {
-        buttons.freeze.classList.add('pointgrab-btn-active');
+        buttons.freeze.classList.add('point-grab-btn-active');
       } else {
-        buttons.freeze.classList.remove('pointgrab-btn-active');
+        buttons.freeze.classList.remove('point-grab-btn-active');
       }
 
       // Enable/disable — hide/show left side
       if (state.options.enabled) {
-        buttons.enable.classList.add('pointgrab-btn-active');
-        leftGroup?.classList.remove('pointgrab-toolbar-left-hidden');
+        buttons.enable.classList.add('point-grab-btn-active');
+        leftGroup?.classList.remove('point-grab-toolbar-left-hidden');
       } else {
-        buttons.enable.classList.remove('pointgrab-btn-active');
-        leftGroup?.classList.add('pointgrab-toolbar-left-hidden');
+        buttons.enable.classList.remove('point-grab-btn-active');
+        leftGroup?.classList.add('point-grab-toolbar-left-hidden');
       }
     },
 

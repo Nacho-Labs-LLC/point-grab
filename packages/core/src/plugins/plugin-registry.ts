@@ -44,7 +44,7 @@ export function createPluginRegistry(): PluginRegistry {
           try {
             (hook as (...a: any[]) => void)(...args);
           } catch (err) {
-            console.warn(`[pointgrab] Plugin "${plugin.name}" hook "${hookName}" threw:`, err);
+            console.warn(`[point-grab] Plugin "${plugin.name}" hook "${hookName}" threw:`, err);
           }
         }
       }
@@ -58,7 +58,7 @@ export function createPluginRegistry(): PluginRegistry {
           try {
             result = transform(result, context);
           } catch (err) {
-            console.warn(`[pointgrab] Plugin "${plugin.name}" transformCopyContent threw:`, err);
+            console.warn(`[point-grab] Plugin "${plugin.name}" transformCopyContent threw:`, err);
           }
         }
       }

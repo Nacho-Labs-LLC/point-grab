@@ -1,5 +1,5 @@
-import { init, createNoopApi } from 'pointgrab';
-import type { PointGrabAPI, PointGrabOptions, Plugin } from 'pointgrab';
+import { init, createNoopApi } from 'point-grab';
+import type { PointGrabAPI, PointGrabOptions, Plugin } from 'point-grab';
 import { resolveComponent } from './resolvers/component-resolver';
 import { resolveSource } from './resolvers/source-resolver';
 import { wcClassFilter, wcHtmlCleaners } from './filters';
@@ -8,14 +8,14 @@ import { deepElementFromPoint } from './shadow-dom';
 let instance: PointGrabAPI | null = null;
 
 /**
- * Initialize pointgrab with Web Components / Shadow DOM resolvers.
+ * Initialize point-grab with Web Components / Shadow DOM resolvers.
  * Idempotent -- subsequent calls return the same instance.
  */
 export function initPointGrabWebComponents(options?: Partial<PointGrabOptions>): PointGrabAPI {
   if (instance) return instance;
 
   // No-op in production when devOnly is requested
-  const devFlag = (globalThis as unknown as Record<string, unknown>).__POINTGRAB_DEV__;
+  const devFlag = (globalThis as unknown as Record<string, unknown>).__POINT_GRAB_DEV__;
   if (options?.devOnly !== false && typeof devFlag !== 'undefined' && !devFlag) {
     instance = createNoopApi();
     return instance;
@@ -43,7 +43,7 @@ export function registerPointGrabPlugin(plugin: Plugin): void {
   instance?.registerPlugin(plugin);
 }
 
-/** Tear down the pointgrab instance. */
+/** Tear down the point-grab instance. */
 export function disposePointGrab(): void {
   instance?.dispose();
   instance = null;

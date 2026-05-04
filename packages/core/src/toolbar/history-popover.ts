@@ -58,10 +58,10 @@ export function createHistoryPopover(callbacks: HistoryPopoverCallbacks): Histor
         left: 50%;
         transform: translateX(-50%);
         z-index: ${Z_INDEX_POPOVER};
-        background: var(--pointgrab-popover-bg, #0f172a);
-        border: 1px solid var(--pointgrab-popover-border, #1e293b);
+        background: var(--point-grab-popover-bg, #0f172a);
+        border: 1px solid var(--point-grab-popover-border, #1e293b);
         border-radius: 12px;
-        box-shadow: 0 8px 24px var(--pointgrab-popover-shadow, rgba(0, 0, 0, 0.5));
+        box-shadow: 0 8px 24px var(--point-grab-popover-shadow, rgba(0, 0, 0, 0.5));
         min-width: 320px;
         max-width: 420px;
         max-height: 360px;
@@ -72,26 +72,26 @@ export function createHistoryPopover(callbacks: HistoryPopoverCallbacks): Histor
         transition: opacity 0.15s ease, visibility 0.15s ease;
         pointer-events: auto;
       }
-      #${POPOVER_ID}.pointgrab-popover-visible {
+      #${POPOVER_ID}.point-grab-popover-visible {
         opacity: 1;
         visibility: visible;
       }
-      #${POPOVER_ID} .pointgrab-history-header {
+      #${POPOVER_ID} .point-grab-history-header {
         padding: 10px 14px 8px;
         font-size: 11px;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.05em;
-        color: var(--pointgrab-text-muted, #64748b);
-        border-bottom: 1px solid var(--pointgrab-popover-border, #1e293b);
+        color: var(--point-grab-text-muted, #64748b);
+        border-bottom: 1px solid var(--point-grab-popover-border, #1e293b);
       }
-      #${POPOVER_ID} .pointgrab-history-empty {
+      #${POPOVER_ID} .point-grab-history-empty {
         padding: 24px 14px;
         text-align: center;
-        color: var(--pointgrab-text-muted, #64748b);
+        color: var(--point-grab-text-muted, #64748b);
         font-size: 13px;
       }
-      #${POPOVER_ID} .pointgrab-history-item {
+      #${POPOVER_ID} .point-grab-history-item {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -99,7 +99,7 @@ export function createHistoryPopover(callbacks: HistoryPopoverCallbacks): Histor
         padding: 8px 14px;
         cursor: pointer;
         border: none;
-        border-bottom: 1px solid var(--pointgrab-popover-border, #1e293b);
+        border-bottom: 1px solid var(--point-grab-popover-border, #1e293b);
         background: transparent;
         width: 100%;
         text-align: left;
@@ -107,43 +107,43 @@ export function createHistoryPopover(callbacks: HistoryPopoverCallbacks): Histor
         color: inherit;
         transition: background 0.1s ease;
       }
-      #${POPOVER_ID} .pointgrab-history-item:last-child {
+      #${POPOVER_ID} .point-grab-history-item:last-child {
         border-bottom: none;
       }
-      #${POPOVER_ID} .pointgrab-history-item:hover {
-        background: var(--pointgrab-popover-hover, #1e293b);
+      #${POPOVER_ID} .point-grab-history-item:hover {
+        background: var(--point-grab-popover-hover, #1e293b);
       }
-      #${POPOVER_ID} .pointgrab-history-info {
+      #${POPOVER_ID} .point-grab-history-info {
         flex: 1;
         min-width: 0;
       }
-      #${POPOVER_ID} .pointgrab-history-selector {
+      #${POPOVER_ID} .point-grab-history-selector {
         font: 12px/1.3 ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
-        color: var(--pointgrab-popover-text, #e2e8f0);
+        color: var(--point-grab-popover-text, #e2e8f0);
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
       }
-      #${POPOVER_ID} .pointgrab-history-meta {
+      #${POPOVER_ID} .point-grab-history-meta {
         font-size: 11px;
-        color: var(--pointgrab-text-muted, #64748b);
+        color: var(--point-grab-text-muted, #64748b);
         margin-top: 2px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
       }
-      #${POPOVER_ID} .pointgrab-history-time {
+      #${POPOVER_ID} .point-grab-history-time {
         font-size: 11px;
-        color: var(--pointgrab-text-muted, #64748b);
+        color: var(--point-grab-text-muted, #64748b);
         flex-shrink: 0;
       }
-      #${POPOVER_ID} .pointgrab-history-file-link {
-        color: var(--pointgrab-text-muted, #64748b);
+      #${POPOVER_ID} .point-grab-history-file-link {
+        color: var(--point-grab-text-muted, #64748b);
         text-decoration: none;
       }
-      #${POPOVER_ID} .pointgrab-history-file-link:hover {
+      #${POPOVER_ID} .point-grab-history-file-link:hover {
         text-decoration: underline;
-        color: var(--pointgrab-accent, #3b82f6);
+        color: var(--point-grab-accent, #3b82f6);
       }
     `;
     document.head.appendChild(style);
@@ -164,10 +164,10 @@ export function createHistoryPopover(callbacks: HistoryPopoverCallbacks): Histor
   function render(entries: HistoryEntry[]): void {
     const el = ensurePopover();
 
-    let html = '<div class="pointgrab-history-header">History</div>';
+    let html = '<div class="point-grab-history-header">History</div>';
 
     if (entries.length === 0) {
-      html += '<div class="pointgrab-history-empty">No elements inspected yet</div>';
+      html += '<div class="point-grab-history-empty">No elements inspected yet</div>';
     } else {
       for (const entry of entries) {
         const selector = escapeHtml(entry.context.selector);
@@ -178,15 +178,15 @@ export function createHistoryPopover(callbacks: HistoryPopoverCallbacks): Histor
           const uri = buildVsCodeUri(entry.context.filePath, entry.context.line, entry.context.column);
           const fileName = escapeHtml(shortPath(entry.context.filePath));
           const sep = meta ? ' — ' : '';
-          meta += `${sep}<a class="pointgrab-history-file-link" href="${escapeHtml(uri)}" title="Open in VS Code">${fileName}</a>`;
+          meta += `${sep}<a class="point-grab-history-file-link" href="${escapeHtml(uri)}" title="Open in VS Code">${fileName}</a>`;
         }
 
-        html += `<button class="pointgrab-history-item" data-pointgrab-history-id="${escapeHtml(entry.id)}" aria-label="Re-copy ${selector}">`;
-        html += `<div class="pointgrab-history-info">`;
-        html += `<div class="pointgrab-history-selector">${selector}</div>`;
-        if (meta) html += `<div class="pointgrab-history-meta">${meta}</div>`;
+        html += `<button class="point-grab-history-item" data-point-grab-history-id="${escapeHtml(entry.id)}" aria-label="Re-copy ${selector}">`;
+        html += `<div class="point-grab-history-info">`;
+        html += `<div class="point-grab-history-selector">${selector}</div>`;
+        if (meta) html += `<div class="point-grab-history-meta">${meta}</div>`;
         html += `</div>`;
-        html += `<span class="pointgrab-history-time">${time}</span>`;
+        html += `<span class="point-grab-history-time">${time}</span>`;
         html += `</button>`;
       }
     }
@@ -194,7 +194,7 @@ export function createHistoryPopover(callbacks: HistoryPopoverCallbacks): Histor
     el.innerHTML = html;
 
     // Attach click handlers
-    const items = el.querySelectorAll('.pointgrab-history-item');
+    const items = el.querySelectorAll('.point-grab-history-item');
     items.forEach((item) => {
       item.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -213,12 +213,12 @@ export function createHistoryPopover(callbacks: HistoryPopoverCallbacks): Histor
       visible = true;
       // Force reflow for transition
       void ensurePopover().offsetHeight;
-      ensurePopover().classList.add('pointgrab-popover-visible');
+      ensurePopover().classList.add('point-grab-popover-visible');
     },
 
     hide(): void {
       visible = false;
-      popover?.classList.remove('pointgrab-popover-visible');
+      popover?.classList.remove('point-grab-popover-visible');
     },
 
     isVisible(): boolean {

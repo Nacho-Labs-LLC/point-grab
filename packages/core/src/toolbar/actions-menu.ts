@@ -59,10 +59,10 @@ export function createActionsMenu(callbacks: ActionsMenuCallbacks): ActionsMenu 
         left: 50%;
         transform: translateX(-50%);
         z-index: ${Z_INDEX_POPOVER};
-        background: var(--pointgrab-popover-bg, #0f172a);
-        border: 1px solid var(--pointgrab-popover-border, #1e293b);
+        background: var(--point-grab-popover-bg, #0f172a);
+        border: 1px solid var(--point-grab-popover-border, #1e293b);
         border-radius: 10px;
-        box-shadow: 0 8px 24px var(--pointgrab-popover-shadow, rgba(0, 0, 0, 0.5));
+        box-shadow: 0 8px 24px var(--point-grab-popover-shadow, rgba(0, 0, 0, 0.5));
         min-width: 200px;
         padding: 4px;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -71,11 +71,11 @@ export function createActionsMenu(callbacks: ActionsMenuCallbacks): ActionsMenu 
         transition: opacity 0.15s ease, visibility 0.15s ease;
         pointer-events: auto;
       }
-      #${MENU_ID}.pointgrab-menu-visible {
+      #${MENU_ID}.point-grab-menu-visible {
         opacity: 1;
         visibility: visible;
       }
-      #${MENU_ID} .pointgrab-menu-item {
+      #${MENU_ID} .point-grab-menu-item {
         display: flex;
         align-items: center;
         gap: 10px;
@@ -83,23 +83,23 @@ export function createActionsMenu(callbacks: ActionsMenuCallbacks): ActionsMenu 
         border: none;
         border-radius: 6px;
         background: transparent;
-        color: var(--pointgrab-popover-text, #e2e8f0);
+        color: var(--point-grab-popover-text, #e2e8f0);
         font-size: 13px;
         cursor: pointer;
         width: 100%;
         text-align: left;
         transition: background 0.1s ease;
       }
-      #${MENU_ID} .pointgrab-menu-item:hover {
-        background: var(--pointgrab-popover-hover, #1e293b);
+      #${MENU_ID} .point-grab-menu-item:hover {
+        background: var(--point-grab-popover-hover, #1e293b);
       }
-      #${MENU_ID} .pointgrab-menu-item svg {
+      #${MENU_ID} .point-grab-menu-item svg {
         flex-shrink: 0;
         opacity: 0.7;
       }
-      #${MENU_ID} .pointgrab-menu-sep {
+      #${MENU_ID} .point-grab-menu-sep {
         height: 1px;
-        background: var(--pointgrab-popover-border, #1e293b);
+        background: var(--point-grab-popover-border, #1e293b);
         margin: 4px 8px;
       }
     `;
@@ -118,20 +118,20 @@ export function createActionsMenu(callbacks: ActionsMenuCallbacks): ActionsMenu 
     for (const entry of items) {
       if (entry.separator) {
         const sep = document.createElement('div');
-        sep.className = 'pointgrab-menu-sep';
+        sep.className = 'point-grab-menu-sep';
         menu.appendChild(sep);
         continue;
       }
 
       const btn = document.createElement('button');
-      btn.className = 'pointgrab-menu-item';
+      btn.className = 'point-grab-menu-item';
       btn.setAttribute('role', 'menuitem');
       btn.innerHTML = `${entry.icon}<span>${escapeHtml(entry.label)}</span>`;
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
         visible = false;
-        menu?.classList.remove('pointgrab-menu-visible');
+        menu?.classList.remove('point-grab-menu-visible');
         entry.action();
       });
       menu.appendChild(btn);
@@ -146,12 +146,12 @@ export function createActionsMenu(callbacks: ActionsMenuCallbacks): ActionsMenu 
       const el = ensureMenu();
       visible = true;
       void el.offsetHeight;
-      el.classList.add('pointgrab-menu-visible');
+      el.classList.add('point-grab-menu-visible');
     },
 
     hide(): void {
       visible = false;
-      menu?.classList.remove('pointgrab-menu-visible');
+      menu?.classList.remove('point-grab-menu-visible');
     },
 
     isVisible(): boolean {
