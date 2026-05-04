@@ -18,6 +18,7 @@ export interface ElementPickerDeps {
   getClassFilters?: () => ClassFilter[];
   isToolbarElement?: (el: Element) => boolean;
   getFreezeElement?: () => HTMLElement | null;
+  getElementFromPoint?: () => ((x: number, y: number) => Element | null) | null;
   onHover: (element: Element | null) => void;
   onSelect: (element: Element) => void;
 }
@@ -52,7 +53,8 @@ export function createElementPicker(deps: ElementPickerDeps): ElementPicker {
     // Temporarily hide freeze overlay so elementFromPoint can see through it
     const freezeEl = deps.getFreezeElement?.();
     if (freezeEl) freezeEl.style.pointerEvents = 'none';
-    const target = document.elementFromPoint(x, y);
+    const customFn = deps.getElementFromPoint?.();
+    const target = customFn ? customFn(x, y) : document.elementFromPoint(x, y);
     if (freezeEl) freezeEl.style.pointerEvents = 'auto';
     return target;
   }

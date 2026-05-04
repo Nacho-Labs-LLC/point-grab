@@ -93,6 +93,7 @@ export function createNoopApi(): PointGrabAPI {
     unregisterPlugin: noop,
     setComponentResolver: noop,
     setSourceResolver: noop,
+    setElementFromPoint: noop,
     showToolbar: noop,
     hideToolbar: noop,
     setThemeMode: noop,
@@ -119,6 +120,7 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
 
   let componentResolver: ComponentResolver | null = null;
   let sourceResolver: SourceResolver | null = null;
+  let elementFromPointFn: ((x: number, y: number) => Element | null) | null = null;
 
   // Per-instance state for last selected element (not in store to avoid serialization issues)
   let lastSelectedElement: WeakRef<Element> | null = null;
@@ -227,6 +229,7 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
     getClassFilters: () => store.state.options.classFilters,
     isToolbarElement: isAnyToolbarElement,
     getFreezeElement: () => freezeOverlay.getElement(),
+    getElementFromPoint: () => elementFromPointFn,
     onHover(element) {
       store.state.hoveredElement = element;
       if (element) {
@@ -598,6 +601,10 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
 
     setSourceResolver(resolver: SourceResolver): void {
       sourceResolver = resolver;
+    },
+
+    setElementFromPoint(fn: (x: number, y: number) => Element | null): void {
+      elementFromPointFn = fn;
     },
 
     showToolbar(): void {

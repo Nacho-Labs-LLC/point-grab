@@ -155,6 +155,7 @@ export interface PointGrabAPI {
   unregisterPlugin(name: string): void;
   setComponentResolver(resolver: ComponentResolver): void;
   setSourceResolver(resolver: SourceResolver): void;
+  setElementFromPoint(fn: (x: number, y: number) => Element | null): void;
   showToolbar(): void;
   hideToolbar(): void;
   setThemeMode(mode: ThemeMode): void;

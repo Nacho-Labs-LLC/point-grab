@@ -3,6 +3,7 @@ import type { PointGrabAPI, PointGrabOptions, Plugin } from 'pointgrab';
 import { resolveComponent } from './resolvers/component-resolver';
 import { resolveSource } from './resolvers/source-resolver';
 import { wcClassFilter, wcHtmlCleaners } from './filters';
+import { deepElementFromPoint } from './shadow-dom';
 
 let instance: PointGrabAPI | null = null;
 
@@ -23,6 +24,7 @@ export function initPointGrabWebComponents(options?: Partial<PointGrabOptions>):
   instance = init(options);
   instance.setComponentResolver((el) => resolveComponent(el));
   instance.setSourceResolver((el) => resolveSource(el));
+  instance.setElementFromPoint(deepElementFromPoint);
   instance.setOptions({
     classFilters: [wcClassFilter],
     htmlCleaners: wcHtmlCleaners,
