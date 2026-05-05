@@ -2,8 +2,8 @@ import type { HistoryEntry } from '../types';
 import { escapeHtml } from '../utils';
 import { Z_INDEX_POPOVER, TOOLBAR_POPOVER_OFFSET } from '../constants';
 
-const POPOVER_ID = '__pointgrab-history-popover__';
-const STYLE_ID = '__pointgrab-history-styles__';
+const POPOVER_ID = '__point-grab-history-popover__';
+const STYLE_ID = '__point-grab-history-styles__';
 
 export interface HistoryPopover {
   show(entries: HistoryEntry[]): void;
@@ -198,7 +198,7 @@ export function createHistoryPopover(callbacks: HistoryPopoverCallbacks): Histor
     items.forEach((item) => {
       item.addEventListener('click', (e) => {
         e.stopPropagation();
-        const id = (item as HTMLElement).dataset.pointgrabHistoryId;
+        const id = (item as HTMLElement).dataset.pointGrabHistoryId;
         const entry = entries.find((ent) => ent.id === id);
         if (entry) {
           callbacks.onEntryClick(entry);

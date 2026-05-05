@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { point-grab } from '@point-grab/svelte';
+  import { pointGrab } from '@point-grab/svelte';
   import './app.css';
 
   let progress = $state(0);
@@ -38,7 +38,7 @@
   });
 </script>
 
-<div use:point-grab={{ activationMode: 'hold' }}>
+<div use:pointGrab={{ activationMode: 'hold' }}>
   <header class="header">
     <h1>point-grab — Svelte Example</h1>
     <p>

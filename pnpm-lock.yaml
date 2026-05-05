@@ -18,11 +18,11 @@ importers:
   examples/react:
     dependencies:
       '@point-grab/core':
-        specifier: ^0.1.0
-        version: 0.1.3
+        specifier: workspace:*
+        version: link:../../packages/core
       '@point-grab/react':
-        specifier: ^0.1.0
-        version: 0.1.2(pointgrab@0.1.2)(react@18.3.1)
+        specifier: workspace:*
+        version: link:../../packages/react
       react:
         specifier: ^18.3.0
         version: 18.3.1
@@ -40,11 +40,11 @@ importers:
   examples/svelte:
     dependencies:
       '@point-grab/core':
-        specifier: ^0.1.0
-        version: 0.1.3
+        specifier: workspace:*
+        version: link:../../packages/core
       '@point-grab/svelte':
-        specifier: ^0.1.0
-        version: 0.1.2(pointgrab@0.1.2)(svelte@5.55.5)
+        specifier: workspace:*
+        version: link:../../packages/svelte
       svelte:
         specifier: ^5.0.0
         version: 5.55.5
@@ -59,8 +59,8 @@ importers:
   examples/vanilla:
     dependencies:
       '@point-grab/core':
-        specifier: ^0.1.0
-        version: 0.1.3
+        specifier: workspace:*
+        version: link:../../packages/core
     devDependencies:
       vite:
         specifier: ^6.0.0
@@ -69,11 +69,11 @@ importers:
   examples/vue:
     dependencies:
       '@point-grab/core':
-        specifier: ^0.1.0
-        version: 0.1.3
+        specifier: workspace:*
+        version: link:../../packages/core
       '@point-grab/vue':
-        specifier: ^0.1.0
-        version: 0.1.2(pointgrab@0.1.2)(vue@3.5.33(typescript@5.9.3))
+        specifier: workspace:*
+        version: link:../../packages/vue
       vue:
         specifier: ^3.5.0
         version: 3.5.33(typescript@5.9.3)
@@ -88,11 +88,11 @@ importers:
   examples/web-components:
     dependencies:
       '@point-grab/core':
-        specifier: ^0.1.0
-        version: 0.1.3
+        specifier: workspace:*
+        version: link:../../packages/core
       '@point-grab/web-components':
-        specifier: ^0.1.0
-        version: 0.1.2(pointgrab@0.1.2)
+        specifier: workspace:*
+        version: link:../../packages/web-components
     devDependencies:
       vite:
         specifier: ^6.0.0
@@ -1029,32 +1029,6 @@ packages:
 
   '@oslojs/encoding@1.1.0':
     resolution: {integrity: sha512-70wQhgYmndg4GCPxPPxPGevRKqTIJ2Nh4OkiMWmDAVYsTQ+Ta7Sq+rPevXyXGdzr30/qZBnyOalCszoMxlyldQ==}
-
-  '@point-grab/core@0.1.3':
-    resolution: {integrity: sha512-XisU5W0Ahae/gQC8Bua08p5hupuTlOxkPnjvcnKzqjALLKFSPve8nr9Ytoen0IYVU7s+a4gHCssdnr3pcOftRA==}
-
-  '@point-grab/react@0.1.2':
-    resolution: {integrity: sha512-mea4C9pe/h0xd1SIwAuc86/p6Tuf2GfacZuUbYXeALEyY2K2CTzb9KxMRtwnKAh/TLIuWi1+2NsvHwVCQf0oGg==}
-    peerDependencies:
-      pointgrab: 0.1.2
-      react: '>=18.0.0'
-
-  '@point-grab/svelte@0.1.2':
-    resolution: {integrity: sha512-clk3/26gCfhtCvQaKwb1G5Z3GZ/kO0Xy8/Wsh6PsaEegCagXHIBvTqehYLUWMZ4bo4ML5zOA2vSM4p+3lCiftQ==}
-    peerDependencies:
-      pointgrab: 0.1.2
-      svelte: '>=4.0.0'
-
-  '@point-grab/vue@0.1.2':
-    resolution: {integrity: sha512-yDZ2lBKrgaZm3S+I05A7XUlOKIbbLl8FUaY+o/Fc2iajzIbyS66cXMkbiW637kLEHQBDmaVcvmnlnuIeUX/iFg==}
-    peerDependencies:
-      pointgrab: 0.1.2
-      vue: '>=3.0.0'
-
-  '@point-grab/web-components@0.1.2':
-    resolution: {integrity: sha512-7/SaH3EvrhELWJM32mVPtw6zdF8zqEjtmUshHu8PVTt5cBxk1/PirXoUngoIBwmNoexZzKwRdhIf2gWNr/hxOw==}
-    peerDependencies:
-      pointgrab: 0.1.2
 
   '@rolldown/pluginutils@1.0.0-beta.27':
     resolution: {integrity: sha512-+d0F4MKMCbeVUJwG96uQ4SgAznZNSq93I3V+9NHA4OpvqG8mRCpGdKmK8l/dl02h2CCDHwW2FqilnTyDcAnqjA==}
@@ -2580,9 +2554,6 @@ packages:
   pkg-types@1.3.1:
     resolution: {integrity: sha512-/Jm5M4RvtBFVkKWRu2BLUTNP8/M2a+UwuAX+ae4770q1qVGtfjG+WTCupoZixokjmHiry8uI+dlY8KXYV5HVVQ==}
 
-  pointgrab@0.1.2:
-    resolution: {integrity: sha512-Stwr5mMbe6dA5N9HXNmw/lb25tmMm3wvlm6sCNI6OXC6NgYdbkT+rDY9vmJ5i+lgFOVlco8WLKQ/Fj/ji7twKw==}
-
   postcss-load-config@6.0.1:
     resolution: {integrity: sha512-oPtTM4oerL+UXmx+93ytZVN82RrlY/wPUV8IeDxFrzIjXOLF1pN+EmKPLbubvKHT2HC20xXsCAH2Z+CKV6Oz/g==}
     engines: {node: '>= 18'}
@@ -3925,27 +3896,6 @@ snapshots:
       - supports-color
 
   '@oslojs/encoding@1.1.0': {}
-
-  '@point-grab/core@0.1.3': {}
-
-  '@point-grab/react@0.1.2(pointgrab@0.1.2)(react@18.3.1)':
-    dependencies:
-      pointgrab: 0.1.2
-      react: 18.3.1
-
-  '@point-grab/svelte@0.1.2(pointgrab@0.1.2)(svelte@5.55.5)':
-    dependencies:
-      pointgrab: 0.1.2
-      svelte: 5.55.5
-
-  '@point-grab/vue@0.1.2(pointgrab@0.1.2)(vue@3.5.33(typescript@5.9.3))':
-    dependencies:
-      pointgrab: 0.1.2
-      vue: 3.5.33(typescript@5.9.3)
-
-  '@point-grab/web-components@0.1.2(pointgrab@0.1.2)':
-    dependencies:
-      pointgrab: 0.1.2
 
   '@rolldown/pluginutils@1.0.0-beta.27': {}
 
@@ -5744,8 +5694,6 @@ snapshots:
       confbox: 0.1.8
       mlly: 1.8.2
       pathe: 2.0.3
-
-  pointgrab@0.1.2: {}
 
   postcss-load-config@6.0.1(jiti@2.6.1)(postcss@8.5.13):
     dependencies:

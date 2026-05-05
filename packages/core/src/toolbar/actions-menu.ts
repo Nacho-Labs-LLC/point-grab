@@ -2,8 +2,8 @@ import { ICON_COPY, ICON_STYLES, ICON_CODE, ICON_COMMENT, ICON_TRASH } from './t
 import { escapeHtml } from '../utils';
 import { Z_INDEX_POPOVER, TOOLBAR_POPOVER_OFFSET } from '../constants';
 
-const MENU_ID = '__pointgrab-actions-menu__';
-const STYLE_ID = '__pointgrab-actions-styles__';
+const MENU_ID = '__point-grab-actions-menu__';
+const STYLE_ID = '__point-grab-actions-styles__';
 
 export interface ActionsMenuCallbacks {
   onCopyElement: () => void;

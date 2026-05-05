@@ -8,8 +8,8 @@
   },
   "dependencies": {
     "vue": "^3.5.0",
-    "@point-grab/core": "^0.1.0",
-    "@point-grab/vue": "^0.1.0"
+    "@point-grab/core": "workspace:*",
+    "@point-grab/vue": "workspace:*"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.0",

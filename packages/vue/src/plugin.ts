@@ -22,7 +22,7 @@ export const PointGrabPlugin: VuePlugin<Partial<PointGrabOptions> | undefined> =
     app.provide('$point-grab', api);
 
     // Clean up when the app unmounts
-    app.config.globalProperties.$pointgrabApi = api;
+    app.config.globalProperties.$pointGrabApi = api;
 
     const originalUnmount = app.unmount.bind(app);
     app.unmount = () => {

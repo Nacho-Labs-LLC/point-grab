@@ -18,14 +18,14 @@ pnpm run test
 
 This is a pnpm + Turborepo monorepo:
 
-- `packages/core` â€” Framework-agnostic core (`@point-grab/core` on npm)
-- `packages/angular` â€” Angular adapter
-- `packages/react` â€” React adapter
-- `packages/vue` â€” Vue adapter
-- `packages/svelte` â€” Svelte adapter
-- `packages/web-components` â€” Web Components adapter
-- `packages/mcp-server` â€” MCP server for AI agents
-- `site/` â€” Documentation site (Astro)
+- `packages/core` — Framework-agnostic core (`@point-grab/core` on npm)
+- `packages/angular` — Angular adapter
+- `packages/react` — React adapter
+- `packages/vue` — Vue adapter
+- `packages/svelte` — Svelte adapter
+- `packages/web-components` — Web Components adapter
+- `packages/mcp-server` — MCP server for AI agents
+- `site/` — Documentation site (Astro)
 
 ## Making Changes
 
@@ -36,7 +36,7 @@ This is a pnpm + Turborepo monorepo:
 
 ## Pull Requests
 
-- Keep PRs focused â€” one feature or fix per PR
+- Keep PRs focused — one feature or fix per PR
 - Include a clear description of what changed and why
 - Make sure the build and tests pass
 - Add tests for new functionality when applicable

@@ -1,8 +1,8 @@
 import { Z_INDEX_CROSSHAIR } from '../constants';
 
-const CROSSHAIR_STYLE_ID = '__pointgrab-crosshair-styles__';
-const H_LINE_ID = '__pointgrab-crosshair-h__';
-const V_LINE_ID = '__pointgrab-crosshair-v__';
+const CROSSHAIR_STYLE_ID = '__point-grab-crosshair-styles__';
+const H_LINE_ID = '__point-grab-crosshair-h__';
+const V_LINE_ID = '__point-grab-crosshair-v__';
 
 export interface Crosshair {
   activate(): void;

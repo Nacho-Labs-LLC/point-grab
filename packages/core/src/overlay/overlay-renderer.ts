@@ -1,8 +1,8 @@
 import { Z_INDEX_OVERLAY, Z_INDEX_LABEL } from '../constants';
 
-const OVERLAY_ID = '__pointgrab-overlay__';
-const LABEL_ID = '__pointgrab-label__';
-const STYLE_ID = '__pointgrab-styles__';
+const OVERLAY_ID = '__point-grab-overlay__';
+const LABEL_ID = '__point-grab-label__';
+const STYLE_ID = '__point-grab-styles__';
 
 export interface OverlayRenderer {
   show(element: Element, componentName: string | null, sourcePath?: string | null, cssClasses?: string[]): void;

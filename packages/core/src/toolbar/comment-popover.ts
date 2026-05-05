@@ -1,7 +1,7 @@
 import { Z_INDEX_POPOVER, TOOLBAR_POPOVER_OFFSET } from '../constants';
 
-const POPOVER_ID = '__pointgrab-comment-popover__';
-const STYLE_ID = '__pointgrab-comment-styles__';
+const POPOVER_ID = '__point-grab-comment-popover__';
+const STYLE_ID = '__point-grab-comment-styles__';
 
 export interface CommentPopover {
   show(mode?: 'single' | 'multi'): void;

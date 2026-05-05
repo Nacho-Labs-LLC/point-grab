@@ -1,9 +1,9 @@
 import { Z_INDEX_FREEZE } from '../constants';
 
-const FREEZE_ID = '__pointgrab-freeze-overlay__';
-const FREEZE_STYLE_ID = '__pointgrab-freeze-styles__';
-const HOVER_STYLE_ID = '__pointgrab-freeze-hover-styles__';
-const ANIM_STYLE_ID = '__pointgrab-freeze-anim-styles__';
+const FREEZE_ID = '__point-grab-freeze-overlay__';
+const FREEZE_STYLE_ID = '__point-grab-freeze-styles__';
+const HOVER_STYLE_ID = '__point-grab-freeze-hover-styles__';
+const ANIM_STYLE_ID = '__point-grab-freeze-anim-styles__';
 const HOVER_ATTR = 'data-point-grab-hover';
 
 /**
@@ -192,12 +192,12 @@ export function createFreezeOverlay(): FreezeOverlay {
   function isPointGrabNode(node: Node): boolean {
     if (node instanceof HTMLElement) {
       const id = node.id || '';
-      if (id.startsWith('__pointgrab')) return true;
+      if (id.startsWith('__point-grab-')) return true;
     }
     // Walk up to check if the mutation target is inside a point-grab element
     let current: Node | null = node;
     while (current) {
-      if (current instanceof HTMLElement && (current.id || '').startsWith('__pointgrab')) return true;
+      if (current instanceof HTMLElement && (current.id || '').startsWith('__point-grab-')) return true;
       current = current.parentNode;
     }
     return false;

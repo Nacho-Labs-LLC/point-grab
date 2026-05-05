@@ -1,6 +1,6 @@
 import { Z_INDEX_OVERLAY, Z_INDEX_LABEL } from '../constants';
 
-const STYLE_ID = '__pointgrab-feedback-styles__';
+const STYLE_ID = '__point-grab-feedback-styles__';
 
 function injectStyles(): void {
   if (document.getElementById(STYLE_ID)) return;

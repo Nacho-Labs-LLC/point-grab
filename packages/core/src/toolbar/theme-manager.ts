@@ -1,7 +1,7 @@
 import type { ThemeMode, Theme } from '../types';
 
-const STYLE_ID = '__pointgrab-theme-vars__';
-const OVERRIDE_STYLE_ID = '__pointgrab-theme-overrides__';
+const STYLE_ID = '__point-grab-theme-vars__';
+const OVERRIDE_STYLE_ID = '__point-grab-theme-overrides__';
 
 const DARK_VARS = `
   :root {

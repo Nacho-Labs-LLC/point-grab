@@ -2,8 +2,8 @@ import type { PointGrabState } from '../store';
 import { Z_INDEX_TOOLBAR } from '../constants';
 import { ICON_GRAB, ICON_HISTORY, ICON_ELLIPSIS, ICON_FREEZE, ICON_SUN, ICON_MOON, ICON_SYSTEM, ICON_POWER, ICON_DISMISS, ICON_COPY } from './toolbar-icons';
 
-const TOOLBAR_ID = '__pointgrab-toolbar__';
-const STYLE_ID = '__pointgrab-toolbar-styles__';
+const TOOLBAR_ID = '__point-grab-toolbar__';
+const STYLE_ID = '__point-grab-toolbar-styles__';
 
 export interface ToolbarCallbacks {
   onSelectionMode: () => void;

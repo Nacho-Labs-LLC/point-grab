@@ -1,8 +1,8 @@
 import { escapeHtml } from '../utils';
 import { Z_INDEX_TOAST } from '../constants';
 
-const TOAST_ID = '__pointgrab-toast__';
-const TOAST_STYLE_ID = '__pointgrab-toast-styles__';
+const TOAST_ID = '__point-grab-toast__';
+const TOAST_STYLE_ID = '__point-grab-toast-styles__';
 
 // Note: toast state is shared across instances (module-level singleton)
 let activeTimer: ReturnType<typeof setTimeout> | null = null;

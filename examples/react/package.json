@@ -9,8 +9,8 @@
   "dependencies": {
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
-    "@point-grab/core": "^0.1.0",
-    "@point-grab/react": "^0.1.0"
+    "@point-grab/core": "workspace:*",
+    "@point-grab/react": "workspace:*"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.0",
