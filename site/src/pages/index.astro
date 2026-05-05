@@ -7,11 +7,11 @@ import FrameworkIcon from "../components/FrameworkIcon.astro";
 import LiveDemo from "../components/LiveDemo.astro";
 ---
 
-<Base title="point-grab — Point at any element. Grab its full context.">
+<Base title="point-grab â€” Point at any element. Grab its full context.">
 
-  <!-- ═══════════════════════════════════════════
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
        HERO
-       ═══════════════════════════════════════════ -->
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
   <section class="relative overflow-hidden px-6 pb-24 pt-24 sm:pt-32 lg:pt-40">
     <!-- Radial glow -->
     <div
@@ -30,13 +30,13 @@ import LiveDemo from "../components/LiveDemo.astro";
         </h1>
 
         <p class="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-text-muted sm:text-xl">
-          Your AI agent can't see your screen. Point at the element, grab its full context — HTML, component name, source file, line number — and hand it over. Works with every framework.
+          Your AI agent can't see your screen. Point at the element, grab its full context â€” HTML, component name, source file, line number â€” and hand it over. Works with every framework.
         </p>
 
         <div class="mt-10 flex flex-col items-center gap-4 sm:flex-row">
           <CopyButton
-            text="npm install point-grab"
-            label="npm install point-grab"
+            text="npm install @point-grab/core"
+            label="npm install @point-grab/core"
             class="shadow-[var(--shadow-glow-blue)] hover:shadow-[var(--shadow-glow-blue-strong)] border-point-grab-blue/50 hover:border-point-grab-blue"
           />
           <a
@@ -58,9 +58,9 @@ import LiveDemo from "../components/LiveDemo.astro";
     </div>
   </section>
 
-  <!-- ═══════════════════════════════════════════
-       THE PROBLEM — WITHOUT vs WITH
-       ═══════════════════════════════════════════ -->
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       THE PROBLEM â€” WITHOUT vs WITH
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
   <Section id="features" background="raised">
     <div class="text-center">
       <Badge variant="amber" class="mb-4">The problem</Badge>
@@ -85,7 +85,7 @@ import LiveDemo from "../components/LiveDemo.astro";
             <span class="text-xs font-semibold uppercase tracking-wider text-text-faint">Without point-grab</span>
           </div>
           <div class="space-y-3 text-sm text-text-muted">
-            <p class="italic">"The submit button in the checkout form is broken — it's the blue one near the bottom"</p>
+            <p class="italic">"The submit button in the checkout form is broken â€” it's the blue one near the bottom"</p>
             <p class="italic">"Something's wrong with the sidebar, the third item from the top"</p>
             <p class="italic">"The loading spinner on the dashboard keeps showing"</p>
           </div>
@@ -114,9 +114,9 @@ import LiveDemo from "../components/LiveDemo.astro";
     </div>
   </Section>
 
-  <!-- ═══════════════════════════════════════════
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
        HOW IT WORKS
-       ═══════════════════════════════════════════ -->
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
   <Section>
     <div class="text-center">
       <Badge variant="blue" class="mb-4">How it works</Badge>
@@ -164,7 +164,7 @@ import LiveDemo from "../components/LiveDemo.astro";
           </div>
         </div>
         <p class="text-sm leading-relaxed text-text-muted">
-          Click to capture. Cleaned HTML, CSS selector, component ancestry, source file with line number — all on your clipboard instantly.
+          Click to capture. Cleaned HTML, CSS selector, component ancestry, source file with line number â€” all on your clipboard instantly.
         </p>
       </div>
 
@@ -183,15 +183,15 @@ import LiveDemo from "../components/LiveDemo.astro";
           </div>
         </div>
         <p class="text-sm leading-relaxed text-text-muted">
-          Paste into Claude Code, Cursor, or Windsurf. Or connect the MCP server and let your agent query grabs directly — no paste needed.
+          Paste into Claude Code, Cursor, or Windsurf. Or connect the MCP server and let your agent query grabs directly â€” no paste needed.
         </p>
       </div>
     </div>
   </Section>
 
-  <!-- ═══════════════════════════════════════════
-       COMMENT MODE — THE KILLER FEATURE
-       ═══════════════════════════════════════════ -->
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+       COMMENT MODE â€” THE KILLER FEATURE
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
   <Section id="comment-mode" background="raised">
     <div class="text-center">
       <Badge variant="amber" class="mb-4">Comment mode</Badge>
@@ -199,7 +199,7 @@ import LiveDemo from "../components/LiveDemo.astro";
         Point at a bug. Tell your agent what to fix.
       </h2>
       <p class="mx-auto mt-4 max-w-2xl text-lg text-text-muted">
-        Don't just capture what's there — attach natural language instructions directly to any element. Your agent gets the context <em>and</em> your intent in one payload.
+        Don't just capture what's there â€” attach natural language instructions directly to any element. Your agent gets the context <em>and</em> your intent in one payload.
       </p>
     </div>
 
@@ -222,7 +222,7 @@ import LiveDemo from "../components/LiveDemo.astro";
 <span class="text-text-faint">&lt;/</span><span class="text-point-grab-blue">button</span><span class="text-text-faint">&gt;</span>
 
 <span class="text-text-faint">in</span> <span class="text-[#a78bfa]">SubmitButton</span> <span class="text-text-faint">at</span> <span class="text-text-muted">src/components/SubmitButton.tsx</span><span class="text-text-faint">:</span><span class="text-amber">24</span></code></pre>
-          <p class="mt-3 text-xs text-text-faint">Your agent has the element — but not your intent.</p>
+          <p class="mt-3 text-xs text-text-faint">Your agent has the element â€” but not your intent.</p>
         </div>
 
         <!-- With comment -->
@@ -260,7 +260,7 @@ import LiveDemo from "../components/LiveDemo.astro";
           <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-point-grab-blue/10 text-xs font-bold text-point-grab-blue">2</div>
           <div>
             <div class="text-sm font-medium text-text-heading">Type your instruction</div>
-            <p class="mt-1 text-xs text-text-faint">Natural language — "fix this", "make it responsive", "add a loading state"</p>
+            <p class="mt-1 text-xs text-text-faint">Natural language â€” "fix this", "make it responsive", "add a loading state"</p>
           </div>
         </div>
         <div class="flex items-start gap-3 rounded-lg border border-border bg-bg p-4">
@@ -274,9 +274,9 @@ import LiveDemo from "../components/LiveDemo.astro";
     </div>
   </Section>
 
-  <!-- ═══════════════════════════════════════════
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
        WHAT YOUR AGENT SEES
-       ═══════════════════════════════════════════ -->
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
   <Section>
     <div class="text-center">
       <Badge variant="amber" class="mb-4">Output</Badge>
@@ -310,7 +310,7 @@ import LiveDemo from "../components/LiveDemo.astro";
       <div class="mt-8 grid gap-4 sm:grid-cols-3">
         <div class="rounded-lg border border-border bg-bg p-4">
           <div class="mb-1 text-xs font-semibold uppercase tracking-wider text-point-grab-blue">Cleaned HTML</div>
-          <p class="text-sm text-text-muted">Framework attributes stripped automatically. <code class="text-text-faint">_nghost-*</code>, <code class="text-text-faint">data-v-*</code>, <code class="text-text-faint">data-reactid</code> — gone.</p>
+          <p class="text-sm text-text-muted">Framework attributes stripped automatically. <code class="text-text-faint">_nghost-*</code>, <code class="text-text-faint">data-v-*</code>, <code class="text-text-faint">data-reactid</code> â€” gone.</p>
         </div>
         <div class="rounded-lg border border-border bg-bg p-4">
           <div class="mb-1 text-xs font-semibold uppercase tracking-wider text-[#a78bfa]">Component + Source</div>
@@ -324,9 +324,9 @@ import LiveDemo from "../components/LiveDemo.astro";
     </div>
   </Section>
 
-  <!-- ═══════════════════════════════════════════
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
        MCP INTEGRATION
-       ═══════════════════════════════════════════ -->
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
   <Section id="mcp" background="raised">
     <div class="text-center">
       <Badge variant="amber" class="mb-4">MCP Integration</Badge>
@@ -334,7 +334,7 @@ import LiveDemo from "../components/LiveDemo.astro";
         Your agent queries. You don't paste.
       </h2>
       <p class="mx-auto mt-4 max-w-2xl text-lg text-text-muted">
-        Connect the MCP server and every grab is instantly searchable by your AI agent. Claude Code, Cursor, Windsurf — anything that speaks MCP.
+        Connect the MCP server and every grab is instantly searchable by your AI agent. Claude Code, Cursor, Windsurf â€” anything that speaks MCP.
       </p>
     </div>
 
@@ -350,19 +350,19 @@ import LiveDemo from "../components/LiveDemo.astro";
       <div class="grid gap-3">
         <div class="flex items-start gap-4 rounded-lg border border-border bg-bg p-4">
           <code class="shrink-0 rounded bg-bg-muted px-2 py-1 text-sm text-point-grab-blue">point_grab_search</code>
-          <p class="text-sm text-text-muted">"Find the button I just clicked" — search by text, component, file, or framework</p>
+          <p class="text-sm text-text-muted">"Find the button I just clicked" â€” search by text, component, file, or framework</p>
         </div>
         <div class="flex items-start gap-4 rounded-lg border border-border bg-bg p-4">
           <code class="shrink-0 rounded bg-bg-muted px-2 py-1 text-sm text-point-grab-blue">point_grab_recent</code>
-          <p class="text-sm text-text-muted">Get the latest grabs from your session — your agent sees what you just pointed at</p>
+          <p class="text-sm text-text-muted">Get the latest grabs from your session â€” your agent sees what you just pointed at</p>
         </div>
         <div class="flex items-start gap-4 rounded-lg border border-border bg-bg p-4">
           <code class="shrink-0 rounded bg-bg-muted px-2 py-1 text-sm text-point-grab-blue">point_grab_get</code>
-          <p class="text-sm text-text-muted">Full context for a specific grab — HTML, selector, component stack, source location</p>
+          <p class="text-sm text-text-muted">Full context for a specific grab â€” HTML, selector, component stack, source location</p>
         </div>
         <div class="flex items-start gap-4 rounded-lg border border-border bg-bg p-4">
           <code class="shrink-0 rounded bg-bg-muted px-2 py-1 text-sm text-point-grab-blue">point_grab_stats</code>
-          <p class="text-sm text-text-muted">Session stats — total grabs, unique components, unique files, framework breakdown</p>
+          <p class="text-sm text-text-muted">Session stats â€” total grabs, unique components, unique files, framework breakdown</p>
         </div>
       </div>
 
@@ -380,9 +380,9 @@ import LiveDemo from "../components/LiveDemo.astro";
     </div>
   </Section>
 
-  <!-- ═══════════════════════════════════════════
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
        FRAMEWORK SHOWCASE
-       ═══════════════════════════════════════════ -->
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
   <Section id="frameworks">
     <div class="text-center">
       <Badge variant="blue" class="mb-4">Frameworks</Badge>
@@ -390,7 +390,7 @@ import LiveDemo from "../components/LiveDemo.astro";
         Every framework. One tool.
       </h2>
       <p class="mx-auto mt-4 max-w-2xl text-lg text-text-muted">
-        Framework adapters add rich metadata — component names, source file paths, ancestor chains — on top of the core inspector. Or skip the adapter and use the core package anywhere.
+        Framework adapters add rich metadata â€” component names, source file paths, ancestor chains â€” on top of the core inspector. Or skip the adapter and use the core package anywhere.
       </p>
     </div>
 
@@ -408,7 +408,7 @@ import LiveDemo from "../components/LiveDemo.astro";
           Reads the component tree via <code class="text-text-faint">window.ng</code> for component names, template references, and source locations.
         </p>
         <a href="/docs/install#angular" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
-          Get started →
+          Get started â†’
         </a>
       </div>
 
@@ -504,9 +504,9 @@ import LiveDemo from "../components/LiveDemo.astro";
     </div>
   </Section>
 
-  <!-- ═══════════════════════════════════════════
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
        QUICK START
-       ═══════════════════════════════════════════ -->
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
   <Section background="raised">
     <div class="text-center">
       <Badge variant="blue" class="mb-4">Quick start</Badge>
@@ -535,7 +535,7 @@ import LiveDemo from "../components/LiveDemo.astro";
             </div>
             <pre class="overflow-x-auto p-6 text-sm leading-relaxed"><code><span class="text-text-faint">&lt;</span><span class="text-point-grab-blue">script</span> <span class="text-amber">src</span><span class="text-text-faint">=</span><span class="text-success">"https://unpkg.com/point-grab/dist/global.js"</span><span class="text-text-faint">&gt;&lt;/</span><span class="text-point-grab-blue">script</span><span class="text-text-faint">&gt;</span></code></pre>
           </div>
-          <p class="mt-3 text-xs text-text-faint">That's it. One script tag. The IIFE bundle auto-initializes — hold <kbd class="rounded border border-border bg-bg-muted px-1 py-0.5 text-[10px] text-text-muted">&#8984;C</kbd> and hover.</p>
+          <p class="mt-3 text-xs text-text-faint">That's it. One script tag. The IIFE bundle auto-initializes â€” hold <kbd class="rounded border border-border bg-bg-muted px-1 py-0.5 text-[10px] text-text-muted">&#8984;C</kbd> and hover.</p>
         </div>
 
         <!-- React -->
@@ -544,7 +544,7 @@ import LiveDemo from "../components/LiveDemo.astro";
             <div class="border-b border-border px-4 py-2.5">
               <span class="text-xs text-text-faint">terminal</span>
             </div>
-            <pre class="overflow-x-auto border-b border-border p-4 text-sm"><code><span class="text-text-faint">$</span> <span class="text-text">npm install point-grab @point-grab/react</span></code></pre>
+            <pre class="overflow-x-auto border-b border-border p-4 text-sm"><code><span class="text-text-faint">$</span> <span class="text-text">npm install @point-grab/core @point-grab/react</span></code></pre>
             <div class="border-b border-border px-4 py-2.5">
               <span class="text-xs text-text-faint">App.tsx</span>
             </div>
@@ -563,7 +563,7 @@ import LiveDemo from "../components/LiveDemo.astro";
             <div class="border-b border-border px-4 py-2.5">
               <span class="text-xs text-text-faint">terminal</span>
             </div>
-            <pre class="overflow-x-auto border-b border-border p-4 text-sm"><code><span class="text-text-faint">$</span> <span class="text-text">npm install point-grab @point-grab/angular</span></code></pre>
+            <pre class="overflow-x-auto border-b border-border p-4 text-sm"><code><span class="text-text-faint">$</span> <span class="text-text">npm install @point-grab/core @point-grab/angular</span></code></pre>
             <div class="border-b border-border px-4 py-2.5">
               <span class="text-xs text-text-faint">app.config.ts</span>
             </div>
@@ -583,7 +583,7 @@ import LiveDemo from "../components/LiveDemo.astro";
             <div class="border-b border-border px-4 py-2.5">
               <span class="text-xs text-text-faint">terminal</span>
             </div>
-            <pre class="overflow-x-auto border-b border-border p-4 text-sm"><code><span class="text-text-faint">$</span> <span class="text-text">npm install point-grab @point-grab/vue</span></code></pre>
+            <pre class="overflow-x-auto border-b border-border p-4 text-sm"><code><span class="text-text-faint">$</span> <span class="text-text">npm install @point-grab/core @point-grab/vue</span></code></pre>
             <div class="border-b border-border px-4 py-2.5">
               <span class="text-xs text-text-faint">main.ts</span>
             </div>
@@ -600,7 +600,7 @@ import LiveDemo from "../components/LiveDemo.astro";
             <div class="border-b border-border px-4 py-2.5">
               <span class="text-xs text-text-faint">terminal</span>
             </div>
-            <pre class="overflow-x-auto border-b border-border p-4 text-sm"><code><span class="text-text-faint">$</span> <span class="text-text">npm install point-grab @point-grab/svelte</span></code></pre>
+            <pre class="overflow-x-auto border-b border-border p-4 text-sm"><code><span class="text-text-faint">$</span> <span class="text-text">npm install @point-grab/core @point-grab/svelte</span></code></pre>
             <div class="border-b border-border px-4 py-2.5">
               <span class="text-xs text-text-faint">+layout.svelte</span>
             </div>
@@ -617,9 +617,9 @@ import LiveDemo from "../components/LiveDemo.astro";
     </div>
   </Section>
 
-  <!-- ═══════════════════════════════════════════
+  <!-- â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
        FOOTER CTA
-       ═══════════════════════════════════════════ -->
+       â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• -->
   <Section padding="xl" class="border-t border-border/50">
     <div class="flex flex-col items-center text-center">
       <h2 class="text-3xl font-bold md:text-4xl lg:text-5xl">
@@ -631,8 +631,8 @@ import LiveDemo from "../components/LiveDemo.astro";
 
       <div class="mt-10">
         <CopyButton
-          text="npm install point-grab"
-          label="npm install point-grab"
+          text="npm install @point-grab/core"
+          label="npm install @point-grab/core"
           class="shadow-[var(--shadow-glow-blue)] hover:shadow-[var(--shadow-glow-blue-strong)] border-point-grab-blue/50 hover:border-point-grab-blue"
         />
       </div>

@@ -7,7 +7,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "point-grab": "^0.1.0",
+    "@point-grab/core": "^0.1.0",
     "@point-grab/web-components": "^0.1.0"
   },
   "devDependencies": {

@@ -41,7 +41,7 @@
     "clean": "rm -rf dist .turbo"
   },
   "peerDependencies": {
-    "point-grab": "workspace:*",
+    "@point-grab/core": "workspace:*",
     "svelte": ">=4.0.0"
   },
   "peerDependenciesMeta": {

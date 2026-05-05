@@ -1,4 +1,4 @@
-import type { PointGrabOptions } from 'point-grab';
+import type { PointGrabOptions } from '@point-grab/core';
 import { initPointGrabSvelte, disposePointGrab } from './init';
 
 interface ActionReturn {

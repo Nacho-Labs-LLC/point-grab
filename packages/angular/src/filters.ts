@@ -1,4 +1,4 @@
-import type { ClassFilter, HtmlCleaner } from 'point-grab';
+import type { ClassFilter, HtmlCleaner } from '@point-grab/core';
 
 /** Drops Angular-generated classes: ng-*, _ng* */
 export const angularClassFilter: ClassFilter = (className: string) =>

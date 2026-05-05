@@ -41,7 +41,7 @@
     "clean": "rm -rf dist .turbo"
   },
   "peerDependencies": {
-    "point-grab": "workspace:*"
+    "@point-grab/core": "workspace:*"
   },
   "devDependencies": {
     "tsup": "^8.3.0",

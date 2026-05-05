@@ -4,7 +4,7 @@ import {
   provideEnvironmentInitializer,
   type EnvironmentProviders,
 } from '@angular/core';
-import type { PointGrabAPI, PointGrabOptions } from 'point-grab';
+import type { PointGrabAPI, PointGrabOptions } from '@point-grab/core';
 import { initPointGrabAngular } from './init';
 
 export const POINT_GRAB_API = new InjectionToken<PointGrabAPI>('POINT_GRAB_API');

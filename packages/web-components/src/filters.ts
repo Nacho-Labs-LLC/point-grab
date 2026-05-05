@@ -1,4 +1,4 @@
-import type { ClassFilter, HtmlCleaner } from 'point-grab';
+import type { ClassFilter, HtmlCleaner } from '@point-grab/core';
 
 /**
  * Web Components do not add framework-specific CSS classes.

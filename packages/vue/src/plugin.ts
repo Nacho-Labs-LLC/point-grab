@@ -1,5 +1,5 @@
 import type { App, Plugin as VuePlugin } from 'vue';
-import type { PointGrabOptions } from 'point-grab';
+import type { PointGrabOptions } from '@point-grab/core';
 import { initPointGrabVue, disposePointGrab } from './init';
 
 /**

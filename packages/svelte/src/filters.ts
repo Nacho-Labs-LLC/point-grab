@@ -1,4 +1,4 @@
-import type { ClassFilter, HtmlCleaner } from 'point-grab';
+import type { ClassFilter, HtmlCleaner } from '@point-grab/core';
 
 /** Strips Svelte internal classes: s-* and svelte-* prefixed. */
 export const svelteClassFilter: ClassFilter = (className: string) =>

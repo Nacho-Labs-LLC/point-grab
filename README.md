@@ -25,11 +25,11 @@ The IIFE bundle auto-initializes and exposes `window.__POINT_GRAB__` for program
 ### npm
 
 ```bash
-npm install point-grab
+npm install @point-grab/core
 ```
 
 ```typescript
-import { init } from 'point-grab';
+import { init } from '@point-grab/core';
 
 const inspector = init();
 // Hold Cmd+C (Mac) / Ctrl+C (Win), hover, click
@@ -44,7 +44,7 @@ The core engine works on any page out of the box. Framework adapters add rich me
 ### Vanilla JS
 
 ```typescript
-import { init } from 'point-grab';
+import { init } from '@point-grab/core';
 
 const inspector = init({
   activationMode: 'toggle',  // toggle instead of hold
@@ -56,7 +56,7 @@ const inspector = init({
 ### Angular
 
 ```bash
-npm install point-grab @point-grab/angular
+npm install @point-grab/core @point-grab/angular
 ```
 
 ```typescript
@@ -85,7 +85,7 @@ api.setThemeMode('light');
 ### React
 
 ```bash
-npm install point-grab @point-grab/react
+npm install @point-grab/core @point-grab/react
 ```
 
 ```typescript
@@ -106,7 +106,7 @@ The React adapter walks the fiber tree via `__reactFiber$` and reads `_debugSour
 ### Vue
 
 ```bash
-npm install point-grab @point-grab/vue
+npm install @point-grab/core @point-grab/vue
 ```
 
 ```typescript
@@ -131,7 +131,7 @@ const point-grab = inject('$point-grab');
 ### Svelte
 
 ```bash
-npm install point-grab @point-grab/svelte
+npm install @point-grab/core @point-grab/svelte
 ```
 
 ```svelte
@@ -158,7 +158,7 @@ The Svelte adapter reads `__svelte_meta` (Svelte 5) and `__svelte_component` (Sv
 ### Web Components
 
 ```bash
-npm install point-grab @point-grab/web-components
+npm install @point-grab/core @point-grab/web-components
 ```
 
 ```typescript
@@ -285,7 +285,7 @@ type HtmlCleaner = { pattern: RegExp; replacement: string };
 Plugins extend point-grab's behavior at well-defined hook points.
 
 ```typescript
-import { init, type Plugin } from 'point-grab';
+import { init, type Plugin } from '@point-grab/core';
 
 const logPlugin: Plugin = {
   name: 'log',

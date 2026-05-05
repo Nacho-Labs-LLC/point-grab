@@ -4,7 +4,7 @@ import Section from "../../components/Section.astro";
 import CodeBlock from "../../components/CodeBlock.astro";
 
 // Code samples as variables so Vite's dep scanner doesn't try to resolve them
-const vanillaCode = `import { init } from 'point-grab';
+const vanillaCode = `import { init } from '@point-grab/core';
 
 const inspector = init();
 
@@ -54,7 +54,7 @@ const wcCode = `import { initPointGrabWebComponents } from '@point-grab/web-comp
 initPointGrabWebComponents();
 // or: initPointGrabWebComponents({ activationMode: 'toggle' })`;
 
-const configCode = `import { init } from 'point-grab';
+const configCode = `import { init } from '@point-grab/core';
 
 const inspector = init({
   activationKey: 'Alt+I',
@@ -65,7 +65,7 @@ const inspector = init({
 });`;
 ---
 
-<Base title="Installation — point-grab" description="Get started with point-grab in under a minute.">
+<Base title="Installation â€” point-grab" description="Get started with point-grab in under a minute.">
   <Section padding="md">
     <div class="mx-auto max-w-3xl">
       <h1 class="text-4xl font-bold">Installation</h1>
@@ -94,13 +94,13 @@ const inspector = init({
       <p class="mt-3 text-text-muted">Install the core package:</p>
 
       <CodeBlock class="mt-4" code={`# npm
-npm install point-grab
+npm install @point-grab/core
 
 # pnpm
-pnpm add point-grab
+pnpm add @point-grab/core
 
 # yarn
-yarn add point-grab`} lang="bash" />
+yarn add @point-grab/core`} lang="bash" />
 
       <p class="mt-4 text-sm text-text-faint">
         The core package works with any framework or plain HTML. Framework adapters add component name resolution and source file mapping.

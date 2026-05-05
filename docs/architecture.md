@@ -33,7 +33,7 @@ Browser                                          AI Agent
 
 ## Core Engine
 
-The core engine (`point-grab` package, published from `packages/core`) is framework-agnostic pure DOM code. It has no dependencies on any UI framework. Everything operates on raw `Element` references and standard browser APIs.
+The core engine (`@point-grab/core` package, published from `packages/core`) is framework-agnostic pure DOM code. It has no dependencies on any UI framework. Everything operates on raw `Element` references and standard browser APIs.
 
 ### Module Breakdown
 
@@ -382,11 +382,11 @@ The IIFE build (`index.global.ts`) auto-initializes with default options and exp
 ### Dependency Graph
 
 ```
-@point-grab/angular   ─┐
-@point-grab/react     ─┤
-@point-grab/vue       ─┼──> point-grab (core, peerDependency)
-@point-grab/svelte    ─┤
-@point-grab/web-comp. ─┘
+@point-grab/angular   â”€â”
+@point-grab/react     â”€â”¤
+@point-grab/vue       â”€â”¼â”€â”€> point-grab (core, peerDependency)
+@point-grab/svelte    â”€â”¤
+@point-grab/web-comp. â”€â”˜
 
 @point-grab/mcp-server  (standalone, depends on @modelcontextprotocol/sdk)
 ```

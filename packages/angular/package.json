@@ -41,7 +41,7 @@
     "clean": "rm -rf dist .turbo"
   },
   "peerDependencies": {
-    "point-grab": "workspace:*",
+    "@point-grab/core": "workspace:*",
     "@angular/core": ">=17.0.0"
   },
   "peerDependenciesMeta": {

@@ -1,5 +1,5 @@
 {
-  "name": "point-grab",
+  "name": "@point-grab/core",
   "version": "0.1.3",
   "description": "Point at any element. Grab its full context. Send it to your AI agent.",
   "author": {

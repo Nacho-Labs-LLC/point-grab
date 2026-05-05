@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import type { PointGrabAPI, PointGrabOptions } from 'point-grab';
+import type { PointGrabAPI, PointGrabOptions } from '@point-grab/core';
 import { initPointGrabReact, disposePointGrab } from './init';
 
 /**

@@ -65,7 +65,7 @@ By default, `point-grab` auto-registers an MCP webhook plugin that POSTs every c
 If you disabled the auto-webhook (`mcpWebhook: false`), you can re-enable it or configure a custom URL:
 
 ```typescript
-import { init } from 'point-grab';
+import { init } from '@point-grab/core';
 
 // Default behavior -- webhook is auto-registered
 const inspector = init();

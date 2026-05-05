@@ -104,7 +104,7 @@ dispose()
 ## Registration
 
 ```typescript
-import { init, type Plugin } from 'point-grab';
+import { init, type Plugin } from '@point-grab/core';
 
 const myPlugin: Plugin = {
   name: 'my-plugin',
@@ -239,7 +239,7 @@ When multiple plugins implement `transformCopyContent`, they chain: each receive
 The core engine auto-registers an MCP webhook plugin when `mcpWebhook: true` (default). Here is the pattern it follows:
 
 ```typescript
-import type { Plugin, ElementContext } from 'point-grab';
+import type { Plugin, ElementContext } from '@point-grab/core';
 
 export function createMcpWebhookPlugin(): Plugin {
   return {
@@ -282,7 +282,7 @@ Key design decisions:
 A plugin that captures a screenshot of the selected element using `html2canvas`:
 
 ```typescript
-import type { Plugin, ElementContext } from 'point-grab';
+import type { Plugin, ElementContext } from '@point-grab/core';
 
 interface ScreenshotPluginOptions {
   output?: 'download' | 'clipboard';
@@ -346,7 +346,7 @@ async function captureScreenshot(
 Usage:
 
 ```typescript
-import { init } from 'point-grab';
+import { init } from '@point-grab/core';
 import { createScreenshotPlugin } from './screenshot-plugin';
 
 const inspector = init();
@@ -358,7 +358,7 @@ inspector.registerPlugin(createScreenshotPlugin({ output: 'download' }));
 Track which components are inspected most often:
 
 ```typescript
-import type { Plugin, ElementContext } from 'point-grab';
+import type { Plugin, ElementContext } from '@point-grab/core';
 
 export function createAnalyticsPlugin(endpoint: string): Plugin {
   const counts = new Map<string, number>();

@@ -1,5 +1,5 @@
-import { init, createNoopApi } from 'point-grab';
-import type { PointGrabAPI, PointGrabOptions, Plugin } from 'point-grab';
+import { init, createNoopApi } from '@point-grab/core';
+import type { PointGrabAPI, PointGrabOptions, Plugin } from '@point-grab/core';
 import { resolveComponent } from './resolvers/component-resolver';
 import { resolveSource } from './resolvers/source-resolver';
 import { svelteClassFilter, svelteHtmlCleaners } from './filters';
