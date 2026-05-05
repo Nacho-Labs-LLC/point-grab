@@ -11,15 +11,15 @@ interface ActionReturn {
  * @example
  * ```svelte
  * <script>
- *   import { point-grab } from '@point-grab/svelte';
+ *   import { pointGrab } from '@point-grab/svelte';
  * </script>
  *
- * <div use:point-grab>
+ * <div use:pointGrab>
  *   ...
  * </div>
  * ```
  */
-export function point-grab(
+export function pointGrab(
   _node: HTMLElement,
   options?: Partial<PointGrabOptions>,
 ): ActionReturn {

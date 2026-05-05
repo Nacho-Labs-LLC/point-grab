@@ -17,12 +17,12 @@ importers:
 
   examples/react:
     dependencies:
+      '@point-grab/core':
+        specifier: ^0.1.0
+        version: 0.1.3
       '@point-grab/react':
         specifier: ^0.1.0
         version: 0.1.2(pointgrab@0.1.2)(react@18.3.1)
-      pointgrab:
-        specifier: ^0.1.0
-        version: 0.1.2
       react:
         specifier: ^18.3.0
         version: 18.3.1
@@ -39,12 +39,12 @@ importers:
 
   examples/svelte:
     dependencies:
+      '@point-grab/core':
+        specifier: ^0.1.0
+        version: 0.1.3
       '@point-grab/svelte':
         specifier: ^0.1.0
         version: 0.1.2(pointgrab@0.1.2)(svelte@5.55.5)
-      pointgrab:
-        specifier: ^0.1.0
-        version: 0.1.2
       svelte:
         specifier: ^5.0.0
         version: 5.55.5
@@ -58,9 +58,9 @@ importers:
 
   examples/vanilla:
     dependencies:
-      pointgrab:
+      '@point-grab/core':
         specifier: ^0.1.0
-        version: 0.1.2
+        version: 0.1.3
     devDependencies:
       vite:
         specifier: ^6.0.0
@@ -68,12 +68,12 @@ importers:
 
   examples/vue:
     dependencies:
+      '@point-grab/core':
+        specifier: ^0.1.0
+        version: 0.1.3
       '@point-grab/vue':
         specifier: ^0.1.0
         version: 0.1.2(pointgrab@0.1.2)(vue@3.5.33(typescript@5.9.3))
-      pointgrab:
-        specifier: ^0.1.0
-        version: 0.1.2
       vue:
         specifier: ^3.5.0
         version: 3.5.33(typescript@5.9.3)
@@ -87,12 +87,12 @@ importers:
 
   examples/web-components:
     dependencies:
+      '@point-grab/core':
+        specifier: ^0.1.0
+        version: 0.1.3
       '@point-grab/web-components':
         specifier: ^0.1.0
         version: 0.1.2(pointgrab@0.1.2)
-      pointgrab:
-        specifier: ^0.1.0
-        version: 0.1.2
     devDependencies:
       vite:
         specifier: ^6.0.0
@@ -103,7 +103,7 @@ importers:
       '@angular/core':
         specifier: '>=17.0.0'
         version: 21.2.11(rxjs@7.8.2)
-      pointgrab:
+      '@point-grab/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -144,7 +144,7 @@ importers:
 
   packages/react:
     dependencies:
-      pointgrab:
+      '@point-grab/core':
         specifier: workspace:*
         version: link:../core
       react:
@@ -163,7 +163,7 @@ importers:
 
   packages/svelte:
     dependencies:
-      pointgrab:
+      '@point-grab/core':
         specifier: workspace:*
         version: link:../core
       svelte:
@@ -179,7 +179,7 @@ importers:
 
   packages/vue:
     dependencies:
-      pointgrab:
+      '@point-grab/core':
         specifier: workspace:*
         version: link:../core
       vue:
@@ -195,7 +195,7 @@ importers:
 
   packages/web-components:
     dependencies:
-      pointgrab:
+      '@point-grab/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -1029,6 +1029,9 @@ packages:
 
   '@oslojs/encoding@1.1.0':
     resolution: {integrity: sha512-70wQhgYmndg4GCPxPPxPGevRKqTIJ2Nh4OkiMWmDAVYsTQ+Ta7Sq+rPevXyXGdzr30/qZBnyOalCszoMxlyldQ==}
+
+  '@point-grab/core@0.1.3':
+    resolution: {integrity: sha512-XisU5W0Ahae/gQC8Bua08p5hupuTlOxkPnjvcnKzqjALLKFSPve8nr9Ytoen0IYVU7s+a4gHCssdnr3pcOftRA==}
 
   '@point-grab/react@0.1.2':
     resolution: {integrity: sha512-mea4C9pe/h0xd1SIwAuc86/p6Tuf2GfacZuUbYXeALEyY2K2CTzb9KxMRtwnKAh/TLIuWi1+2NsvHwVCQf0oGg==}
@@ -3922,6 +3925,8 @@ snapshots:
       - supports-color
 
   '@oslojs/encoding@1.1.0': {}
+
+  '@point-grab/core@0.1.3': {}
 
   '@point-grab/react@0.1.2(pointgrab@0.1.2)(react@18.3.1)':
     dependencies:

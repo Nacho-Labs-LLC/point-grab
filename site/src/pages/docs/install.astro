@@ -42,10 +42,10 @@ app.use(PointGrabPlugin);
 app.mount('#app');`;
 
 const svelteCode = `<script>
-  import { point-grab } from '@point-grab/svelte';
+  import { pointGrab } from '@point-grab/svelte';
 </script>
 
-<div use:point-grab>
+<div use:pointGrab>
   <slot />
 </div>`;
 
@@ -191,7 +191,7 @@ yarn add @point-grab/core`} lang="bash" />
         </h3>
         <CodeBlock class="mt-4" code="npm install @point-grab/svelte" />
         <p class="mt-4 text-text-muted">
-          Use the <code class="text-amber">use:point-grab</code> action in your root layout:
+          Use the <code class="text-amber">use:pointGrab</code> action in your root layout:
         </p>
         <CodeBlock class="mt-3" lang="svelte" filename="+layout.svelte" code={svelteCode} />
         <p class="mt-3 text-sm text-text-faint">
