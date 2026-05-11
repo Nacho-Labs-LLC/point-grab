@@ -31,7 +31,11 @@ export function createPluginRegistry(): PluginRegistry {
     unregister(name: string): void {
       const cleanup = cleanups.get(name);
       if (cleanup) {
-        cleanup();
+        try {
+          cleanup();
+        } catch (err) {
+          console.warn(`[point-grab] Plugin "${name}" cleanup threw:`, err);
+        }
         cleanups.delete(name);
       }
       plugins.delete(name);
@@ -70,8 +74,12 @@ export function createPluginRegistry(): PluginRegistry {
     },
 
     dispose(): void {
-      for (const cleanup of cleanups.values()) {
-        try { cleanup(); } catch { /* ignore */ }
+      for (const [name, cleanup] of cleanups.entries()) {
+        try {
+          cleanup();
+        } catch (err) {
+          console.warn(`[point-grab] Plugin "${name}" cleanup threw:`, err);
+        }
       }
       cleanups.clear();
       plugins.clear();

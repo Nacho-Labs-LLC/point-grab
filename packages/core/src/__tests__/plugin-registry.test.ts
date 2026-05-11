@@ -94,6 +94,25 @@ describe('createPluginRegistry', () => {
     expect(cleanup).toHaveBeenCalledTimes(1);
   });
 
+  it('catches and warns on cleanup errors', () => {
+    const registry = createPluginRegistry();
+    const api = makeMockApi();
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+    registry.register({
+      name: 'bad-cleanup',
+      setup: () => () => { throw new Error('boom'); },
+    }, api);
+
+    // Should not throw
+    expect(() => registry.unregister('bad-cleanup')).not.toThrow();
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('Plugin "bad-cleanup" cleanup threw:'),
+      expect.any(Error),
+    );
+    warnSpy.mockRestore();
+  });
+
   it('re-registers a plugin by unregistering the old one first', () => {
     const registry = createPluginRegistry();
     const api = makeMockApi();
@@ -273,9 +292,10 @@ describe('createPluginRegistry', () => {
       expect(registry.getPlugins()).toHaveLength(0);
     });
 
-    it('ignores errors during cleanup', () => {
+    it('ignores errors during cleanup and warns', () => {
       const registry = createPluginRegistry();
       const api = makeMockApi();
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       registry.register({
         name: 'err',
@@ -284,7 +304,12 @@ describe('createPluginRegistry', () => {
 
       // Should not throw
       expect(() => registry.dispose()).not.toThrow();
+      expect(warnSpy).toHaveBeenCalledWith(
+        expect.stringContaining('Plugin "err" cleanup threw:'),
+        expect.any(Error),
+      );
       expect(registry.getPlugins()).toHaveLength(0);
+      warnSpy.mockRestore();
     });
   });
 });
