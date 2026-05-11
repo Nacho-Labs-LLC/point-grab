@@ -96,7 +96,7 @@ describe('buildElementContext', () => {
     const context = buildElementContext(el, null, null);
 
     expect(context.textContent?.length).toBe(201); // 200 + '…'
-    expect(context.textContent).endsWith('…');
+    expect(context.textContent?.endsWith('…')).toBe(true);
   });
 
   it('extracts ARIA attributes and element description', () => {
