@@ -12,18 +12,17 @@ describe('escapeHtml', () => {
     expect(escapeHtml('<div>')).toBe('&lt;div&gt;');
   });
 
-  it('passes through double quotes (not special in text nodes)', () => {
-    // innerHTML only escapes <, >, & in text content — not quotes
-    expect(escapeHtml('"hello"')).toBe('"hello"');
+  it('escapes double quotes', () => {
+    expect(escapeHtml('"hello"')).toBe('&quot;hello&quot;');
   });
 
-  it('passes through single quotes (not special in text nodes)', () => {
-    expect(escapeHtml("it's")).toBe("it's");
+  it('escapes single quotes', () => {
+    expect(escapeHtml("it's")).toBe('it&#039;s');
   });
 
   it('escapes multiple special characters together', () => {
     expect(escapeHtml('<a href="x">&</a>')).toBe(
-      '&lt;a href="x"&gt;&amp;&lt;/a&gt;',
+      '&lt;a href=&quot;x&quot;&gt;&amp;&lt;/a&gt;',
     );
   });
 
