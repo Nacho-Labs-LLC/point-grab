@@ -20,12 +20,12 @@ interface ComponentResult {
 }
 
 function getFiber(element: Element): FiberNode | null {
-  const keys = Object.keys(element);
-  const fiberKey = keys.find(
-    (k) => k.startsWith('__reactFiber$') || k.startsWith('__reactInternalInstance$'),
-  );
-  if (!fiberKey) return null;
-  return (element as unknown as Record<string, unknown>)[fiberKey] as FiberNode ?? null;
+  for (const key in element) {
+    if (key.startsWith('__reactFiber$') || key.startsWith('__reactInternalInstance$')) {
+      return (element as unknown as Record<string, unknown>)[key] as FiberNode ?? null;
+    }
+  }
+  return null;
 }
 
 function getComponentName(fiber: FiberNode): string | null {
