@@ -121,8 +121,11 @@ export function createFreezeOverlay(): FreezeOverlay {
     if (hoverStyleEl) return;
 
     const cloned: string[] = [];
+    const sheets = document.styleSheets;
+    const len = sheets.length;
 
-    for (const sheet of Array.from(document.styleSheets)) {
+    for (let i = 0; i < len; i++) {
+      const sheet = sheets[i];
       let rules: CSSRuleList;
       try {
         rules = sheet.cssRules;
@@ -141,7 +144,9 @@ export function createFreezeOverlay(): FreezeOverlay {
   }
 
   function collectHoverRules(rules: CSSRuleList, out: string[]): void {
-    for (const rule of Array.from(rules)) {
+    const len = rules.length;
+    for (let i = 0; i < len; i++) {
+      const rule = rules[i];
       if (rule instanceof CSSStyleRule) {
         if (rule.selectorText.includes(':hover')) {
           const newSelector = rule.selectorText.replace(/:hover/g, `[${HOVER_ATTR}]`);
