@@ -13,6 +13,7 @@ function makeMockApi(): PointGrabAPI {
     unregisterPlugin: vi.fn(),
     setComponentResolver: vi.fn(),
     setSourceResolver: vi.fn(),
+    setElementFromPoint: vi.fn(),
     showToolbar: vi.fn(),
     hideToolbar: vi.fn(),
     setThemeMode: vi.fn(),
