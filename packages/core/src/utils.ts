@@ -27,11 +27,7 @@ export function filterFrameworkClasses(classList: DOMTokenList, filters: ClassFi
  * Framework adapters inject their own cleaners (e.g. Angular: remove _nghost-* / _ngcontent-* attrs).
  */
 export function cleanFrameworkAttrs(html: string, cleaners: HtmlCleaner[] = []): string {
-  let result = html;
-  for (const { pattern, replacement } of cleaners) {
-    result = result.replace(pattern, replacement);
-  }
-  return result;
+  return cleaners.reduce((result, { pattern, replacement }) => result.replace(pattern, replacement), html);
 }
 
 function truncate(text: string, max: number): string {
