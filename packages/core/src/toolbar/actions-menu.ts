@@ -1,5 +1,4 @@
 import { ICON_COPY, ICON_STYLES, ICON_CODE, ICON_COMMENT, ICON_TRASH } from './toolbar-icons';
-import { escapeHtml } from '../utils';
 import { Z_INDEX_POPOVER, TOOLBAR_POPOVER_OFFSET } from '../constants';
 
 const MENU_ID = '__point-grab-actions-menu__';
@@ -126,7 +125,17 @@ export function createActionsMenu(callbacks: ActionsMenuCallbacks): ActionsMenu 
       const btn = document.createElement('button');
       btn.className = 'point-grab-menu-item';
       btn.setAttribute('role', 'menuitem');
-      btn.innerHTML = `${entry.icon}<span>${escapeHtml(entry.label)}</span>`;
+
+      const iconContainer = document.createElement('span');
+      iconContainer.innerHTML = entry.icon;
+      if (iconContainer.firstElementChild) {
+        btn.appendChild(iconContainer.firstElementChild);
+      }
+
+      const labelSpan = document.createElement('span');
+      labelSpan.textContent = entry.label;
+      btn.appendChild(labelSpan);
+
       btn.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
