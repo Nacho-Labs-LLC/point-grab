@@ -33,6 +33,17 @@ export function isMac(): boolean {
   return /Mac|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
+const MODIFIER_MAP: Record<string, keyof Omit<ParsedKey, 'key'>> = {
+  meta: 'meta',
+  cmd: 'meta',
+  command: 'meta',
+  ctrl: 'ctrl',
+  control: 'ctrl',
+  shift: 'shift',
+  alt: 'alt',
+  option: 'alt',
+};
+
 function parseKeyCombo(combo: string): ParsedKey {
   const parts = combo.split('+').map((s) => s.trim());
   const result: ParsedKey = {
@@ -45,14 +56,9 @@ function parseKeyCombo(combo: string): ParsedKey {
 
   for (const part of parts) {
     const lower = part.toLowerCase();
-    if (lower === 'meta' || lower === 'cmd' || lower === 'command') {
-      result.meta = true;
-    } else if (lower === 'ctrl' || lower === 'control') {
-      result.ctrl = true;
-    } else if (lower === 'shift') {
-      result.shift = true;
-    } else if (lower === 'alt' || lower === 'option') {
-      result.alt = true;
+    const modifier = MODIFIER_MAP[lower];
+    if (modifier) {
+      result[modifier] = true;
     } else {
       result.key = lower;
     }
