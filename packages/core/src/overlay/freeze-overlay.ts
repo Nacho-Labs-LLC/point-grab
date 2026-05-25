@@ -121,7 +121,6 @@ export function createFreezeOverlay(): FreezeOverlay {
     if (hoverStyleEl) return;
 
     const cloned: string[] = [];
-
     const sheets = document.styleSheets;
     const len = sheets.length;
     for (let i = 0; i < len; i++) {
