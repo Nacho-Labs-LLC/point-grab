@@ -121,8 +121,11 @@ export function createFreezeOverlay(): FreezeOverlay {
     if (hoverStyleEl) return;
 
     const cloned: string[] = [];
+    const sheets = document.styleSheets;
+    const len = sheets.length;
 
-    for (const sheet of Array.from(document.styleSheets)) {
+    for (let i = 0; i < len; i++) {
+      const sheet = sheets[i];
       let rules: CSSRuleList;
       try {
         rules = sheet.cssRules;
@@ -141,7 +144,9 @@ export function createFreezeOverlay(): FreezeOverlay {
   }
 
   function collectHoverRules(rules: CSSRuleList, out: string[]): void {
-    for (const rule of Array.from(rules)) {
+    const len = rules.length;
+    for (let i = 0; i < len; i++) {
+      const rule = rules[i];
       if (rule instanceof CSSStyleRule) {
         if (rule.selectorText.includes(':hover')) {
           const newSelector = rule.selectorText.replace(/:hover/g, `[${HOVER_ATTR}]`);
@@ -224,11 +229,18 @@ export function createFreezeOverlay(): FreezeOverlay {
             el.setAttribute(mutation.attributeName!, mutation.oldValue);
           }
         } else if (mutation.type === 'childList') {
-          for (const added of Array.from(mutation.addedNodes)) {
+          const addedNodes = mutation.addedNodes;
+          const addedLen = addedNodes.length;
+          for (let i = 0; i < addedLen; i++) {
+            const added = addedNodes[i];
             if (isPointGrabNode(added)) continue;
             added.parentNode?.removeChild(added);
           }
-          for (const removed of Array.from(mutation.removedNodes)) {
+
+          const removedNodes = mutation.removedNodes;
+          const removedLen = removedNodes.length;
+          for (let i = 0; i < removedLen; i++) {
+            const removed = removedNodes[i];
             if (isPointGrabNode(removed)) continue;
             if (mutation.nextSibling) {
               mutation.target.insertBefore(removed, mutation.nextSibling);
