@@ -16,9 +16,31 @@ export function escapeHtml(text: string): string {
  * Framework adapters inject their own filters (e.g. Angular: exclude ng-* / _ng* classes).
  */
 export function filterFrameworkClasses(classList: DOMTokenList, filters: ClassFilter[] = []): string[] {
-  const classes = Array.from(classList);
-  if (filters.length === 0) return classes;
-  return classes.filter((c) => filters.every((fn) => fn(c)));
+  const len = classList.length;
+  if (filters.length === 0) {
+    const classes = new Array<string>(len);
+    for (let i = 0; i < len; i++) {
+      classes[i] = classList[i];
+    }
+    return classes;
+  }
+
+  const result: string[] = [];
+  const filtersLen = filters.length;
+  for (let i = 0; i < len; i++) {
+    const c = classList[i];
+    let keep = true;
+    for (let j = 0; j < filtersLen; j++) {
+      if (!filters[j](c)) {
+        keep = false;
+        break;
+      }
+    }
+    if (keep) {
+      result.push(c);
+    }
+  }
+  return result;
 }
 
 /**
@@ -27,11 +49,7 @@ export function filterFrameworkClasses(classList: DOMTokenList, filters: ClassFi
  * Framework adapters inject their own cleaners (e.g. Angular: remove _nghost-* / _ngcontent-* attrs).
  */
 export function cleanFrameworkAttrs(html: string, cleaners: HtmlCleaner[] = []): string {
-  let result = html;
-  for (const { pattern, replacement } of cleaners) {
-    result = result.replace(pattern, replacement);
-  }
-  return result;
+  return cleaners.reduce((result, { pattern, replacement }) => result.replace(pattern, replacement), html);
 }
 
 function truncate(text: string, max: number): string {
