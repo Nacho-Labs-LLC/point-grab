@@ -176,4 +176,32 @@ describe('generateSnippet', () => {
     expect(result).toContain('in Comp');
     expect(result).not.toContain('at');
   });
+
+  it('ignores column when line is null', () => {
+    const ctx = makeContext({
+      filePath: 'src/app.ts',
+      line: null,
+      column: 15,
+      selector: '',
+    });
+    const result = generateSnippet(ctx, 20);
+
+    expect(result).toContain('at src/app.ts');
+    expect(result).not.toContain(':15');
+  });
+
+  it('handles empty component stack entries gracefully', () => {
+    const stack: ComponentStackEntry[] = [
+      { name: null, filePath: null, line: null, column: null },
+    ];
+    const ctx = makeContext({
+      html: '<div>hello</div>',
+      selector: '',
+      componentStack: stack
+    });
+    const result = generateSnippet(ctx, 20);
+
+    // Only HTML should be output, as the stack entry yields empty location string
+    expect(result).toBe('<div>hello</div>\n');
+  });
 });

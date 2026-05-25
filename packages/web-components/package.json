@@ -37,7 +37,6 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "test": "vitest run",
     "lint": "tsc --noEmit",
     "clean": "rm -rf dist .turbo"
   },
@@ -45,10 +44,7 @@
     "@point-grab/core": "workspace:*"
   },
   "devDependencies": {
-    "@vitest/ui": "^4.1.6",
-    "jsdom": "^29.1.0",
     "tsup": "^8.3.0",
-    "typescript": "^5.7.0",
-    "vitest": "^2.1.0"
+    "typescript": "^5.7.0"
   }
 }
