@@ -229,11 +229,18 @@ export function createFreezeOverlay(): FreezeOverlay {
             el.setAttribute(mutation.attributeName!, mutation.oldValue);
           }
         } else if (mutation.type === 'childList') {
-          for (const added of Array.from(mutation.addedNodes)) {
+          const addedNodes = mutation.addedNodes;
+          const addedLen = addedNodes.length;
+          for (let i = 0; i < addedLen; i++) {
+            const added = addedNodes[i];
             if (isPointGrabNode(added)) continue;
             added.parentNode?.removeChild(added);
           }
-          for (const removed of Array.from(mutation.removedNodes)) {
+
+          const removedNodes = mutation.removedNodes;
+          const removedLen = removedNodes.length;
+          for (let i = 0; i < removedLen; i++) {
+            const removed = removedNodes[i];
             if (isPointGrabNode(removed)) continue;
             if (mutation.nextSibling) {
               mutation.target.insertBefore(removed, mutation.nextSibling);
