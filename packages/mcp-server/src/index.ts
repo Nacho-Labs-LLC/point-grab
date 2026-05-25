@@ -149,18 +149,7 @@ function getFrameworkBreakdown(history: GrabHistory): Record<string, number> {
 
 function startWebhookServer(port: number): void {
   const httpServer = createServer(async (req, res) => {
-    const origin = req.headers.origin;
-    if (origin) {
-      try {
-        const url = new URL(origin);
-        if (['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)) {
-          res.setHeader('Access-Control-Allow-Origin', origin);
-        }
-      } catch (e) {
-        // Invalid origin, ignore
-      }
-    }
-
+    res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
