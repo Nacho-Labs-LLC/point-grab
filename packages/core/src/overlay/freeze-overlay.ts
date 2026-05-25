@@ -123,9 +123,9 @@ export function createFreezeOverlay(): FreezeOverlay {
     const cloned: string[] = [];
     const sheets = document.styleSheets;
     const len = sheets.length;
-
     for (let i = 0; i < len; i++) {
       const sheet = sheets[i];
+      if (!sheet) continue;
       let rules: CSSRuleList;
       try {
         rules = sheet.cssRules;
@@ -147,6 +147,7 @@ export function createFreezeOverlay(): FreezeOverlay {
     const len = rules.length;
     for (let i = 0; i < len; i++) {
       const rule = rules[i];
+      if (!rule) continue;
       if (rule instanceof CSSStyleRule) {
         if (rule.selectorText.includes(':hover')) {
           const newSelector = rule.selectorText.replace(/:hover/g, `[${HOVER_ATTR}]`);
@@ -233,7 +234,7 @@ export function createFreezeOverlay(): FreezeOverlay {
           const addedLen = addedNodes.length;
           for (let i = 0; i < addedLen; i++) {
             const added = addedNodes[i];
-            if (isPointGrabNode(added)) continue;
+            if (!added || isPointGrabNode(added)) continue;
             added.parentNode?.removeChild(added);
           }
 
@@ -241,7 +242,7 @@ export function createFreezeOverlay(): FreezeOverlay {
           const removedLen = removedNodes.length;
           for (let i = 0; i < removedLen; i++) {
             const removed = removedNodes[i];
-            if (isPointGrabNode(removed)) continue;
+            if (!removed || isPointGrabNode(removed)) continue;
             if (mutation.nextSibling) {
               mutation.target.insertBefore(removed, mutation.nextSibling);
             } else {
