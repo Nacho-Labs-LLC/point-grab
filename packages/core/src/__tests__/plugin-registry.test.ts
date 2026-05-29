@@ -19,6 +19,7 @@ function makeMockApi(): PointGrabAPI {
     getHistory: vi.fn(() => []),
     clearHistory: vi.fn(),
     dispose: vi.fn(),
+    setElementFromPoint: vi.fn(),
   };
 }
 

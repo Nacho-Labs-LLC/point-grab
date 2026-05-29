@@ -192,7 +192,7 @@ describe('generateSnippet', () => {
 
   it('handles empty component stack entries gracefully', () => {
     const stack: ComponentStackEntry[] = [
-      { name: null, filePath: null, line: null, column: null },
+      { name: '', filePath: null, line: null, column: null },
     ];
     const ctx = makeContext({
       html: '<div>hello</div>',

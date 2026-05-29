@@ -195,13 +195,19 @@ export function createHistoryPopover(callbacks: HistoryPopoverCallbacks): Histor
 
     // Attach click handlers
     const items = el.querySelectorAll('.point-grab-history-item');
+
+    // Create map to ensure O(1) lookup in click handlers
+    const entriesMap: Record<string, HistoryEntry> = {};
+    for (let i = 0; i < entries.length; i++) {
+      entriesMap[entries[i].id] = entries[i];
+    }
+
     items.forEach((item) => {
       item.addEventListener('click', (e) => {
         e.stopPropagation();
         const id = (item as HTMLElement).dataset.pointGrabHistoryId;
-        const entry = entries.find((ent) => ent.id === id);
-        if (entry) {
-          callbacks.onEntryClick(entry);
+        if (id && entriesMap[id]) {
+          callbacks.onEntryClick(entriesMap[id]);
         }
       });
     });
