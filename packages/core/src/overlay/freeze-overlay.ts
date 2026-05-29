@@ -149,8 +149,9 @@ export function createFreezeOverlay(): FreezeOverlay {
       const rule = rules[i];
       if (!rule) continue;
       if (rule instanceof CSSStyleRule) {
-        if (rule.selectorText.includes(':hover')) {
-          const newSelector = rule.selectorText.replace(/:hover/g, `[${HOVER_ATTR}]`);
+        const sel = rule.selectorText;
+        if (sel.includes(':hover')) {
+          const newSelector = sel.replace(/:hover/g, `[${HOVER_ATTR}]`);
           out.push(`${newSelector} { ${rule.style.cssText} }`);
         }
       } else if (rule instanceof CSSMediaRule) {
