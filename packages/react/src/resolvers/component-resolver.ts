@@ -41,7 +41,10 @@ function isComponentFiber(fiber: FiberNode): boolean {
 function findHostElement(fiber: FiberNode): Element | null {
   // Walk down to find the nearest host (DOM) element
   let current: FiberNode | null = fiber;
+  const seen = new Set<FiberNode>();
   while (current) {
+    if (seen.has(current)) break;
+    seen.add(current);
     if (current.stateNode instanceof Element) return current.stateNode;
     current = current.return;
   }
@@ -58,8 +61,10 @@ export function resolveComponent(element: Element): ComponentResult {
   // Walk up the fiber tree collecting component boundaries
   let current: FiberNode | null = fiber;
   while (current) {
-    if (isComponentFiber(current) && !seen.has(current)) {
-      seen.add(current);
+    if (seen.has(current)) break;
+    seen.add(current);
+
+    if (isComponentFiber(current)) {
       const name = getComponentName(current);
       if (name) {
         stack.push({

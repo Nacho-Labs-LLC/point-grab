@@ -11,9 +11,21 @@ importers:
       '@types/node':
         specifier: ^22.10.0
         version: 22.19.17
+      '@types/react':
+        specifier: ^19.2.14
+        version: 19.2.14
+      '@vitest/coverage-v8':
+        specifier: ^2.1.9
+        version: 2.1.9(vitest@2.1.9(@types/node@22.19.17)(jsdom@29.1.1)(lightningcss@1.32.0))
+      jsdom:
+        specifier: ^29.1.0
+        version: 29.1.1
       turbo:
         specifier: ^2.3.0
         version: 2.9.8
+      vitest:
+        specifier: ^2.1.0
+        version: 2.1.9(@types/node@22.19.17)(jsdom@29.1.1)(lightningcss@1.32.0)
 
   examples/react:
     dependencies:
