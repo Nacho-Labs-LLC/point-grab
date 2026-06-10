@@ -44,6 +44,11 @@ export default defineConfig({
       testMatch: '**/web-components.spec.ts',
     },
     {
+      name: 'angular',
+      use: { ...devices['Desktop Chrome'], baseURL: 'http://127.0.0.1:4200' },
+      testMatch: '**/angular.spec.ts',
+    },
+    {
       name: 'site-livedemo',
       use: { ...devices['Desktop Chrome'], baseURL: 'http://127.0.0.1:4321' },
       testMatch: '**/site-livedemo.spec.ts',
@@ -79,6 +84,12 @@ export default defineConfig({
       command: 'node_modules/.bin/vite --port 5177',
       cwd: path.join(examplesDir, 'web-components'),
       url: 'http://localhost:5177',
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: 'node_modules/.bin/ng serve --host 127.0.0.1 --port 4200',
+      cwd: path.join(examplesDir, 'angular'),
+      url: 'http://127.0.0.1:4200',
       reuseExistingServer: !process.env.CI,
     },
     {

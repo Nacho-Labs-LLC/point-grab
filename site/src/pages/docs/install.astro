@@ -23,14 +23,13 @@ function App() {
   return <div>...</div>;
 }`;
 
-const angularCode = `import { providePointGrab } from '@point-grab/angular';
+const angularCode = `import { bootstrapApplication } from '@angular/platform-browser';
+import { initPointGrabAngular } from '@point-grab/angular';
+import { appConfig } from './app/app.config';
+import { App } from './app/app';
 
-export const appConfig = {
-  providers: [
-    providePointGrab(),
-    // or: providePointGrab({ activationMode: 'toggle' })
-  ],
-};`;
+initPointGrabAngular({ activationMode: 'hold', devOnly: false });
+bootstrapApplication(App, appConfig).catch((err) => console.error(err));`;
 
 const vueCode = `import { createApp } from 'vue';
 import { PointGrabPlugin } from '@point-grab/vue';
@@ -138,7 +137,7 @@ yarn add @point-grab/core`} lang="bash" />
           <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-point-grab-blue/10 text-xs font-bold text-point-grab-blue">Re</span>
           React
         </h3>
-        <CodeBlock class="mt-4" code="npm install @point-grab/react" />
+        <CodeBlock class="mt-4" code="npm install @point-grab/core @point-grab/react" />
         <p class="mt-4 text-text-muted">
           Add the <code class="text-amber">usePointGrab()</code> hook to your root component:
         </p>
@@ -155,11 +154,11 @@ yarn add @point-grab/core`} lang="bash" />
           <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-error/10 text-xs font-bold text-error">Ng</span>
           Angular
         </h3>
-        <CodeBlock class="mt-4" code="npm install @point-grab/angular" />
+        <CodeBlock class="mt-4" code="npm install @point-grab/core @point-grab/angular" />
         <p class="mt-4 text-text-muted">
-          Add <code class="text-amber">providePointGrab()</code> to your application config:
+          Initialize point-grab once in <code class="text-amber">main.ts</code> before bootstrapping the Angular app:
         </p>
-        <CodeBlock class="mt-3" lang="typescript" filename="app.config.ts" code={angularCode} />
+        <CodeBlock class="mt-3" lang="typescript" filename="main.ts" code={angularCode} />
         <p class="mt-3 text-sm text-text-faint">
           Uses <code class="text-amber">window.ng.getComponent()</code> and <code class="text-amber">window.ng.getOwningComponent()</code> for resolution.
           Strips <code class="text-amber">ng-*</code> classes and <code class="text-amber">_nghost-*</code> / <code class="text-amber">_ngcontent-*</code> attributes.
@@ -173,7 +172,7 @@ yarn add @point-grab/core`} lang="bash" />
           <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-success/10 text-xs font-bold text-success">Vu</span>
           Vue
         </h3>
-        <CodeBlock class="mt-4" code="npm install @point-grab/vue" />
+        <CodeBlock class="mt-4" code="npm install @point-grab/core @point-grab/vue" />
         <p class="mt-4 text-text-muted">
           Register the plugin in your <code class="text-amber">main.ts</code>:
         </p>
@@ -191,7 +190,7 @@ yarn add @point-grab/core`} lang="bash" />
           <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-amber/10 text-xs font-bold text-amber-bright">Sv</span>
           Svelte
         </h3>
-        <CodeBlock class="mt-4" code="npm install @point-grab/svelte" />
+        <CodeBlock class="mt-4" code="npm install @point-grab/core @point-grab/svelte" />
         <p class="mt-4 text-text-muted">
           Use the <code class="text-amber">use:pointGrab</code> action in your root layout:
         </p>
@@ -209,7 +208,7 @@ yarn add @point-grab/core`} lang="bash" />
           <span class="inline-flex h-6 w-6 items-center justify-center rounded bg-point-grab-blue/10 text-xs font-bold text-point-grab-blue-bright">WC</span>
           Web Components
         </h3>
-        <CodeBlock class="mt-4" code="npm install @point-grab/web-components" />
+        <CodeBlock class="mt-4" code="npm install @point-grab/core @point-grab/web-components" />
         <p class="mt-4 text-text-muted">Initialize in your app entry point:</p>
         <CodeBlock class="mt-3" lang="typescript" filename="main.ts" code={wcCode} />
         <p class="mt-3 text-sm text-text-faint">

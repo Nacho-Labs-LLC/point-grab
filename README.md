@@ -63,14 +63,14 @@ npm install @point-grab/core @point-grab/angular
 ```
 
 ```typescript
-// app.config.ts
-import { providePointGrab } from '@point-grab/angular';
+// main.ts
+import { bootstrapApplication } from '@angular/platform-browser';
+import { initPointGrabAngular } from '@point-grab/angular';
+import { appConfig } from './app/app.config';
+import { App } from './app/app';
 
-export const appConfig: ApplicationConfig = {
-  providers: [
-    providePointGrab(),
-  ],
-};
+initPointGrabAngular({ activationMode: 'hold', devOnly: false });
+bootstrapApplication(App, appConfig).catch((err) => console.error(err));
 ```
 
 The Angular adapter uses `window.ng.getComponent()` and `window.ng.getOwningComponent()` to resolve component names and walks the DOM to build the component ancestor chain. It strips `_nghost-*`, `_ngcontent-*` attributes and `ng-*` / `_ng*` CSS classes from captured HTML.
@@ -543,7 +543,7 @@ interface PluginHooks {
 | Package | Description |
 |---|---|
 | [`@point-grab/core`](./packages/core) | Core engine -- picker, overlays, toolbar, keyboard, clipboard, plugins, reactive store |
-| [`@point-grab/angular`](./packages/angular) | Angular adapter -- `window.ng` debug API, `providePointGrab()` |
+| [`@point-grab/angular`](./packages/angular) | Angular adapter -- `window.ng` debug API and `initPointGrabAngular()` bootstrap |
 | [`@point-grab/react`](./packages/react) | React adapter -- fiber tree, `_debugSource`, `usePointGrab()` hook |
 | [`@point-grab/vue`](./packages/vue) | Vue adapter -- component tree, `__file`, `PointGrabPlugin` for `app.use()` |
 | [`@point-grab/svelte`](./packages/svelte) | Svelte adapter -- `__svelte_meta`, `use:pointGrab` action |
