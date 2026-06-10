@@ -411,8 +411,8 @@ Comment: Make this button disabled while the form is submitting`} />
         Extend point-grab with custom plugins. Every lifecycle event has a corresponding hook. Plugins can react to events, modify copied content, override theme colors, and manage setup/teardown.
       </p>
 
-      <CodeBlock class="mt-6" lang="typescript" code={`import { init } ${from} 'point-grab';
-import type { Plugin } ${from} 'point-grab';
+      <CodeBlock class="mt-6" lang="typescript" code={`import { init } ${from} '@point-grab/core';
+import type { Plugin } ${from} '@point-grab/core';
 
 const myPlugin: Plugin = {
   name: 'my-plugin',
