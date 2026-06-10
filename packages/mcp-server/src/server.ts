@@ -782,7 +782,7 @@ export function createPointGrabMcpServer(
   const server = new Server(
     {
       name: 'point-grab-mcp',
-      version: '0.1.5',
+      version: '0.1.6',
     },
     {
       capabilities: {

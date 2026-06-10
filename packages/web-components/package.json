@@ -1,6 +1,6 @@
 {
   "name": "@point-grab/web-components",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Web Components adapter for point-grab",
   "author": {
     "name": "Nate Richardson",

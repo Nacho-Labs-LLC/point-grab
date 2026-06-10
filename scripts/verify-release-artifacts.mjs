@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 
 const root = path.resolve(new URL('..', import.meta.url).pathname);
-const version = '0.1.5';
+const version = '0.1.6';
 const packages = [
   { name: '@point-grab/core', dir: 'packages/core', install: ['@point-grab/core'] },
   { name: '@point-grab/react', dir: 'packages/react', install: ['react', 'react-dom', '@point-grab/core', '@point-grab/react'] },

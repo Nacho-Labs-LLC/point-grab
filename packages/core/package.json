@@ -1,6 +1,6 @@
 {
   "name": "@point-grab/core",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Point at any element. Grab its full context. Send it to your AI agent.",
   "author": {
     "name": "Nate Richardson",
