@@ -120,11 +120,13 @@ yarn add @point-grab/core`} lang="bash" />
           Vanilla JS
         </h3>
         <p class="mt-3 text-text-muted">
-          Use a script tag for the simplest setup. Auto-initializes with default options and exposes
-          <code class="text-amber">window.__POINT_GRAB__</code>.
+          Use a script tag for the simplest setup. The IIFE bundle exposes a global
+          <code class="text-amber">PointGrab</code>; call <code class="text-amber">PointGrab.init()</code> yourself.
         </p>
-        <CodeBlock class="mt-4" lang="html" code={`<!-- CDN script tag (auto-initializes) -->
-<script src="https://unpkg.com/@point-grab/core/dist/index.global.js"></script>`} />
+        <CodeBlock class="mt-4" lang="html" code={`<script src="https://unpkg.com/@point-grab/core/global"></script>
+<script>
+  PointGrab.init();
+</script>`} />
 
         <p class="mt-4 text-text-muted">Or use the ES module import for bundler setups:</p>
         <CodeBlock class="mt-3" lang="typescript" filename="main.ts" code={vanillaCode} />

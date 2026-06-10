@@ -40,7 +40,7 @@ The core engine (`@point-grab/core` package, published from `packages/core`) is 
 ```
 packages/core/src/
   index.ts                      # Public exports: init, createNoopApi, types
-  index.global.ts               # IIFE entry: auto-inits, sets window.__POINT_GRAB__
+  index.global.ts               # IIFE entry: exports the PointGrab global
   grab.ts                       # createPointGrabInstance(), PointGrabAPI factory
   types.ts                      # All public type definitions
   store.ts                      # Proxy-based reactive state
@@ -377,7 +377,7 @@ defineConfig([
 | IIFE | `dist/index.global.js` | CDN script tag |
 | Types | `dist/index.d.ts` | TypeScript declarations |
 
-The IIFE build (`index.global.ts`) auto-initializes with default options and exposes `window.__POINT_GRAB__`.
+The IIFE build (`index.global.ts`) exposes the `PointGrab` global. Consumers still call `PointGrab.init()` themselves.
 
 ### Dependency Graph
 

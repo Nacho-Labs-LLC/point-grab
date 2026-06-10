@@ -1,194 +1,243 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, computed } from 'vue';
 
-// Progress bar state
-const progressWidth = ref(0);
-const progressLabel = ref('0%');
-let progressInterval;
-
-// Status badge cycling
-const statusStates = [
-  { text: 'Syncing...', class: 'info' },
-  { text: 'Validating', class: 'warning' },
-  { text: 'Confirmed', class: 'success' },
+const colors = [
+  { name: 'Black',  value: '#1a1a1a' },
+  { name: 'Cream',  value: '#f5f0e8' },
+  { name: 'Forest', value: '#2d4a3e' },
 ];
-const statusIndex = ref(0);
-let statusInterval;
 
-// Notification popover
-const popoverOpen = ref(false);
+const sizes = ['S', 'M', 'L', 'XL'];
 
-function togglePopover() {
-  popoverOpen.value = !popoverOpen.value;
+const selectedColor = ref(null);
+const selectedSize  = ref(null);
+const cartCount     = ref(0);
+const cartOpen      = ref(false);
+const cartItems     = ref([]);
+const cartBumping   = ref(false);
+const btnShaking    = ref(false);
+
+const productImageBg = computed(() =>
+  selectedColor.value ? selectedColor.value.value : '#1e2130'
+);
+
+function selectColor(color) {
+  selectedColor.value = color;
 }
 
-// Skeleton loader
-const skeletonLoading = ref(true);
-let skeletonInterval;
+function selectSize(size) {
+  selectedSize.value = size;
+}
 
-onMounted(() => {
-  // Progress bar: fills 0% → ~87% then resets
-  let progress = 0;
-  progressInterval = setInterval(() => {
-    progress += 3;
-    if (progress > 87) progress = 0;
-    progressWidth.value = progress;
-    progressLabel.value = `${progress}%`;
-  }, 400);
+function addToCart() {
+  if (!selectedColor.value || !selectedSize.value) {
+    btnShaking.value = true;
+    setTimeout(() => { btnShaking.value = false; }, 300);
+    return;
+  }
 
-  // Status badge cycles every 2500ms
-  statusInterval = setInterval(() => {
-    statusIndex.value = (statusIndex.value + 1) % statusStates.length;
-  }, 2500);
+  cartItems.value.push({
+    id: Date.now(),
+    name: 'Novo Crewneck',
+    color: selectedColor.value.name,
+    size: selectedSize.value,
+    price: '$68.00',
+  });
 
-  // Skeleton toggles every 4000ms
-  skeletonInterval = setInterval(() => {
-    skeletonLoading.value = !skeletonLoading.value;
-  }, 4000);
-});
+  cartCount.value += 1;
 
-onUnmounted(() => {
-  clearInterval(progressInterval);
-  clearInterval(statusInterval);
-  clearInterval(skeletonInterval);
-});
+  cartBumping.value = true;
+  setTimeout(() => { cartBumping.value = false; }, 400);
+
+  cartOpen.value = true;
+}
+
+function openCart() {
+  cartOpen.value = true;
+}
+
+function closeCart() {
+  cartOpen.value = false;
+}
+
+function starFill(index) {
+  const rating = 4.8;
+  if (index < Math.floor(rating)) return 'full';
+  if (index < rating) return 'partial';
+  return 'empty';
+}
 </script>
 
 <template>
-  <header>
-    <h1>point-grab <span class="accent">vue</span></h1>
-    <p class="subtitle">
-      Hold <kbd>Cmd+C</kbd> (Mac) or <kbd>Ctrl+C</kbd> (Win) and hover over any element.
-      Click to capture. Press <kbd>F</kbd> to freeze animations.
-    </p>
+  <header class="krate-header">
+    <span class="krate-logo">Krate</span>
+    <button class="cart-icon-btn" @click="openCart" aria-label="Open cart">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
+      </svg>
+      <span :class="['cart-badge', { bumping: cartBumping }]" v-if="cartCount > 0">{{ cartCount }}</span>
+    </button>
   </header>
 
-  <main>
-    <!-- Dashboard stats -->
-    <section class="card">
-      <h2>Dashboard</h2>
-      <div class="stats">
-        <div class="stat">
-          <span class="stat-label">Revenue</span>
-          <span class="stat-value">$12,847</span>
-          <span class="stat-change positive">+14.2%</span>
+  <main class="page-main">
+    <nav class="breadcrumb">
+      <span>Shop</span>
+      <span class="breadcrumb-sep">/</span>
+      <span>Tops</span>
+      <span class="breadcrumb-sep">/</span>
+      <span class="breadcrumb-current">Novo Crewneck</span>
+    </nav>
+
+    <div class="product-layout">
+      <div
+        class="product-image"
+        :style="{ background: productImageBg }"
+      >
+        <span v-if="selectedColor" class="image-color-label">{{ selectedColor.name }}</span>
+      </div>
+
+      <div class="product-info">
+        <h1 class="product-name">Novo Crewneck</h1>
+
+        <div class="product-price">$68</div>
+
+        <div class="rating">
+          <span class="stars">
+            <svg
+              v-for="i in 5"
+              :key="i"
+              class="star"
+              :class="starFill(i - 1)"
+              width="14" height="14" viewBox="0 0 24 24"
+            >
+              <polygon
+                points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"
+                :fill="starFill(i - 1) !== 'empty' ? '#f59e0b' : 'none'"
+                stroke="#f59e0b"
+                stroke-width="1.5"
+              />
+            </svg>
+          </span>
+          <span class="rating-score">4.8</span>
+          <span class="rating-count">214 reviews</span>
         </div>
-        <div class="stat">
-          <span class="stat-label">Orders</span>
-          <span class="stat-value">284</span>
-          <span class="stat-change positive">+8.1%</span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">Fulfillment</span>
-          <div class="progress-track">
-            <div class="progress-fill" :style="{ width: progressWidth + '%' }"></div>
+
+        <p class="product-description">
+          Heavyweight 400gsm French terry. Slightly oversized. Pre-shrunk.
+        </p>
+
+        <div class="option-group">
+          <div class="option-label">
+            Color
+            <span v-if="selectedColor" class="option-value">{{ selectedColor.name }}</span>
           </div>
-          <span class="stat-change">{{ progressLabel }}</span>
+          <div class="color-swatches">
+            <button
+              v-for="color in colors"
+              :key="color.value"
+              :class="['color-swatch', { 'swatch-active': selectedColor?.value === color.value }]"
+              :style="{ background: color.value }"
+              :aria-label="color.name"
+              @click="selectColor(color)"
+            />
+          </div>
         </div>
-      </div>
-    </section>
 
-    <!-- Orders table -->
-    <section class="card">
-      <div class="card-header">
-        <h2>Recent Orders</h2>
-        <button class="btn-primary">+ New Order</button>
-      </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Order</th>
-            <th>Customer</th>
-            <th>Amount</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>#1847</td>
-            <td>Sarah Chen</td>
-            <td>$249.00</td>
-            <td><span class="badge warning">Processing</span></td>
-          </tr>
-          <tr>
-            <td>#1846</td>
-            <td>Mike Johnson</td>
-            <td>$89.50</td>
-            <td><span class="badge success">Shipped</span></td>
-          </tr>
-          <tr>
-            <td>#1845</td>
-            <td>Alex Rivera</td>
-            <td>$412.00</td>
-            <td>
-              <span :class="['badge', statusStates[statusIndex].class]">
-                {{ statusStates[statusIndex].text }}
-              </span>
-            </td>
-          </tr>
-          <tr>
-            <td>#1844</td>
-            <td>Priya Patel</td>
-            <td>$175.25</td>
-            <td><span class="badge success">Delivered</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
+        <div class="option-group">
+          <div class="option-label">
+            Size
+            <span v-if="selectedSize" class="option-value">{{ selectedSize }}</span>
+          </div>
+          <div class="size-options">
+            <button
+              v-for="size in sizes"
+              :key="size"
+              :class="['size-btn', { 'size-active': selectedSize === size }]"
+              @click="selectSize(size)"
+            >{{ size }}</button>
+          </div>
+        </div>
 
-    <!-- Notification popover -->
-    <section class="card">
-      <div class="card-header">
-        <h2>Notifications</h2>
-        <button class="btn-secondary" @click="togglePopover">
-          {{ popoverOpen ? 'Hide popover' : 'Show popover' }}
+        <button
+          :class="['add-to-cart-btn', { shake: btnShaking }]"
+          @click="addToCart"
+        >
+          Add to Cart
         </button>
-      </div>
-      <div v-if="popoverOpen" class="popover">
-        <div class="popover-item">
-          <span class="dot blue"></span> New order #1847 received <small>2 min ago</small>
-        </div>
-        <div class="popover-item">
-          <span class="dot amber"></span> Inventory low on SKU-2291 <small>18 min ago</small>
-        </div>
-        <div class="popover-item">
-          <span class="dot green"></span> Deployment v2.4.1 succeeded <small>1 hr ago</small>
-        </div>
-      </div>
-    </section>
 
-    <!-- Skeleton loader -->
-    <section class="card">
-      <h2>Processing Queue</h2>
-      <div v-if="skeletonLoading" class="skeleton">
-        <div class="skeleton-line wide"></div>
-        <div class="skeleton-line medium"></div>
-        <div class="skeleton-line narrow"></div>
+        <div class="product-meta">
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            Free shipping over $100
+          </span>
+          <span class="meta-item">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Free 30-day returns
+          </span>
+        </div>
       </div>
-      <div v-else>
-        <p class="stat-value">12</p>
-        <p class="stat-change warning">items in queue</p>
-      </div>
-    </section>
+    </div>
   </main>
+
+  <div v-if="cartOpen" class="cart-overlay" @click="closeCart" />
+
+  <div v-if="cartOpen" class="cart-drawer">
+    <div class="cart-drawer-header">
+      <span class="cart-drawer-title">Your Cart</span>
+      <button class="cart-close" @click="closeCart" aria-label="Close cart">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="cart-body">
+      <div v-if="cartItems.length === 0" class="cart-empty">
+        Your cart is empty.
+      </div>
+      <div
+        v-for="item in cartItems"
+        :key="item.id"
+        class="cart-item"
+      >
+        <div class="cart-item-swatch" :style="{ background: colors.find(c => c.name === item.color)?.value || '#1e2130' }" />
+        <div class="cart-item-details">
+          <span class="cart-item-name">{{ item.name }}</span>
+          <span class="cart-item-meta">{{ item.color }} · {{ item.size }}</span>
+        </div>
+        <span class="cart-item-price">{{ item.price }}</span>
+      </div>
+    </div>
+
+    <div v-if="cartItems.length > 0" class="cart-footer">
+      <div class="cart-total">
+        <span>Total</span>
+        <span>${{ (cartItems.length * 68).toFixed(2) }}</span>
+      </div>
+      <button class="checkout-btn">Checkout</button>
+    </div>
+  </div>
 </template>
 
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #0a0a0b;
-  --bg-raised: #141416;
-  --bg-muted: #1c1c1f;
-  --border: #27272a;
-  --text: #e4e4e7;
-  --text-heading: #fafafa;
-  --text-muted: #a1a1aa;
-  --text-faint: #71717a;
-  --blue: #3b82f6;
-  --amber: #f59e0b;
-  --green: #22c55e;
-  --red: #ef4444;
+  --bg:           #0d0f14;
+  --bg-raised:    #161921;
+  --bg-muted:     #1e2130;
+  --border:       #2a2d3e;
+  --text:         #c8ccd8;
+  --text-heading: #eef0f8;
+  --text-muted:   #7880a0;
+  --text-faint:   #454868;
+  --accent:       #7c8cf8;
+  --accent-dim:   rgba(124, 140, 248, 0.12);
+  --green:        #34d399;
+  --red:          #f87171;
 }
 
 body {
@@ -196,164 +245,457 @@ body {
   background: var(--bg);
   color: var(--text);
   line-height: 1.6;
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 2rem 1rem;
+  min-height: 100vh;
 }
 
-header { margin-bottom: 2rem; }
-h1 { font-size: 1.5rem; color: var(--text-heading); }
-h2 { font-size: 1rem; color: var(--text-heading); margin-bottom: 0.75rem; }
-.accent { color: var(--blue); }
-.subtitle { color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem; }
-kbd {
-  background: var(--bg-muted);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 1px 5px;
-  font-size: 0.75rem;
-  color: var(--text-muted);
-}
-
-.card {
-  background: var(--bg-raised);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 1.25rem;
-  margin-bottom: 1rem;
-}
-
-.card-header {
+/* ── Header ── */
+.krate-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.75rem;
+  padding: 0 2rem;
+  height: 56px;
+  background: rgba(13, 15, 20, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
 }
-.card-header h2 { margin-bottom: 0; }
 
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; }
-.stat { background: var(--bg-muted); border-radius: 8px; padding: 0.75rem; }
-.stat-label {
-  display: block;
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-faint);
-}
-.stat-value {
-  display: block;
-  font-size: 1.25rem;
+.krate-logo {
+  font-size: 1.2rem;
   font-weight: 700;
+  letter-spacing: -0.02em;
   color: var(--text-heading);
-  margin-top: 0.25rem;
-}
-.stat-change { font-size: 0.7rem; }
-.stat-change.positive { color: var(--green); }
-.stat-change.warning { color: var(--amber); }
-
-.progress-track {
-  height: 8px;
-  background: var(--bg);
-  border-radius: 4px;
-  overflow: hidden;
-  margin-top: 0.5rem;
-}
-.progress-fill {
-  height: 100%;
-  background: var(--blue);
-  border-radius: 4px;
-  transition: width 0.4s ease;
 }
 
-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-th {
-  text-align: left;
-  color: var(--text-faint);
-  font-weight: 500;
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid var(--border);
-}
-td {
-  padding: 0.6rem 0.75rem;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-muted);
-}
-tr:hover { background: var(--bg-muted); }
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 2px 8px;
-  border-radius: 999px;
-  font-size: 0.7rem;
-  font-weight: 500;
-  transition: all 0.3s;
-}
-.badge.info { background: rgba(59, 130, 246, 0.1); color: var(--blue); }
-.badge.warning { background: rgba(245, 158, 11, 0.1); color: var(--amber); }
-.badge.success { background: rgba(34, 197, 94, 0.1); color: var(--green); }
-
-.btn-primary {
-  background: var(--blue);
-  color: #fff;
+.cart-icon-btn {
+  position: relative;
+  background: none;
   border: none;
-  border-radius: 6px;
-  padding: 6px 12px;
-  font-size: 0.75rem;
-  font-weight: 500;
+  color: var(--text);
   cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
 }
-.btn-primary:hover { filter: brightness(1.15); }
+.cart-icon-btn:hover { color: var(--text-heading); }
 
-.btn-secondary {
-  background: var(--bg-muted);
+.cart-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.6rem;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  transform-origin: center;
+}
+
+/* ── Main ── */
+.page-main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+/* ── Breadcrumb ── */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  padding: 6px 12px;
-  font-size: 0.75rem;
-  cursor: pointer;
+  margin-bottom: 1.75rem;
 }
-.btn-secondary:hover { border-color: var(--text-faint); color: var(--text); }
+.breadcrumb-sep { color: var(--text-faint); }
+.breadcrumb-current { color: var(--text); }
 
-.popover {
-  margin-top: 0.75rem;
+/* ── Product layout ── */
+.product-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+@media (max-width: 600px) {
+  .product-layout { grid-template-columns: 1fr; gap: 1.5rem; }
+}
+
+/* ── Product image ── */
+.product-image {
+  aspect-ratio: 4/5;
+  border-radius: 16px;
+  transition: background 0.35s ease;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 1.25rem;
+  background: var(--bg-muted);
+  position: relative;
+  overflow: hidden;
+}
+
+.product-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, rgba(255,255,255,0.04) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.image-color-label {
+  position: relative;
+  z-index: 1;
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.45);
+  background: rgba(0,0,0,0.3);
+  padding: 3px 10px;
+  border-radius: 999px;
+  backdrop-filter: blur(4px);
+}
+
+/* ── Product info ── */
+.product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.product-name {
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--text-heading);
+  line-height: 1.2;
+}
+
+.product-price {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+/* ── Rating ── */
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.stars {
+  display: flex;
+  gap: 2px;
+}
+
+.star { flex-shrink: 0; }
+
+.rating-score {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+.rating-count {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ── Description ── */
+.product-description {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── Options ── */
+.option-group { display: flex; flex-direction: column; gap: 0.6rem; }
+
+.option-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.option-value {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--text);
+}
+
+/* ── Color swatches ── */
+.color-swatches {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.color-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  cursor: pointer;
+  padding: 0;
+  transition: outline-color 0.15s, transform 0.15s;
+}
+.color-swatch:hover { transform: scale(1.1); }
+.swatch-active {
+  outline-color: var(--accent);
+}
+
+/* ── Size buttons ── */
+.size-options {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.size-btn {
+  min-width: 44px;
+  height: 40px;
+  padding: 0 0.75rem;
+  background: var(--bg-muted);
   border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--bg-muted);
-  overflow: hidden;
-  transition: all 0.2s;
+  color: var(--text);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
 }
-.popover-item {
+.size-btn:hover {
+  border-color: var(--text-muted);
+  color: var(--text-heading);
+}
+.size-active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* ── Add to cart ── */
+.add-to-cart-btn {
+  width: 100%;
+  height: 50px;
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.1s;
+  margin-top: 0.25rem;
+}
+.add-to-cart-btn:hover { filter: brightness(1.12); }
+.add-to-cart-btn:active { transform: scale(0.98); }
+
+/* ── Product meta ── */
+.product-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.meta-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0.6rem 0.75rem;
-  font-size: 0.8rem;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.meta-item svg { color: var(--green); flex-shrink: 0; }
+
+/* ── Cart overlay ── */
+.cart-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+  animation: fade-in 0.2s ease;
+}
+
+/* ── Cart drawer ── */
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 201;
+  width: 360px;
+  max-width: 90vw;
+  background: var(--bg-raised);
+  border-left: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  animation: slide-in 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cart-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
   border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
 }
-.popover-item:last-child { border-bottom: none; }
-.popover-item small { margin-left: auto; color: var(--text-faint); font-size: 0.65rem; }
 
-.dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-.dot.blue { background: var(--blue); }
-.dot.amber { background: var(--amber); }
-.dot.green { background: var(--green); }
+.cart-drawer-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-heading);
+}
 
-.skeleton-line {
-  height: 10px;
-  border-radius: 4px;
+.cart-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  transition: color 0.15s;
+}
+.cart-close:hover { color: var(--text-heading); }
+
+.cart-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.cart-empty {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.75rem;
   background: var(--bg-muted);
-  margin-bottom: 8px;
-  animation: pulse 1.5s infinite;
+  border-radius: 10px;
+  border: 1px solid var(--border);
 }
-.skeleton-line.wide { width: 100%; }
-.skeleton-line.medium { width: 75%; }
-.skeleton-line.narrow { width: 50%; }
 
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+.cart-item-swatch {
+  width: 40px;
+  height: 48px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.cart-item-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.cart-item-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-heading);
+}
+
+.cart-item-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.cart-item-price {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-heading);
+  flex-shrink: 0;
+}
+
+.cart-footer {
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  flex-shrink: 0;
+}
+
+.cart-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-heading);
+}
+
+.checkout-btn {
+  width: 100%;
+  height: 46px;
+  background: var(--accent);
+  border: none;
+  border-radius: 9px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.2s;
+}
+.checkout-btn:hover { filter: brightness(1.12); }
+
+/* ── Animations ── */
+@keyframes badge-bump {
+  0%   { transform: scale(1); }
+  30%  { transform: scale(1.4); }
+  70%  { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+.cart-badge.bumping { animation: badge-bump 0.4s ease; }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%       { transform: translateX(-6px); }
+  75%       { transform: translateX(6px); }
+}
+.add-to-cart-btn.shake { animation: shake 0.3s ease; }
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-in {
+  from { transform: translateX(100%); }
+  to   { transform: translateX(0); }
 }
 </style>

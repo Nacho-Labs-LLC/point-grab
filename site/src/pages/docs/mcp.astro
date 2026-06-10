@@ -140,7 +140,7 @@ import CodeBlock from "../../components/CodeBlock.astro";
         <h3 class="text-xl font-semibold">
           <code class="font-mono text-amber">point_grab_search</code>
         </h3>
-        <p class="mt-2 text-text-muted">Search capture history by text, component name, file path, or framework.</p>
+        <p class="mt-2 text-text-muted">Search capture history by text, component name, file path, or framework when your sender includes it.</p>
 
         <div class="mt-4 overflow-x-auto rounded-xl border border-border">
           <table class="w-full text-sm">
@@ -157,7 +157,7 @@ import CodeBlock from "../../components/CodeBlock.astro";
                 <td class="px-4 py-2.5 font-mono text-amber">query</td>
                 <td class="px-4 py-2.5 font-mono text-text-faint">string</td>
                 <td class="px-4 py-2.5 text-text-faint">no</td>
-                <td class="px-4 py-2.5 text-text-muted">Searches HTML, component name, file path, selector, framework</td>
+                <td class="px-4 py-2.5 text-text-muted">Searches HTML, component name, file path, selector, and framework when present</td>
               </tr>
               <tr class="border-b border-border/50 bg-bg-raised/50">
                 <td class="px-4 py-2.5 font-mono text-amber">componentName</td>
@@ -175,7 +175,7 @@ import CodeBlock from "../../components/CodeBlock.astro";
                 <td class="px-4 py-2.5 font-mono text-amber">framework</td>
                 <td class="px-4 py-2.5 font-mono text-text-faint">string</td>
                 <td class="px-4 py-2.5 text-text-faint">no</td>
-                <td class="px-4 py-2.5 text-text-muted">Exact match: "angular", "react", "vue", "svelte", "web-components", "vanilla"</td>
+                <td class="px-4 py-2.5 text-text-muted">Exact match when stored entries include a framework value</td>
               </tr>
               <tr>
                 <td class="px-4 py-2.5 font-mono text-amber">limit</td>
@@ -208,8 +208,7 @@ import CodeBlock from "../../components/CodeBlock.astro";
           { "name": "Dashboard", "filePath": "src/pages/Dashboard.tsx", "line": 42, "column": null },
           { "name": "App", "filePath": "src/App.tsx", "line": 7, "column": null }
         ],
-        "framework": "react",
-        "computedStyles": null
+        "framework": null
       }
     }
   ]
@@ -307,7 +306,7 @@ import CodeBlock from "../../components/CodeBlock.astro";
         <h3 class="text-xl font-semibold">
           <code class="font-mono text-amber">point_grab_frameworks</code>
         </h3>
-        <p class="mt-2 text-text-muted">Get capture counts grouped by detected framework. No parameters.</p>
+        <p class="mt-2 text-text-muted">Get capture counts grouped by detected framework values present in stored history. No parameters.</p>
 
         <CodeBlock class="mt-4" lang="json" code={`{
   "totalGrabs": 47,
@@ -389,9 +388,9 @@ Content-Type: application/json`} />
   "componentStack": [...],            // optional
   "selector": "div.user-card",        // optional
   "cssClasses": ["user-card"],        // optional
-  "framework": "react",               // optional
+  "framework": "react",               // optional, custom sender only
   "snippet": "...",                    // optional
-  "computedStyles": {}                 // optional
+  "computedStyles": {}                 // optional, custom sender only
 }`} />
 
       <h3 class="text-lg font-semibold mt-8">Responses</h3>
@@ -425,7 +424,7 @@ Content-Type: application/json`} />
       </div>
 
       <p class="mt-6 text-sm text-text-faint">
-        The browser-side webhook plugin (auto-registered when <code class="text-amber font-mono">mcpWebhook: true</code>) handles all of this automatically. The webhook is fire-and-forget &mdash; it silently ignores errors if the MCP server isn't running. CORS headers (<code class="text-text-faint font-mono">Access-Control-Allow-Origin: *</code>) are included so the browser can POST from any origin.
+        The browser-side webhook plugin (auto-registered when <code class="text-amber font-mono">mcpWebhook: true</code>) handles this automatically, but it only sends <code class="text-text-faint font-mono">html</code>, <code class="text-text-faint font-mono">componentName</code>, <code class="text-text-faint font-mono">filePath</code>, <code class="text-text-faint font-mono">line</code>, <code class="text-text-faint font-mono">column</code>, <code class="text-text-faint font-mono">selector</code>, <code class="text-text-faint font-mono">cssClasses</code>, <code class="text-text-faint font-mono">snippet</code>, and <code class="text-text-faint font-mono">componentStack</code>. Because the MCP server requires both <code class="text-text-faint font-mono">html</code> and <code class="text-text-faint font-mono">componentName</code>, captures without a resolved component name are copied locally but are not persisted to MCP history. The webhook is fire-and-forget &mdash; it silently ignores errors if the MCP server isn't running. CORS headers (<code class="text-text-faint font-mono">Access-Control-Allow-Origin: *</code>) are included so the browser can POST from any origin.
       </p>
     </div>
   </Section>

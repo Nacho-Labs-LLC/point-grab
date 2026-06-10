@@ -3,84 +3,74 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>point-grab — Vanilla JS Example</title>
+  <title>Wavely</title>
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-  <header>
-    <h1>point-grab <span class="accent">vanilla</span></h1>
-    <p class="subtitle">Hold <kbd>Cmd+C</kbd> (Mac) or <kbd>Ctrl+C</kbd> (Win) and hover over any element. Click to capture. Press <kbd>F</kbd> to freeze animations.</p>
-  </header>
+  <div class="app">
+    <header class="app-header">
+      <div class="app-logo">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#818cf8" stroke-width="1.5"/><circle cx="10" cy="10" r="3.5" fill="#818cf8"/></svg>
+        Wavely
+      </div>
+      <p class="pg-hint">Hold <kbd>Cmd+C</kbd> / <kbd>Ctrl+C</kbd>, hover any element, click to grab its context for your AI</p>
+    </header>
 
-  <main>
-    <section class="card">
-      <h2>Dashboard</h2>
-      <div class="stats">
-        <div class="stat">
-          <span class="stat-label">Revenue</span>
-          <span class="stat-value">$12,847</span>
-          <span class="stat-change positive">+14.2%</span>
+    <div class="player">
+      <div class="now-playing">
+        <div class="album-art" id="album-art"></div>
+        <div class="track-meta">
+          <div class="track-title" id="track-title">Neon Dreams</div>
+          <div class="track-artist" id="track-artist">Synthwave Collective</div>
+          <div class="track-album">Chrome Horizon</div>
         </div>
-        <div class="stat">
-          <span class="stat-label">Orders</span>
-          <span class="stat-value">284</span>
-          <span class="stat-change positive">+8.1%</span>
+        <button class="heart-btn" id="heart-btn" aria-label="Like">♡</button>
+      </div>
+
+      <div class="scrubber">
+        <span class="time" id="time-elapsed">1:23</span>
+        <div class="progress-track" id="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+          <div class="progress-thumb" id="progress-thumb"></div>
         </div>
-        <div class="stat">
-          <span class="stat-label">Fulfillment</span>
-          <div class="progress-track">
-            <div id="progress-bar" class="progress-fill"></div>
+        <span class="time" id="time-total">3:47</span>
+      </div>
+
+      <div class="controls">
+        <button class="ctrl-btn" id="btn-shuffle" title="Shuffle">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>
+        </button>
+        <button class="ctrl-btn" id="btn-prev" title="Previous">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M19 20L9 12l10-8v16zM5 4h2v16H5z"/></svg>
+        </button>
+        <button class="ctrl-btn ctrl-btn--play" id="btn-play" title="Play/Pause">
+          <svg id="icon-pause" width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+          <svg id="icon-play" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" class="hidden"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button class="ctrl-btn" id="btn-next" title="Next">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M5 4l10 8-10 8V4zM19 4h-2v16h2z"/></svg>
+        </button>
+        <div class="volume-wrap">
+          <button class="ctrl-btn" id="btn-volume" title="Volume">
+            <svg id="icon-volume" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>
+          </button>
+          <div class="volume-popover hidden" id="volume-popover">
+            <span class="volume-pct" id="volume-pct">75%</span>
+            <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="75" />
+            <span class="volume-label">Volume</span>
           </div>
-          <span id="progress-label" class="stat-change">0%</span>
         </div>
+        <button class="ctrl-btn" id="btn-repeat" title="Repeat">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+        </button>
       </div>
-    </section>
 
-    <section class="card">
-      <div class="card-header">
-        <h2>Recent Orders</h2>
-        <button class="btn-primary">+ New Order</button>
+      <div class="queue">
+        <div class="queue-header">Queue</div>
+        <div class="queue-list" id="queue-list"></div>
       </div>
-      <table>
-        <thead>
-          <tr><th>Order</th><th>Customer</th><th>Amount</th><th>Status</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>#1847</td><td>Sarah Chen</td><td>$249.00</td><td><span class="badge warning">Processing</span></td></tr>
-          <tr><td>#1846</td><td>Mike Johnson</td><td>$89.50</td><td><span class="badge success">Shipped</span></td></tr>
-          <tr id="live-row"><td>#1845</td><td>Alex Rivera</td><td>$412.00</td><td><span id="live-status" class="badge info">Syncing...</span></td></tr>
-          <tr><td>#1844</td><td>Priya Patel</td><td>$175.25</td><td><span class="badge success">Delivered</span></td></tr>
-        </tbody>
-      </table>
-    </section>
-
-    <!-- Notification popover demo -->
-    <section class="card">
-      <div class="card-header">
-        <h2>Notifications</h2>
-        <button id="notif-toggle" class="btn-secondary">Show popover</button>
-      </div>
-      <div id="notif-popover" class="popover hidden">
-        <div class="popover-item"><span class="dot blue"></span> New order #1847 received <small>2 min ago</small></div>
-        <div class="popover-item"><span class="dot amber"></span> Inventory low on SKU-2291 <small>18 min ago</small></div>
-        <div class="popover-item"><span class="dot green"></span> Deployment v2.4.1 succeeded <small>1 hr ago</small></div>
-      </div>
-    </section>
-
-    <!-- Skeleton loader demo -->
-    <section class="card">
-      <h2>Processing Queue</h2>
-      <div id="skeleton" class="skeleton">
-        <div class="skeleton-line wide"></div>
-        <div class="skeleton-line medium"></div>
-        <div class="skeleton-line narrow"></div>
-      </div>
-      <div id="skeleton-loaded" class="hidden">
-        <p class="stat-value">12</p>
-        <p class="stat-change warning">items in queue</p>
-      </div>
-    </section>
-  </main>
+    </div>
+  </div>
 
   <script type="module" src="/main.js"></script>
 </body>

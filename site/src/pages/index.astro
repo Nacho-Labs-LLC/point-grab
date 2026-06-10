@@ -350,7 +350,7 @@ import LiveDemo from "../components/LiveDemo.astro";
       <div class="grid gap-3">
         <div class="flex items-start gap-4 rounded-lg border border-border bg-bg p-4">
           <code class="shrink-0 rounded bg-bg-muted px-2 py-1 text-sm text-point-grab-blue">point_grab_search</code>
-          <p class="text-sm text-text-muted">"Find the button I just clicked" — search by text, component, file, or framework</p>
+          <p class="text-sm text-text-muted">"Find the button I just clicked" — search by text, component, file, or framework when your sender includes it</p>
         </div>
         <div class="flex items-start gap-4 rounded-lg border border-border bg-bg p-4">
           <code class="shrink-0 rounded bg-bg-muted px-2 py-1 text-sm text-point-grab-blue">point_grab_recent</code>
@@ -362,7 +362,7 @@ import LiveDemo from "../components/LiveDemo.astro";
         </div>
         <div class="flex items-start gap-4 rounded-lg border border-border bg-bg p-4">
           <code class="shrink-0 rounded bg-bg-muted px-2 py-1 text-sm text-point-grab-blue">point_grab_stats</code>
-          <p class="text-sm text-text-muted">Session stats — total grabs, unique components, unique files, framework breakdown</p>
+          <p class="text-sm text-text-muted">Session stats — total grabs, unique components, unique files, plus framework breakdown when stored history includes it</p>
         </div>
       </div>
 
@@ -533,9 +533,12 @@ import LiveDemo from "../components/LiveDemo.astro";
             <div class="border-b border-border px-4 py-2.5">
               <span class="text-xs text-text-faint">index.html</span>
             </div>
-            <pre class="overflow-x-auto p-6 text-sm leading-relaxed"><code><span class="text-text-faint">&lt;</span><span class="text-point-grab-blue">script</span> <span class="text-amber">src</span><span class="text-text-faint">=</span><span class="text-success">"https://unpkg.com/@point-grab/core/dist/index.global.js"</span><span class="text-text-faint">&gt;&lt;/</span><span class="text-point-grab-blue">script</span><span class="text-text-faint">&gt;</span></code></pre>
+            <pre class="overflow-x-auto p-6 text-sm leading-relaxed"><code><span class="text-text-faint">&lt;</span><span class="text-point-grab-blue">script</span> <span class="text-amber">src</span><span class="text-text-faint">=</span><span class="text-success">"https://unpkg.com/@point-grab/core/global"</span><span class="text-text-faint">&gt;&lt;/</span><span class="text-point-grab-blue">script</span><span class="text-text-faint">&gt;</span>
+<span class="text-text-faint">&lt;</span><span class="text-point-grab-blue">script</span><span class="text-text-faint">&gt;</span>
+  <span class="text-text">PointGrab</span><span class="text-text-faint">.</span><span class="text-point-grab-blue">init</span><span class="text-text-faint">();</span>
+<span class="text-text-faint">&lt;/</span><span class="text-point-grab-blue">script</span><span class="text-text-faint">&gt;</span></code></pre>
           </div>
-          <p class="mt-3 text-xs text-text-faint">That's it. One script tag. The IIFE bundle auto-initializes — hold <kbd class="rounded border border-border bg-bg-muted px-1 py-0.5 text-[10px] text-text-muted">&#8984;C</kbd> and hover.</p>
+          <p class="mt-3 text-xs text-text-faint">Load the IIFE bundle, call <code class="text-text-heading">PointGrab.init()</code>, then hold <kbd class="rounded border border-border bg-bg-muted px-1 py-0.5 text-[10px] text-text-muted">&#8984;C</kbd> and hover.</p>
         </div>
 
         <!-- React -->
@@ -639,7 +642,7 @@ import LiveDemo from "../components/LiveDemo.astro";
 
       <div class="mt-8 flex items-center gap-6">
         <a href="https://github.com/Nacho-Labs-LLC/point-grab" class="text-sm text-text-faint transition-colors hover:text-text-heading">GitHub</a>
-        <a href="https://npmjs.com/package/point-grab" class="text-sm text-text-faint transition-colors hover:text-text-heading">npm</a>
+        <a href="https://npmjs.com/package/@point-grab/core" class="text-sm text-text-faint transition-colors hover:text-text-heading">npm</a>
         <a href="/docs/install" class="text-sm text-text-faint transition-colors hover:text-text-heading">Docs</a>
       </div>
     </div>
