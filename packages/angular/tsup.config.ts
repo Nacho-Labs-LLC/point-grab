@@ -4,7 +4,7 @@ export default defineConfig({
   entry: { index: 'src/index.ts' },
   format: ['esm'],
   dts: true,
-  clean: true,
+  clean: false,
   sourcemap: true,
   external: ['@angular/core'],
 });

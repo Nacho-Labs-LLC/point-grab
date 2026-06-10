@@ -1,6 +1,6 @@
 {
   "name": "@point-grab/svelte",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Svelte adapter for point-grab",
   "author": {
     "name": "Nate Richardson",
@@ -52,5 +52,8 @@
   "devDependencies": {
     "tsup": "^8.3.0",
     "typescript": "^5.7.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
