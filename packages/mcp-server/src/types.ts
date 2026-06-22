@@ -22,6 +22,8 @@ export interface GrabContext {
   elementDescription: string | null;
   /** Which framework adapter captured this grab */
   framework: string | null;
+  /** Optional sender-defined session identifier for grouping related captures */
+  sessionId?: string | null;
   /** Computed CSS styles snapshot (for future use) */
   computedStyles?: Record<string, string>;
 }

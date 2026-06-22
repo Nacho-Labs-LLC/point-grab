@@ -1,0 +1,63 @@
+<div class="shell">
+  <header class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow">Angular example</span>
+      <h1>point-grab for Angular</h1>
+      <p>
+        A real Angular demo surface for inspecting nested cards, metrics, and action controls. Hold
+        <kbd>Ctrl+C</kbd> / <kbd>Cmd+C</kbd>, hover an element, and click to capture it.
+      </p>
+    </div>
+
+    <div class="hero-panel">
+      <div class="panel-label">What this proves</div>
+      <ul>
+        <li>Angular app initialized from <code>main.ts</code> with <code>initPointGrabAngular()</code></li>
+        <li>Nested standalone components for better component ancestry capture</li>
+        <li>Enough UI density to be worth inspecting</li>
+      </ul>
+    </div>
+  </header>
+
+  <section class="metrics-grid">
+    @for (metric of metrics; track metric.label) {
+      <app-stat-card [label]="metric.label" [value]="metric.value" [hint]="metric.hint" />
+    }
+  </section>
+
+  <section class="content-grid">
+    <main class="feed-column">
+      <div class="section-header">
+        <div>
+          <span class="section-kicker">Demo feed</span>
+          <h2>Inspectable posts</h2>
+        </div>
+        <button type="button">New capture</button>
+      </div>
+
+      <div class="feed-list">
+        @for (post of posts; track post.id) {
+          <app-post-card [post]="post" />
+        }
+      </div>
+    </main>
+
+    <aside class="sidebar-card">
+      <span class="section-kicker">Operator notes</span>
+      <h2>Best results</h2>
+      <ol>
+        <li>Run <code>npm run dev</code> or <code>ng serve</code> for Angular debug metadata.</li>
+        <li>Hold the activation keys before hovering your target.</li>
+        <li>Click cards, buttons, or the detail panel to inspect deeper nested nodes.</li>
+      </ol>
+
+      <div class="callout">
+        <strong>Why this exists</strong>
+        <p>
+          The repo already had React, Vue, Svelte, Web Components, and Vanilla examples. Angular
+          support deserved the same treatment.
+        </p>
+      </div>
+    </aside>
+  </section>
+</div>

@@ -350,7 +350,7 @@ import LiveDemo from "../components/LiveDemo.astro";
       <div class="grid gap-3">
         <div class="flex items-start gap-4 rounded-lg border border-border bg-bg p-4">
           <code class="shrink-0 rounded bg-bg-muted px-2 py-1 text-sm text-point-grab-blue">point_grab_search</code>
-          <p class="text-sm text-text-muted">"Find the button I just clicked" — search by text, component, file, or framework</p>
+          <p class="text-sm text-text-muted">"Find the button I just clicked" — search by text, component, file, or framework when your sender includes it</p>
         </div>
         <div class="flex items-start gap-4 rounded-lg border border-border bg-bg p-4">
           <code class="shrink-0 rounded bg-bg-muted px-2 py-1 text-sm text-point-grab-blue">point_grab_recent</code>
@@ -362,7 +362,7 @@ import LiveDemo from "../components/LiveDemo.astro";
         </div>
         <div class="flex items-start gap-4 rounded-lg border border-border bg-bg p-4">
           <code class="shrink-0 rounded bg-bg-muted px-2 py-1 text-sm text-point-grab-blue">point_grab_stats</code>
-          <p class="text-sm text-text-muted">Session stats — total grabs, unique components, unique files, framework breakdown</p>
+          <p class="text-sm text-text-muted">Session stats — total grabs, unique components, unique files, plus framework breakdown when stored history includes it</p>
         </div>
       </div>
 
@@ -407,9 +407,14 @@ import LiveDemo from "../components/LiveDemo.astro";
         <p class="text-sm leading-relaxed text-text-muted">
           Reads the component tree via <code class="text-text-faint">window.ng</code> for component names, template references, and source locations.
         </p>
-        <a href="/docs/install#angular" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
-          Get started â†’
-        </a>
+        <div class="mt-4 flex flex-wrap items-center gap-4 text-xs font-medium">
+          <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/angular" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
+            Example source
+          </a>
+          <a href="/docs/install#angular" class="inline-flex items-center gap-1 text-text-faint transition-colors hover:text-text-heading">
+            Install docs →
+          </a>
+        </div>
       </div>
 
       <!-- React -->
@@ -424,9 +429,9 @@ import LiveDemo from "../components/LiveDemo.astro";
         <p class="text-sm leading-relaxed text-text-muted">
           Walks the fiber tree via <code class="text-text-faint">__reactFiber$</code> for component names and <code class="text-text-faint">_debugSource</code> for file paths with line numbers.
         </p>
-        <a href="https://stackblitz.com/github/nacho-labs-llc/point-grab/tree/main/examples/react" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
+        <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/react" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
           <svg class="h-3.5 w-3.5" viewBox="0 0 28 28" fill="currentColor"><path d="M12.747 16.273h-7.46L18.925 1.5l-3.671 10.227h7.46L9.075 26.5l3.672-10.227z"/></svg>
-          StackBlitz demo
+          Example source
         </a>
       </div>
 
@@ -442,9 +447,9 @@ import LiveDemo from "../components/LiveDemo.astro";
         <p class="text-sm leading-relaxed text-text-muted">
           Traverses the Vue instance tree, resolving SFC file paths and stripping <code class="text-text-faint">data-v-*</code> scoped hashes.
         </p>
-        <a href="https://stackblitz.com/github/nacho-labs-llc/point-grab/tree/main/examples/vue" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
+        <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/vue" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
           <svg class="h-3.5 w-3.5" viewBox="0 0 28 28" fill="currentColor"><path d="M12.747 16.273h-7.46L18.925 1.5l-3.671 10.227h7.46L9.075 26.5l3.672-10.227z"/></svg>
-          StackBlitz demo
+          Example source
         </a>
       </div>
 
@@ -460,9 +465,9 @@ import LiveDemo from "../components/LiveDemo.astro";
         <p class="text-sm leading-relaxed text-text-muted">
           Reads <code class="text-text-faint">__svelte_meta</code> for component boundaries and <code class="text-text-faint">loc</code> for source mappings.
         </p>
-        <a href="https://stackblitz.com/github/nacho-labs-llc/point-grab/tree/main/examples/svelte" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
+        <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/svelte" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
           <svg class="h-3.5 w-3.5" viewBox="0 0 28 28" fill="currentColor"><path d="M12.747 16.273h-7.46L18.925 1.5l-3.671 10.227h7.46L9.075 26.5l3.672-10.227z"/></svg>
-          StackBlitz demo
+          Example source
         </a>
       </div>
 
@@ -478,9 +483,9 @@ import LiveDemo from "../components/LiveDemo.astro";
         <p class="text-sm leading-relaxed text-text-muted">
           Pierces Shadow DOM boundaries and maps custom element tags back to their class definitions.
         </p>
-        <a href="https://stackblitz.com/github/nacho-labs-llc/point-grab/tree/main/examples/web-components" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
+        <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/web-components" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
           <svg class="h-3.5 w-3.5" viewBox="0 0 28 28" fill="currentColor"><path d="M12.747 16.273h-7.46L18.925 1.5l-3.671 10.227h7.46L9.075 26.5l3.672-10.227z"/></svg>
-          StackBlitz demo
+          Example source
         </a>
       </div>
 
@@ -490,15 +495,15 @@ import LiveDemo from "../components/LiveDemo.astro";
           <FrameworkIcon name="html" size={36} />
           <div>
             <h3 class="font-semibold text-text-heading">Vanilla JS</h3>
-            <code class="text-xs text-text-faint">point-grab</code>
+            <code class="text-xs text-text-faint">@point-grab/core</code>
           </div>
         </div>
         <p class="text-sm leading-relaxed text-text-muted">
           Pure DOM inspection with CSS selector generation. Zero dependencies, works in any page.
         </p>
-        <a href="https://stackblitz.com/github/nacho-labs-llc/point-grab/tree/main/examples/vanilla" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
+        <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/vanilla" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
           <svg class="h-3.5 w-3.5" viewBox="0 0 28 28" fill="currentColor"><path d="M12.747 16.273h-7.46L18.925 1.5l-3.671 10.227h7.46L9.075 26.5l3.672-10.227z"/></svg>
-          StackBlitz demo
+          Example source
         </a>
       </div>
     </div>
@@ -533,9 +538,12 @@ import LiveDemo from "../components/LiveDemo.astro";
             <div class="border-b border-border px-4 py-2.5">
               <span class="text-xs text-text-faint">index.html</span>
             </div>
-            <pre class="overflow-x-auto p-6 text-sm leading-relaxed"><code><span class="text-text-faint">&lt;</span><span class="text-point-grab-blue">script</span> <span class="text-amber">src</span><span class="text-text-faint">=</span><span class="text-success">"https://unpkg.com/@point-grab/core/dist/index.global.js"</span><span class="text-text-faint">&gt;&lt;/</span><span class="text-point-grab-blue">script</span><span class="text-text-faint">&gt;</span></code></pre>
+            <pre class="overflow-x-auto p-6 text-sm leading-relaxed"><code><span class="text-text-faint">&lt;</span><span class="text-point-grab-blue">script</span> <span class="text-amber">src</span><span class="text-text-faint">=</span><span class="text-success">"https://unpkg.com/@point-grab/core/global"</span><span class="text-text-faint">&gt;&lt;/</span><span class="text-point-grab-blue">script</span><span class="text-text-faint">&gt;</span>
+<span class="text-text-faint">&lt;</span><span class="text-point-grab-blue">script</span><span class="text-text-faint">&gt;</span>
+  <span class="text-text">PointGrab</span><span class="text-text-faint">.</span><span class="text-point-grab-blue">init</span><span class="text-text-faint">();</span>
+<span class="text-text-faint">&lt;/</span><span class="text-point-grab-blue">script</span><span class="text-text-faint">&gt;</span></code></pre>
           </div>
-          <p class="mt-3 text-xs text-text-faint">That's it. One script tag. The IIFE bundle auto-initializes — hold <kbd class="rounded border border-border bg-bg-muted px-1 py-0.5 text-[10px] text-text-muted">&#8984;C</kbd> and hover.</p>
+          <p class="mt-3 text-xs text-text-faint">Load the IIFE bundle, call <code class="text-text-heading">PointGrab.init()</code>, then hold <kbd class="rounded border border-border bg-bg-muted px-1 py-0.5 text-[10px] text-text-muted">&#8984;C</kbd> and hover.</p>
         </div>
 
         <!-- React -->
@@ -565,15 +573,15 @@ import LiveDemo from "../components/LiveDemo.astro";
             </div>
             <pre class="overflow-x-auto border-b border-border p-4 text-sm"><code><span class="text-text-faint">$</span> <span class="text-text">npm install @point-grab/core @point-grab/angular</span></code></pre>
             <div class="border-b border-border px-4 py-2.5">
-              <span class="text-xs text-text-faint">app.config.ts</span>
+              <span class="text-xs text-text-faint">main.ts</span>
             </div>
-            <pre class="overflow-x-auto p-6 text-sm leading-relaxed"><code><span class="text-[#a78bfa]">import</span> <span class="text-text-faint">{</span> <span class="text-text">providePointGrab</span> <span class="text-text-faint">}</span> <span class="text-[#a78bfa]">from</span> <span class="text-success">'@point-grab/angular'</span>
+            <pre class="overflow-x-auto p-6 text-sm leading-relaxed"><code><span class="text-[#a78bfa]">import</span> <span class="text-text-faint">{</span> <span class="text-text">bootstrapApplication</span> <span class="text-text-faint">}</span> <span class="text-[#a78bfa]">from</span> <span class="text-success">'@angular/platform-browser'</span>
+<span class="text-[#a78bfa]">import</span> <span class="text-text-faint">{</span> <span class="text-text">initPointGrabAngular</span> <span class="text-text-faint">}</span> <span class="text-[#a78bfa]">from</span> <span class="text-success">'@point-grab/angular'</span>
+<span class="text-[#a78bfa]">import</span> <span class="text-text-faint">{</span> <span class="text-text">appConfig</span> <span class="text-text-faint">}</span> <span class="text-[#a78bfa]">from</span> <span class="text-success">'./app/app.config'</span>
+<span class="text-[#a78bfa]">import</span> <span class="text-text-faint">{</span> <span class="text-text">App</span> <span class="text-text-faint">}</span> <span class="text-[#a78bfa]">from</span> <span class="text-success">'./app/app'</span>
 
-<span class="text-[#a78bfa]">export const</span> <span class="text-text">appConfig</span> <span class="text-text-faint">=</span> <span class="text-text-faint">{</span>
-  <span class="text-text">providers</span><span class="text-text-faint">: [</span>
-    <span class="text-point-grab-blue">providePointGrab</span><span class="text-text-faint">()</span>
-  <span class="text-text-faint">]</span>
-<span class="text-text-faint">}</span></code></pre>
+<span class="text-text">initPointGrabAngular</span><span class="text-text-faint">({</span> <span class="text-text">activationMode</span><span class="text-text-faint">:</span> <span class="text-success">'hold'</span><span class="text-text-faint">,</span> <span class="text-text">devOnly</span><span class="text-text-faint">:</span> <span class="text-text">false</span> <span class="text-text-faint">})</span>
+<span class="text-text">bootstrapApplication</span><span class="text-text-faint">(</span><span class="text-text">App</span><span class="text-text-faint">,</span> <span class="text-text">appConfig</span><span class="text-text-faint">).catch((</span><span class="text-text">err</span><span class="text-text-faint">) =&gt; console.error(</span><span class="text-text">err</span><span class="text-text-faint">))</span></code></pre>
           </div>
         </div>
 
@@ -639,7 +647,7 @@ import LiveDemo from "../components/LiveDemo.astro";
 
       <div class="mt-8 flex items-center gap-6">
         <a href="https://github.com/Nacho-Labs-LLC/point-grab" class="text-sm text-text-faint transition-colors hover:text-text-heading">GitHub</a>
-        <a href="https://npmjs.com/package/point-grab" class="text-sm text-text-faint transition-colors hover:text-text-heading">npm</a>
+        <a href="https://npmjs.com/package/@point-grab/core" class="text-sm text-text-faint transition-colors hover:text-text-heading">npm</a>
         <a href="/docs/install" class="text-sm text-text-faint transition-colors hover:text-text-heading">Docs</a>
       </div>
     </div>
