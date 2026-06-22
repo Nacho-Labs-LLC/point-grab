@@ -1,9 +1,9 @@
 import { initPointGrabWebComponents } from '@point-grab/web-components';
 
-initPointGrabWebComponents({ activationMode: 'hold' });
+initPointGrabWebComponents({ activationMode: 'hold', devOnly: false });
 
-// --- <app-shell> ---
-class AppShell extends HTMLElement {
+// --- <forge-app> ---
+class ForgeApp extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
@@ -11,60 +11,349 @@ class AppShell extends HTMLElement {
       <style>
         :host {
           display: block;
+          min-height: 100vh;
+          background: #0f0d0a;
+          color: #d4cdc5;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
-        header {
-          margin-bottom: 2rem;
+
+        .forge-header {
+          background: #1a1714;
+          border-bottom: 1px solid #2e2924;
+          padding: 0 1.5rem;
+          height: 56px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
         }
-        h1 {
-          font-size: 1.5rem;
+
+        .forge-header-logo {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+
+        .forge-header-logo svg {
+          width: 24px;
+          height: 24px;
+          flex-shrink: 0;
+        }
+
+        .forge-header-wordmark {
+          font-size: 1rem;
           font-weight: 700;
-          color: #fafafa;
-          margin-bottom: 0.25rem;
+          color: #f0ebe4;
+          letter-spacing: -0.02em;
         }
-        p {
-          color: #a1a1aa;
-          font-size: 0.875rem;
-          line-height: 1.5;
+
+        .forge-header-hint {
+          font-size: 0.75rem;
+          color: #5a5248;
         }
-        .dashboard {
-          display: grid;
+
+        .forge-main {
+          max-width: 640px;
+          margin: 0 auto;
+          padding: 2.5rem 1.5rem 4rem;
+        }
+
+        .forge-section {
+          margin-bottom: 2.5rem;
+        }
+
+        .forge-section-heading {
+          font-size: 0.6875rem;
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: #5a5248;
+          margin-bottom: 1rem;
+          padding-bottom: 0.5rem;
+          border-bottom: 1px solid #2e2924;
+        }
+
+        .forge-row {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          flex-wrap: wrap;
+        }
+
+        .forge-tooltip-row {
+          display: flex;
+          align-items: center;
           gap: 1rem;
+          flex-wrap: wrap;
         }
-        .stat-row {
-          display: grid;
-          grid-template-columns: repeat(3, 1fr);
-          gap: 1rem;
-        }
-        @media (max-width: 600px) {
-          .stat-row {
-            grid-template-columns: 1fr;
-          }
+
+        .forge-hint {
+          font-size: 0.75rem;
+          color: #5a5248;
+          margin-top: 0.5rem;
         }
       </style>
-      <header>
-        <h1>point-grab web-components</h1>
-        <p>Hold Cmd+C (Mac) or Ctrl+C (Win) and hover over any element. Click to capture. Press F to freeze animations.</p>
-      </header>
-      <div class="dashboard">
-        <div class="stat-row">
-          <stat-card label="Revenue" value="$48.2k" change="+12.5%"></stat-card>
-          <stat-card label="Orders" value="1,284" change="+8.1%"></stat-card>
-          <stat-card label="Customers" value="573" change="+3.2%"></stat-card>
+
+      <header class="forge-header">
+        <div class="forge-header-logo">
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="3" y="16" width="18" height="5" rx="1.5" fill="#f97316"/>
+            <rect x="9" y="11" width="6" height="6" rx="1" fill="#f97316" opacity="0.7"/>
+            <path d="M12 3 L15 8 L12 11 L9 8 Z" fill="#f0ebe4"/>
+            <rect x="11" y="7" width="2" height="4" rx="0.5" fill="#f97316"/>
+          </svg>
+          <span class="forge-header-wordmark">Forge UI</span>
         </div>
-        <progress-card></progress-card>
-        <order-table></order-table>
-        <notif-popover></notif-popover>
-        <skeleton-card></skeleton-card>
+        <span class="forge-header-hint">Hold Cmd+C / Ctrl+C, hover any element, click to grab</span>
+      </header>
+
+      <main class="forge-main">
+
+        <section class="forge-section">
+          <div class="forge-section-heading">Buttons</div>
+          <div class="forge-row">
+            <forge-button variant="primary">Deploy</forge-button>
+            <forge-button variant="secondary">Settings</forge-button>
+            <forge-button variant="ghost">Cancel</forge-button>
+          </div>
+        </section>
+
+        <section class="forge-section">
+          <div class="forge-section-heading">Badges</div>
+          <div class="forge-row">
+            <forge-badge count="3" variant="default"></forge-badge>
+            <forge-badge count="0" variant="success" auto-increment></forge-badge>
+            <forge-badge count="12" variant="warning"></forge-badge>
+            <forge-badge count="99" variant="danger"></forge-badge>
+          </div>
+          <div class="forge-hint">The green badge auto-increments every 3s</div>
+        </section>
+
+        <section class="forge-section">
+          <div class="forge-section-heading">Input</div>
+          <forge-input label="Component name" placeholder="e.g. forge-dialog"></forge-input>
+        </section>
+
+        <section class="forge-section">
+          <div class="forge-section-heading">Tooltip</div>
+          <div class="forge-tooltip-row">
+            <forge-tooltip text="Send a message" position="top">
+              <forge-button variant="primary">Message</forge-button>
+            </forge-tooltip>
+            <forge-tooltip text="Opens in new tab" position="top">
+              <forge-button variant="ghost">Docs</forge-button>
+            </forge-tooltip>
+          </div>
+          <div class="forge-hint">Hover a button — press F to freeze the tooltip for capture</div>
+        </section>
+
+        <section class="forge-section">
+          <div class="forge-section-heading">Card</div>
+          <forge-card heading="Component Health">
+            All systems operational. Last deploy 4 minutes ago.
+            <forge-badge count="2" variant="success" style="margin-top: 0.75rem; display: block;"></forge-badge>
+          </forge-card>
+        </section>
+
+      </main>
+    `;
+  }
+}
+customElements.define('forge-app', ForgeApp);
+
+// --- <forge-button> ---
+class ForgeButton extends HTMLElement {
+  static get observedAttributes() {
+    return ['variant'];
+  }
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+  }
+
+  connectedCallback() {
+    this.render();
+  }
+
+  attributeChangedCallback() {
+    this.render();
+  }
+
+  render() {
+    const variant = this.getAttribute('variant') || 'primary';
+
+    const styles = {
+      primary: `
+        background: #f97316;
+        color: #0f0d0a;
+        border: 1px solid transparent;
+      `,
+      secondary: `
+        background: #1a1714;
+        color: #d4cdc5;
+        border: 1px solid #2e2924;
+      `,
+      ghost: `
+        background: transparent;
+        color: #f97316;
+        border: 1px solid transparent;
+      `,
+    };
+
+    const hoverStyles = {
+      primary: `background: #ea6a0a;`,
+      secondary: `background: #231f1b; border-color: #3e3530;`,
+      ghost: `background: rgba(249,115,22,0.08);`,
+    };
+
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host {
+          display: inline-block;
+        }
+        .forge-btn {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.4375rem 0.875rem;
+          border-radius: 0.375rem;
+          font-size: 0.8125rem;
+          font-weight: 500;
+          font-family: inherit;
+          cursor: pointer;
+          line-height: 1.4;
+          transition: background 0.15s, border-color 0.15s;
+          white-space: nowrap;
+          ${styles[variant] || styles.primary}
+        }
+        .forge-btn:hover {
+          ${hoverStyles[variant] || hoverStyles.primary}
+        }
+        .forge-btn:active {
+          opacity: 0.85;
+        }
+      </style>
+      <button class="forge-btn"><slot></slot></button>
+    `;
+  }
+}
+customElements.define('forge-button', ForgeButton);
+
+// --- <forge-badge> ---
+class ForgeBadge extends HTMLElement {
+  static get observedAttributes() {
+    return ['count', 'variant', 'auto-increment'];
+  }
+
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' });
+    this._interval = null;
+  }
+
+  connectedCallback() {
+    this.render();
+    if (this.hasAttribute('auto-increment')) {
+      this._interval = setInterval(() => {
+        const current = parseInt(this.getAttribute('count') || '0', 10);
+        this.setAttribute('count', String(current + 1));
+        this._triggerBump();
+      }, 3000);
+    }
+  }
+
+  disconnectedCallback() {
+    if (this._interval) {
+      clearInterval(this._interval);
+      this._interval = null;
+    }
+  }
+
+  attributeChangedCallback(name) {
+    if (name === 'count') {
+      const chip = this.shadowRoot.querySelector('.badge-chip');
+      const countEl = this.shadowRoot.querySelector('.badge-count');
+      if (countEl) {
+        countEl.textContent = this.getAttribute('count') || '0';
+      }
+    } else {
+      this.render();
+    }
+  }
+
+  _triggerBump() {
+    const chip = this.shadowRoot.querySelector('.badge-chip');
+    if (!chip) return;
+    chip.classList.remove('badge-bump');
+    // Force reflow so re-adding the class re-triggers animation
+    void chip.offsetWidth;
+    chip.classList.add('badge-bump');
+    chip.addEventListener('animationend', () => {
+      chip.classList.remove('badge-bump');
+    }, { once: true });
+  }
+
+  render() {
+    const variant = this.getAttribute('variant') || 'default';
+    const count = this.getAttribute('count') || '0';
+
+    const colors = {
+      default: { bg: 'rgba(249,115,22,0.12)', text: '#f97316', border: 'rgba(249,115,22,0.25)' },
+      success: { bg: 'rgba(52,211,153,0.12)', text: '#34d399', border: 'rgba(52,211,153,0.25)' },
+      warning: { bg: 'rgba(251,191,36,0.12)', text: '#fbbf24', border: 'rgba(251,191,36,0.25)' },
+      danger:  { bg: 'rgba(248,113,113,0.12)', text: '#f87171', border: 'rgba(248,113,113,0.25)' },
+    };
+
+    const c = colors[variant] || colors.default;
+
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host {
+          display: inline-block;
+        }
+        .badge-chip {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.3rem;
+          padding: 0.2rem 0.6rem;
+          border-radius: 9999px;
+          background: ${c.bg};
+          border: 1px solid ${c.border};
+          font-size: 0.75rem;
+          font-weight: 600;
+          color: ${c.text};
+          font-variant-numeric: tabular-nums;
+          transition: transform 0.1s;
+        }
+        .badge-label {
+          font-size: 0.6875rem;
+          opacity: 0.8;
+          font-weight: 500;
+        }
+        .badge-count {
+          font-size: 0.75rem;
+        }
+        @keyframes badge-bump-anim {
+          0%   { transform: scale(1); }
+          45%  { transform: scale(1.35); }
+          100% { transform: scale(1); }
+        }
+        .badge-bump {
+          animation: badge-bump-anim 0.35s ease;
+        }
+      </style>
+      <div class="badge-chip">
+        <span class="badge-count">${count}</span>
       </div>
     `;
   }
 }
-customElements.define('app-shell', AppShell);
+customElements.define('forge-badge', ForgeBadge);
 
-// --- <stat-card> ---
-class StatCard extends HTMLElement {
+// --- <forge-input> ---
+class ForgeInput extends HTMLElement {
   static get observedAttributes() {
-    return ['label', 'value', 'change'];
+    return ['label', 'placeholder', 'value'];
   }
 
   constructor() {
@@ -82,422 +371,201 @@ class StatCard extends HTMLElement {
 
   render() {
     const label = this.getAttribute('label') || '';
+    const placeholder = this.getAttribute('placeholder') || '';
     const value = this.getAttribute('value') || '';
-    const change = this.getAttribute('change') || '';
-    const isPositive = change.startsWith('+');
 
     this.shadowRoot.innerHTML = `
       <style>
         :host {
           display: block;
         }
-        .card {
-          background: #141416;
-          border: 1px solid #27272a;
-          border-radius: 0.75rem;
-          padding: 1.25rem;
-        }
-        .label {
+        .input-label {
+          display: block;
           font-size: 0.75rem;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          color: #a1a1aa;
-          margin-bottom: 0.5rem;
+          font-weight: 500;
+          color: #8a8078;
+          margin-bottom: 0.375rem;
+          letter-spacing: 0.01em;
         }
-        .value {
-          font-size: 1.5rem;
-          font-weight: 700;
-          color: #fafafa;
-          margin-bottom: 0.25rem;
+        .input-field {
+          display: block;
+          width: 100%;
+          padding: 0.5rem 0.75rem;
+          background: #1a1714;
+          border: 1px solid #2e2924;
+          border-radius: 0.375rem;
+          color: #d4cdc5;
+          font-size: 0.875rem;
+          font-family: inherit;
+          outline: none;
+          transition: border-color 0.15s, box-shadow 0.15s;
+          max-width: 320px;
         }
-        .change {
-          font-size: 0.8125rem;
-          color: ${isPositive ? '#22c55e' : '#ef4444'};
+        .input-field::placeholder {
+          color: #5a5248;
+        }
+        .input-field:focus {
+          border-color: #f97316;
+          box-shadow: 0 0 0 2px rgba(249,115,22,0.15);
         }
       </style>
-      <div class="card">
-        <div class="label">${label}</div>
-        <div class="value">${value}</div>
-        <div class="change">${change}</div>
-      </div>
+      <label class="input-label">${label}</label>
+      <input class="input-field" placeholder="${placeholder}" value="${value}" />
     `;
   }
 }
-customElements.define('stat-card', StatCard);
+customElements.define('forge-input', ForgeInput);
 
-// --- <progress-card> ---
-class ProgressCard extends HTMLElement {
+// --- <forge-tooltip> ---
+class ForgeTooltip extends HTMLElement {
+  static get observedAttributes() {
+    return ['text', 'position'];
+  }
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this._progress = 0;
-    this._interval = null;
+    this._onMouseover = this._onMouseover.bind(this);
+    this._onMouseleave = this._onMouseleave.bind(this);
   }
 
   connectedCallback() {
-    this.shadowRoot.innerHTML = `
-      <style>
-        :host {
-          display: block;
-        }
-        .card {
-          background: #141416;
-          border: 1px solid #27272a;
-          border-radius: 0.75rem;
-          padding: 1.25rem;
-        }
-        .header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 0.75rem;
-        }
-        .title {
-          font-size: 0.875rem;
-          font-weight: 600;
-          color: #fafafa;
-        }
-        .percent {
-          font-size: 0.8125rem;
-          color: #a1a1aa;
-          font-variant-numeric: tabular-nums;
-        }
-        .track {
-          height: 8px;
-          background: #1c1c1f;
-          border-radius: 4px;
-          overflow: hidden;
-        }
-        .bar {
-          height: 100%;
-          background: #3b82f6;
-          border-radius: 4px;
-          transition: width 0.3s ease;
-        }
-      </style>
-      <div class="card">
-        <div class="header">
-          <span class="title">Deployment Progress</span>
-          <span class="percent">0%</span>
-        </div>
-        <div class="track">
-          <div class="bar" style="width: 0%"></div>
-        </div>
-      </div>
-    `;
-
-    this._interval = setInterval(() => {
-      if (this._progress >= 87) {
-        this._progress = 0;
-      } else {
-        this._progress += 1;
-      }
-      const bar = this.shadowRoot.querySelector('.bar');
-      const percent = this.shadowRoot.querySelector('.percent');
-      if (bar) bar.style.width = `${this._progress}%`;
-      if (percent) percent.textContent = `${this._progress}%`;
-    }, 400);
+    this.render();
+    this.addEventListener('mouseover', this._onMouseover);
+    this.addEventListener('mouseleave', this._onMouseleave);
   }
 
   disconnectedCallback() {
-    clearInterval(this._interval);
-  }
-}
-customElements.define('progress-card', ProgressCard);
-
-// --- <order-table> ---
-class OrderTable extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-    this._statusIndex = 0;
-    this._interval = null;
+    this.removeEventListener('mouseover', this._onMouseover);
+    this.removeEventListener('mouseleave', this._onMouseleave);
   }
 
-  connectedCallback() {
-    const statuses = ['Syncing...', 'Validating', 'Confirmed'];
-    const statusColors = { 'Syncing...': '#f59e0b', 'Validating': '#3b82f6', 'Confirmed': '#22c55e' };
-
-    this.shadowRoot.innerHTML = `
-      <style>
-        :host {
-          display: block;
-        }
-        .card {
-          background: #141416;
-          border: 1px solid #27272a;
-          border-radius: 0.75rem;
-          overflow: hidden;
-        }
-        .card-header {
-          padding: 1rem 1.25rem;
-          border-bottom: 1px solid #27272a;
-          font-size: 0.875rem;
-          font-weight: 600;
-          color: #fafafa;
-        }
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          font-size: 0.8125rem;
-        }
-        th {
-          text-align: left;
-          padding: 0.625rem 1.25rem;
-          color: #71717a;
-          font-weight: 500;
-          border-bottom: 1px solid #27272a;
-        }
-        td {
-          padding: 0.75rem 1.25rem;
-          color: #e4e4e7;
-          border-bottom: 1px solid #1c1c1f;
-        }
-        tr:last-child td {
-          border-bottom: none;
-        }
-        .badge {
-          display: inline-block;
-          padding: 0.2rem 0.6rem;
-          border-radius: 9999px;
-          font-size: 0.75rem;
-          font-weight: 500;
-          transition: background 0.2s, color 0.2s;
-        }
-      </style>
-      <div class="card">
-        <div class="card-header">Recent Orders</div>
-        <table>
-          <thead>
-            <tr>
-              <th>Order</th>
-              <th>Customer</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>#4091</td>
-              <td>Alice Park</td>
-              <td><span class="badge" id="badge">Syncing...</span></td>
-            </tr>
-            <tr>
-              <td>#4090</td>
-              <td>Bob Chen</td>
-              <td><span class="badge" style="background: rgba(34,197,94,0.15); color: #22c55e;">Confirmed</span></td>
-            </tr>
-            <tr>
-              <td>#4089</td>
-              <td>Carol Wu</td>
-              <td><span class="badge" style="background: rgba(59,130,246,0.15); color: #3b82f6;">Validating</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    `;
-
-    const badge = this.shadowRoot.getElementById('badge');
-    this._updateBadge(badge, statuses[0], statusColors[statuses[0]]);
-
-    this._interval = setInterval(() => {
-      this._statusIndex = (this._statusIndex + 1) % statuses.length;
-      const status = statuses[this._statusIndex];
-      this._updateBadge(badge, status, statusColors[status]);
-    }, 2500);
+  attributeChangedCallback() {
+    this.render();
   }
 
-  _updateBadge(badge, text, color) {
-    if (!badge) return;
-    badge.textContent = text;
-    badge.style.color = color;
-    badge.style.background = color.replace(')', ', 0.15)').replace('rgb(', 'rgba(');
-    // Handle hex colors
-    if (color.startsWith('#')) {
-      const r = parseInt(color.slice(1, 3), 16);
-      const g = parseInt(color.slice(3, 5), 16);
-      const b = parseInt(color.slice(5, 7), 16);
-      badge.style.background = `rgba(${r}, ${g}, ${b}, 0.15)`;
+  _onMouseover() {
+    const bubble = this.shadowRoot.querySelector('.tooltip-bubble');
+    if (bubble) {
+      bubble.style.opacity = '1';
+      bubble.style.visibility = 'visible';
     }
   }
 
-  disconnectedCallback() {
-    clearInterval(this._interval);
-  }
-}
-customElements.define('order-table', OrderTable);
-
-// --- <notif-popover> ---
-class NotifPopover extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-    this._open = false;
+  _onMouseleave() {
+    const bubble = this.shadowRoot.querySelector('.tooltip-bubble');
+    if (bubble) {
+      bubble.style.opacity = '0';
+      bubble.style.visibility = 'hidden';
+    }
   }
 
-  connectedCallback() {
+  render() {
+    const text = this.getAttribute('text') || '';
+    const position = this.getAttribute('position') || 'top';
+
+    const isTop = position === 'top';
+
     this.shadowRoot.innerHTML = `
       <style>
         :host {
-          display: block;
-        }
-        .wrapper {
+          display: inline-block;
           position: relative;
-          background: #141416;
-          border: 1px solid #27272a;
-          border-radius: 0.75rem;
-          padding: 1.25rem;
         }
-        button {
-          background: #3b82f6;
-          color: #fff;
-          border: none;
-          padding: 0.5rem 1rem;
-          border-radius: 0.5rem;
-          font-size: 0.8125rem;
-          font-weight: 500;
-          cursor: pointer;
-          transition: background 0.15s;
+        .tooltip-wrapper {
+          display: inline-block;
+          position: relative;
         }
-        button:hover {
-          background: #2563eb;
-        }
-        .popover {
-          display: none;
+        .tooltip-bubble {
           position: absolute;
-          bottom: calc(100% + 0.5rem);
-          left: 1.25rem;
-          background: #1c1c1f;
-          border: 1px solid #27272a;
-          border-radius: 0.625rem;
-          padding: 0.75rem 1rem;
-          min-width: 220px;
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-          z-index: 10;
+          ${isTop ? 'bottom: calc(100% + 8px);' : 'top: calc(100% + 8px);'}
+          left: 50%;
+          transform: translateX(-50%);
+          background: #231f1b;
+          border: 1px solid #2e2924;
+          border-radius: 0.375rem;
+          padding: 0.375rem 0.625rem;
+          font-size: 0.75rem;
+          color: #d4cdc5;
+          white-space: nowrap;
+          pointer-events: none;
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 0.15s ease, visibility 0.15s ease;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+          z-index: 100;
         }
-        .popover.open {
-          display: block;
-          animation: fadeIn 0.15s ease;
-        }
-        .notif-item {
-          padding: 0.375rem 0;
-          font-size: 0.8125rem;
-          color: #e4e4e7;
-          border-bottom: 1px solid #27272a;
-        }
-        .notif-item:last-child {
-          border-bottom: none;
-        }
-        .notif-item .time {
-          color: #71717a;
-          font-size: 0.6875rem;
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(4px); }
-          to { opacity: 1; transform: translateY(0); }
+        .tooltip-bubble::after {
+          content: '';
+          position: absolute;
+          ${isTop ? 'top: 100%;' : 'bottom: 100%;'}
+          left: 50%;
+          transform: translateX(-50%);
+          border: 5px solid transparent;
+          ${isTop
+            ? 'border-top-color: #2e2924;'
+            : 'border-bottom-color: #2e2924;'}
         }
       </style>
-      <div class="wrapper">
-        <div class="popover" id="popover">
-          <div class="notif-item">Deploy succeeded <span class="time">2m ago</span></div>
-          <div class="notif-item">New signup: dave@co.io <span class="time">5m ago</span></div>
-          <div class="notif-item">Invoice #892 paid <span class="time">12m ago</span></div>
-        </div>
-        <button id="btn">Notifications (3)</button>
+      <div class="tooltip-wrapper">
+        <slot></slot>
+        <div class="tooltip-bubble">${text}</div>
       </div>
     `;
-
-    this.shadowRoot.getElementById('btn').addEventListener('click', () => {
-      this._open = !this._open;
-      this.shadowRoot.getElementById('popover').classList.toggle('open', this._open);
-    });
   }
 }
-customElements.define('notif-popover', NotifPopover);
+customElements.define('forge-tooltip', ForgeTooltip);
 
-// --- <skeleton-card> ---
-class SkeletonCard extends HTMLElement {
+// --- <forge-card> ---
+class ForgeCard extends HTMLElement {
+  static get observedAttributes() {
+    return ['heading'];
+  }
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this._loaded = false;
-    this._interval = null;
   }
 
   connectedCallback() {
+    this.render();
+  }
+
+  attributeChangedCallback() {
+    this.render();
+  }
+
+  render() {
+    const heading = this.getAttribute('heading') || '';
+
     this.shadowRoot.innerHTML = `
       <style>
         :host {
           display: block;
         }
-        .card {
-          background: #141416;
-          border: 1px solid #27272a;
-          border-radius: 0.75rem;
-          padding: 1.25rem;
-          min-height: 120px;
+        .card-root {
+          background: #1a1714;
+          border: 1px solid #2e2924;
+          border-radius: 0.625rem;
+          padding: 1.25rem 1.375rem;
         }
-        .skeleton-line {
-          height: 12px;
-          border-radius: 6px;
-          background: linear-gradient(90deg, #1c1c1f 25%, #27272a 50%, #1c1c1f 75%);
-          background-size: 200% 100%;
-          animation: shimmer 1.5s infinite;
-          margin-bottom: 0.75rem;
-        }
-        .skeleton-line:nth-child(1) { width: 40%; }
-        .skeleton-line:nth-child(2) { width: 100%; }
-        .skeleton-line:nth-child(3) { width: 75%; }
-        .skeleton-line:nth-child(4) { width: 60%; margin-bottom: 0; }
-        @keyframes shimmer {
-          0% { background-position: 200% 0; }
-          100% { background-position: -200% 0; }
-        }
-        .loaded-content {
-          display: none;
-        }
-        .loaded-content.visible {
-          display: block;
-        }
-        .loaded-content h3 {
+        .card-heading {
           font-size: 0.875rem;
           font-weight: 600;
-          color: #fafafa;
-          margin-bottom: 0.5rem;
+          color: #f0ebe4;
+          margin-bottom: 0.625rem;
         }
-        .loaded-content p {
+        .card-body {
           font-size: 0.8125rem;
-          color: #a1a1aa;
-          line-height: 1.5;
-        }
-        .skeleton.hidden {
-          display: none;
+          color: #8a8078;
+          line-height: 1.6;
         }
       </style>
-      <div class="card">
-        <div class="skeleton" id="skeleton">
-          <div class="skeleton-line"></div>
-          <div class="skeleton-line"></div>
-          <div class="skeleton-line"></div>
-          <div class="skeleton-line"></div>
-        </div>
-        <div class="loaded-content" id="loaded">
-          <h3>Analytics Summary</h3>
-          <p>Conversion rate improved by 4.2% this week. Top performing channel: organic search with 12.8k sessions.</p>
-        </div>
+      <div class="card-root">
+        <div class="card-heading">${heading}</div>
+        <div class="card-body"><slot></slot></div>
       </div>
     `;
-
-    this._interval = setInterval(() => {
-      this._loaded = !this._loaded;
-      const skeleton = this.shadowRoot.getElementById('skeleton');
-      const loaded = this.shadowRoot.getElementById('loaded');
-      skeleton.classList.toggle('hidden', this._loaded);
-      loaded.classList.toggle('visible', this._loaded);
-    }, 4000);
-  }
-
-  disconnectedCallback() {
-    clearInterval(this._interval);
   }
 }
-customElements.define('skeleton-card', SkeletonCard);
+customElements.define('forge-card', ForgeCard);

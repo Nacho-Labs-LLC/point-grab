@@ -1,49 +1,149 @@
 import { init } from '@point-grab/core';
 
-const pg = init({ activationMode: 'hold' });
+init({ activationMode: 'hold', devOnly: false });
 
-// --- Animations ---
-
-// Progress bar
-const progressBar = document.getElementById('progress-bar');
-const progressLabel = document.getElementById('progress-label');
-let progressValue = 0;
-
-setInterval(() => {
-  progressValue += 2 + Math.random() * 3;
-  if (progressValue > 87) progressValue = 0;
-  progressBar.style.width = `${Math.round(progressValue)}%`;
-  progressLabel.textContent = `${Math.round(progressValue)}%`;
-}, 400);
-
-// Live status row
-const liveStatus = document.getElementById('live-status');
-const states = [
-  { text: 'Syncing...', cls: 'info' },
-  { text: 'Validating', cls: 'warning' },
-  { text: 'Confirmed', cls: 'success' },
+const tracks = [
+  { title: 'Neon Dreams',   artist: 'Synthwave Collective', album: 'Chrome Horizon', duration: '3:47', color: 'linear-gradient(135deg,#4f46e5,#7c3aed,#db2777)' },
+  { title: 'Midnight Circuit', artist: 'VΛSION',           album: 'Signal Path',    duration: '4:12', color: 'linear-gradient(135deg,#0ea5e9,#6366f1,#8b5cf6)' },
+  { title: 'Glass City',    artist: 'Parallax',             album: 'Refract',        duration: '3:29', color: 'linear-gradient(135deg,#10b981,#0ea5e9,#6366f1)' },
+  { title: 'Retrograde',    artist: 'Luminos',              album: 'Phase IV',       duration: '5:01', color: 'linear-gradient(135deg,#f59e0b,#ef4444,#8b5cf6)' },
+  { title: 'Pulse & Static',artist: 'Synthwave Collective', album: 'Chrome Horizon', duration: '3:55', color: 'linear-gradient(135deg,#ec4899,#8b5cf6,#06b6d4)' },
 ];
-let stateIdx = 0;
+
+let currentIdx = 0;
+let playing = true;
+let progress = 37; // start mid-song
+let liked = false;
+
+const elAlbumArt   = document.getElementById('album-art');
+const elTitle      = document.getElementById('track-title');
+const elArtist     = document.getElementById('track-artist');
+const elFill       = document.getElementById('progress-fill');
+const elThumb      = document.getElementById('progress-thumb');
+const elElapsed    = document.getElementById('time-elapsed');
+const elTotal      = document.getElementById('time-total');
+const elBtnPlay    = document.getElementById('btn-play');
+const elIconPause  = document.getElementById('icon-pause');
+const elIconPlay   = document.getElementById('icon-play');
+const elBtnPrev    = document.getElementById('btn-prev');
+const elBtnNext    = document.getElementById('btn-next');
+const elBtnVolume  = document.getElementById('btn-volume');
+const elVolumePop  = document.getElementById('volume-popover');
+const elVolumeSlider = document.getElementById('volume-slider');
+const elVolumePct  = document.getElementById('volume-pct');
+const elQueueList  = document.getElementById('queue-list');
+const elHeart      = document.getElementById('heart-btn');
+
+function loadTrack(idx) {
+  const t = tracks[idx];
+  elTitle.textContent = t.title;
+  elArtist.textContent = t.artist;
+  document.querySelector('.track-album').textContent = t.album;
+  elAlbumArt.style.background = t.color;
+  elTotal.textContent = t.duration;
+  progress = 0;
+  updateProgress();
+  renderQueue();
+}
+
+function updateProgress() {
+  elFill.style.width = `${progress}%`;
+  elThumb.style.left = `${progress}%`;
+
+  const totalSecs = parseDuration(tracks[currentIdx].duration);
+  const elapsed = Math.round((progress / 100) * totalSecs);
+  const m = Math.floor(elapsed / 60);
+  const s = elapsed % 60;
+  elElapsed.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+function parseDuration(str) {
+  const [m, s] = str.split(':').map(Number);
+  return m * 60 + s;
+}
 
 setInterval(() => {
-  stateIdx = (stateIdx + 1) % states.length;
-  liveStatus.textContent = states[stateIdx].text;
-  liveStatus.className = `badge ${states[stateIdx].cls}`;
-}, 2500);
+  if (!playing) return;
+  progress += 0.25;
+  if (progress >= 100) {
+    progress = 0;
+    currentIdx = (currentIdx + 1) % tracks.length;
+    loadTrack(currentIdx);
+  }
+  updateProgress();
+}, 200);
 
-// Notification popover
-const toggle = document.getElementById('notif-toggle');
-const popover = document.getElementById('notif-popover');
-
-toggle.addEventListener('click', () => {
-  popover.classList.toggle('hidden');
+elBtnPlay.addEventListener('click', () => {
+  playing = !playing;
+  elIconPause.classList.toggle('hidden', !playing);
+  elIconPlay.classList.toggle('hidden', playing);
 });
 
-// Skeleton loader
-const skeleton = document.getElementById('skeleton');
-const loaded = document.getElementById('skeleton-loaded');
+elBtnPrev.addEventListener('click', () => {
+  currentIdx = (currentIdx - 1 + tracks.length) % tracks.length;
+  loadTrack(currentIdx);
+});
 
-setInterval(() => {
-  skeleton.classList.toggle('hidden');
-  loaded.classList.toggle('hidden');
-}, 4000);
+elBtnNext.addEventListener('click', () => {
+  currentIdx = (currentIdx + 1) % tracks.length;
+  loadTrack(currentIdx);
+});
+
+elHeart.addEventListener('click', () => {
+  liked = !liked;
+  elHeart.textContent = liked ? '♥' : '♡';
+  elHeart.classList.toggle('liked', liked);
+});
+
+elBtnVolume.addEventListener('click', (e) => {
+  e.stopPropagation();
+  elVolumePop.classList.toggle('hidden');
+});
+
+document.addEventListener('click', () => {
+  elVolumePop.classList.add('hidden');
+});
+
+elVolumeSlider.addEventListener('input', () => {
+  elVolumePct.textContent = `${elVolumeSlider.value}%`;
+});
+
+function renderQueue() {
+  elQueueList.innerHTML = '';
+  tracks.forEach((t, i) => {
+    const item = document.createElement('div');
+    item.className = `queue-item${i === currentIdx ? ' active' : ''}`;
+    item.dataset.idx = i;
+
+    const numEl = document.createElement('div');
+    numEl.className = 'queue-num';
+    if (i === currentIdx) {
+      const dot = document.createElement('div');
+      dot.className = 'queue-dot';
+      numEl.appendChild(dot);
+    } else {
+      numEl.textContent = i + 1;
+    }
+
+    const art = document.createElement('div');
+    art.className = 'queue-art';
+    art.style.background = t.color;
+
+    const info = document.createElement('div');
+    info.className = 'queue-info';
+    info.innerHTML = `<div class="queue-title">${t.title}</div><div class="queue-artist">${t.artist}</div>`;
+
+    const dur = document.createElement('div');
+    dur.className = 'queue-duration';
+    dur.textContent = t.duration;
+
+    item.append(numEl, art, info, dur);
+    item.addEventListener('click', () => {
+      currentIdx = i;
+      loadTrack(currentIdx);
+    });
+    elQueueList.appendChild(item);
+  });
+}
+
+loadTrack(currentIdx);

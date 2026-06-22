@@ -3,176 +3,154 @@
   import { pointGrab } from '@point-grab/svelte';
   import './app.css';
 
-  let progress = $state(0);
-  let statusIndex = $state(0);
-  let popoverOpen = $state(false);
-  let skeletonLoaded = $state(false);
-
-  const statuses = [
-    { label: 'Syncing...', cls: 'badge-info' },
-    { label: 'Validating', cls: 'badge-warning' },
-    { label: 'Confirmed', cls: 'badge-success' },
+  const initialNotes = [
+    { id: 1, title: 'Product launch checklist', body: 'Review pricing page copy\nUpdate hero section\nTest mobile breakpoints', tags: ['work', 'launch'] },
+    { id: 2, title: 'Weekend reading', body: 'The Pragmatic Programmer — chapter 4\nCheck Hacker News discussion', tags: ['personal'] },
+    { id: 3, title: 'AI prompting tips', body: 'Be specific about which element\nInclude component name and file\nDescribe what you want changed', tags: ['dev'] },
   ];
 
-  let currentStatus = $derived(statuses[statusIndex]);
+  let notes = $state(initialNotes);
+  let selectedNoteId = $state(1);
+  let toolbarOpen = $state(false);
+  let saving = $state(false);
+  let nextId = $state(4);
+
+  let saveTimer = null;
+
+  let selectedNote = $derived(notes.find(n => n.id === selectedNoteId) ?? notes[0]);
+  let wordCount = $derived(
+    selectedNote?.body.trim()
+      ? selectedNote.body.trim().split(/\s+/).length
+      : 0
+  );
+
+  function selectNote(id) {
+    selectedNoteId = id;
+  }
+
+  function updateTitle(e) {
+    notes = notes.map(n =>
+      n.id === selectedNoteId ? { ...n, title: e.target.value } : n
+    );
+    triggerSave();
+  }
+
+  function updateBody(e) {
+    notes = notes.map(n =>
+      n.id === selectedNoteId ? { ...n, body: e.target.value } : n
+    );
+    triggerSave();
+  }
+
+  function triggerSave() {
+    saving = true;
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      saving = false;
+    }, 1500);
+  }
+
+  function newNote() {
+    const id = nextId++;
+    notes = [
+      { id, title: 'Untitled note', body: '', tags: [] },
+      ...notes,
+    ];
+    selectedNoteId = id;
+  }
 
   onMount(() => {
-    const progressInterval = setInterval(() => {
-      progress += 2;
-      if (progress > 87) progress = 0;
-    }, 400);
-
-    const statusInterval = setInterval(() => {
-      statusIndex = (statusIndex + 1) % statuses.length;
-    }, 2500);
-
-    const skeletonInterval = setInterval(() => {
-      skeletonLoaded = !skeletonLoaded;
-    }, 4000);
-
     return () => {
-      clearInterval(progressInterval);
-      clearInterval(statusInterval);
-      clearInterval(skeletonInterval);
+      if (saveTimer) clearTimeout(saveTimer);
     };
   });
 </script>
 
-<div use:pointGrab={{ activationMode: 'hold' }}>
-  <header class="header">
-    <h1>point-grab — Svelte Example</h1>
-    <p>
-      Hold Cmd+C (Mac) or Ctrl+C (Win) and hover over any element. Click to capture. Press F to freeze animations.
-    </p>
+<div use:pointGrab={{ activationMode: 'hold', devOnly: false }}>
+  <header class="inkwell-header">
+    <div class="inkwell-logo">
+      <span class="inkwell-logotype">Inkwell</span>
+      <span class="inkwell-beta">beta</span>
+    </div>
+    <div class="pg-hint">
+      Hold <kbd>Cmd+C</kbd> / <kbd>Ctrl+C</kbd>, hover any element, click to grab its context
+    </div>
   </header>
 
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-label">Revenue</div>
-      <div class="stat-value">$48.2k</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Orders</div>
-      <div class="stat-value">1,284</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Conversion</div>
-      <div class="stat-value">3.6%</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Avg. Time</div>
-      <div class="stat-value">2m 14s</div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Upload Progress</div>
-    <div class="progress-container">
-      <div class="progress-label">
-        <span>Processing batch...</span>
-        <span>{progress}%</span>
+  <div class="app-layout">
+    <!-- Left sidebar -->
+    <aside class="note-sidebar">
+      <div class="sidebar-top">
+        <button class="new-note-btn" onclick={newNote}>+ New Note</button>
       </div>
-      <div class="progress-track">
-        <div class="progress-fill" style="width: {progress}%"></div>
+
+      <div class="note-list">
+        {#each notes as note (note.id)}
+          <button
+            class="note-item {note.id === selectedNoteId ? 'active' : ''}"
+            onclick={() => selectNote(note.id)}
+          >
+            <div class="note-title-preview">{note.title || 'Untitled note'}</div>
+            <div class="note-snippet">{note.body.split('\n')[0] || 'No content'}</div>
+            {#if note.tags.length > 0}
+              <div class="note-tags">
+                {#each note.tags as tag}
+                  <span class="tag">{tag}</span>
+                {/each}
+              </div>
+            {/if}
+          </button>
+        {/each}
       </div>
-    </div>
-  </div>
+    </aside>
 
-  <div class="card">
-    <div class="card-title">Recent Transactions</div>
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Customer</th>
-            <th>Amount</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>#4091</td>
-            <td>Sarah Chen</td>
-            <td>$1,240.00</td>
-            <td><span class="badge {currentStatus.cls}">{currentStatus.label}</span></td>
-          </tr>
-          <tr>
-            <td>#4090</td>
-            <td>Marcus Rivera</td>
-            <td>$890.50</td>
-            <td><span class="badge badge-success">Confirmed</span></td>
-          </tr>
-          <tr>
-            <td>#4089</td>
-            <td>Aiko Tanaka</td>
-            <td>$2,100.00</td>
-            <td><span class="badge badge-success">Confirmed</span></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+    <!-- Right editor panel -->
+    <main class="editor-panel">
+      {#if selectedNote}
+        <div class="editor-topbar">
+          <div class="format-toolbar" class:visible={toolbarOpen}>
+            <button class="format-btn" title="Bold"><strong>B</strong></button>
+            <button class="format-btn" title="Italic"><em>I</em></button>
+            <button class="format-btn" title="Heading">H1</button>
+            <button class="format-btn" title="Link">🔗</button>
+          </div>
+          <button class="toggle-format-btn" onclick={() => toolbarOpen = !toolbarOpen}>
+            {toolbarOpen ? 'Hide toolbar' : 'Format ↓'}
+          </button>
 
-  <div class="card">
-    <div class="card-title">Notifications</div>
-    <div class="notification-area">
-      <button class="notification-btn" onclick={() => popoverOpen = !popoverOpen}>
-        {popoverOpen ? 'Hide' : 'Show'} Notifications (3)
-      </button>
+          <div class="editor-meta">
+            <span class="word-count">{wordCount} {wordCount === 1 ? 'word' : 'words'}</span>
+            {#if saving}
+              <span class="saving-dot" aria-label="Saving..."></span>
+            {/if}
+          </div>
+        </div>
 
-      {#if popoverOpen}
-        <div class="popover">
-          <div class="popover-item">
-            <strong>Deployment complete</strong>
-            Production v2.4.1 rolled out successfully.
-          </div>
-          <div class="popover-item">
-            <strong>New team member</strong>
-            Jordan Lee joined the workspace.
-          </div>
-          <div class="popover-item">
-            <strong>Billing alert</strong>
-            Usage approaching 80% of plan limit.
-          </div>
+        <div class="editor-body">
+          <input
+            class="editor-title"
+            type="text"
+            value={selectedNote.title}
+            oninput={updateTitle}
+            placeholder="Note title"
+          />
+
+          <textarea
+            class="editor-textarea"
+            value={selectedNote.body}
+            oninput={updateBody}
+            placeholder="Start writing…"
+          ></textarea>
+
+          {#if selectedNote.tags.length > 0}
+            <div class="editor-tags">
+              {#each selectedNote.tags as tag}
+                <span class="tag">{tag}</span>
+              {/each}
+            </div>
+          {/if}
         </div>
       {/if}
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">Team Members</div>
-
-    {#if !skeletonLoaded}
-      <div class="skeleton-row">
-        <div class="skeleton-circle"></div>
-        <div class="skeleton-lines">
-          <div class="skeleton-line"></div>
-          <div class="skeleton-line"></div>
-        </div>
-      </div>
-      <div class="skeleton-row">
-        <div class="skeleton-circle"></div>
-        <div class="skeleton-lines">
-          <div class="skeleton-line"></div>
-          <div class="skeleton-line"></div>
-        </div>
-      </div>
-    {:else}
-      <div class="loaded-row">
-        <div class="loaded-avatar">AK</div>
-        <div class="loaded-text">
-          <strong>Alex Kim</strong>
-          <p>Engineering Lead — Last active 2m ago</p>
-        </div>
-      </div>
-      <div class="loaded-row">
-        <div class="loaded-avatar">MP</div>
-        <div class="loaded-text">
-          <strong>Maya Patel</strong>
-          <p>Product Designer — Last active 15m ago</p>
-        </div>
-      </div>
-    {/if}
+    </main>
   </div>
 </div>

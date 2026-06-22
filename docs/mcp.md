@@ -60,9 +60,11 @@ Add to your Windsurf MCP configuration:
 
 ### Browser Side
 
-By default, `point-grab` auto-registers an MCP webhook plugin that POSTs every capture to `http://localhost:3456/inspect`. No additional browser configuration is needed.
+By default, `point-grab` auto-registers an MCP webhook plugin that POSTs captures to `http://localhost:3456/inspect`. No additional browser configuration is needed.
 
-If you disabled the auto-webhook (`mcpWebhook: false`), you can re-enable it or configure a custom URL:
+The built-in webhook only sends `html`, `componentName`, `filePath`, `line`, `column`, `selector`, `cssClasses`, `snippet`, and `componentStack`. The MCP server requires `html` and `componentName`, so captures without a resolved component name are copied locally but are not persisted to MCP history.
+
+If you disabled the auto-webhook (`mcpWebhook: false`), you can turn it off entirely:
 
 ```typescript
 import { init } from '@point-grab/core';
@@ -74,20 +76,22 @@ const inspector = init();
 const inspector = init({ mcpWebhook: false });
 ```
 
+If you need a different webhook URL or want to include extra fields such as `framework` or `computedStyles`, register a custom plugin.
+
 ## Available Tools
 
 ### `point_grab_search`
 
-Search capture history by text, component name, file path, or framework.
+Search capture history by text, component name, file path, or framework when your sender includes it.
 
 **Parameters:**
 
 | Parameter | Type | Required | Description |
 |---|---|---|---|
-| `query` | `string` | no | Search term (matches against HTML, component name, file path, selector, framework) |
+| `query` | `string` | no | Search term (matches against HTML, component name, file path, selector, and `framework` when present) |
 | `componentName` | `string` | no | Filter by component name (partial match) |
 | `filePath` | `string` | no | Filter by file path (partial match) |
-| `framework` | `string` | no | Filter by framework (exact match: `"angular"`, `"react"`, `"vue"`, `"svelte"`, `"web-components"`, `"vanilla"`) |
+| `framework` | `string` | no | Filter by framework (exact match) when stored entries include a `framework` value |
 | `limit` | `number` | no | Max results to return (default: 10) |
 
 **Example request:**
@@ -125,8 +129,7 @@ Search capture history by text, component name, file path, or framework.
           { "name": "Dashboard", "filePath": "src/pages/Dashboard.tsx", "line": 42, "column": null },
           { "name": "App", "filePath": "src/App.tsx", "line": 7, "column": null }
         ],
-        "framework": "react",
-        "computedStyles": null
+        "framework": null
       }
     }
   ]
@@ -196,7 +199,7 @@ Get summary statistics about the capture history.
 
 ### `point_grab_frameworks`
 
-Get capture counts grouped by detected framework.
+Get capture counts grouped by detected framework values present in stored history.
 
 **Parameters:** None.
 
@@ -300,9 +303,9 @@ Content-Type: application/json
   "componentStack": [...],            // optional
   "selector": "div.user-card",       // optional
   "cssClasses": ["user-card"],       // optional
-  "framework": "react",              // optional
+  "framework": "react",              // optional, custom sender only
   "snippet": "...",                   // optional
-  "computedStyles": {}               // optional
+  "computedStyles": {}               // optional, custom sender only
 }
 ```
 

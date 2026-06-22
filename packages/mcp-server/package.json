@@ -1,6 +1,6 @@
 {
   "name": "@point-grab/mcp-server",
-  "version": "0.1.4",
+  "version": "0.1.6",
   "description": "MCP stdio + webhook server for point-grab",
   "author": {
     "name": "Nate Richardson",
@@ -17,7 +17,7 @@
   "homepage": "https://point-grab.com",
   "bugs": "https://github.com/Nacho-Labs-LLC/point-grab/issues",
   "bin": {
-    "point-grab-mcp": "./dist/index.js"
+    "point-grab-mcp": "dist/index.js"
   },
   "exports": {
     ".": {
@@ -30,6 +30,9 @@
   "files": [
     "dist"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "point-grab",
     "mcp",
@@ -40,6 +43,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
+    "test": "vitest run",
     "lint": "tsc --noEmit",
     "clean": "rm -rf dist .turbo"
   },
