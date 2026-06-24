@@ -1,0 +1,435 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #0c0f0e;
+  --bg-raised: #141a18;
+  --bg-muted: #1b2220;
+  --border: #253028;
+  --text: #c2ccc8;
+  --text-heading: #eaf0ed;
+  --text-muted: #7a9088;
+  --text-faint: #4a5e58;
+  --accent: #34d399;
+  --accent-dim: rgba(52, 211, 153, 0.1);
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+
+.inkwell-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 20px;
+  height: 48px;
+  background: var(--bg-raised);
+  border-bottom: 1px solid var(--border);
+}
+
+.inkwell-logo {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.inkwell-logotype {
+  color: var(--text-heading);
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.inkwell-beta {
+  font-size: 0.625rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+/* ── Hint ────────────────────────────────────────────────────── */
+
+.pg-hint {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.pg-hint kbd {
+  font-family: inherit;
+  font-size: 0.6875rem;
+  background: var(--bg-muted);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--text-muted);
+}
+
+/* ── App layout ──────────────────────────────────────────────── */
+
+.app-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* ── Note sidebar ────────────────────────────────────────────── */
+
+.note-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  background: var(--bg-raised);
+  overflow: hidden;
+}
+
+.sidebar-top {
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.new-note-btn {
+  width: 100%;
+  background: var(--accent-dim);
+  border: 1px solid rgba(52, 211, 153, 0.3);
+  color: var(--accent);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 7px 12px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  text-align: center;
+}
+
+.new-note-btn:hover {
+  background: rgba(52, 211, 153, 0.18);
+  border-color: rgba(52, 211, 153, 0.5);
+}
+
+.note-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.note-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.note-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.note-list::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+/* ── Note items ──────────────────────────────────────────────── */
+
+.note-item {
+  width: 100%;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 10px 11px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+  color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.note-item:hover {
+  background: var(--bg-muted);
+  border-color: var(--border);
+}
+
+.note-item.active {
+  background: var(--accent-dim);
+  border-color: rgba(52, 211, 153, 0.3);
+}
+
+.note-title-preview {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-heading);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.note-item.active .note-title-preview {
+  color: var(--accent);
+}
+
+.note-snippet {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.note-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+/* ── Tags ────────────────────────────────────────────────────── */
+
+.tag {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--bg-muted);
+  border: 1px solid var(--border);
+  color: var(--text-faint);
+  letter-spacing: 0.02em;
+}
+
+.note-item.active .tag {
+  background: rgba(52, 211, 153, 0.08);
+  border-color: rgba(52, 211, 153, 0.2);
+  color: rgba(52, 211, 153, 0.7);
+}
+
+/* ── Editor panel ────────────────────────────────────────────── */
+
+.editor-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* ── Editor topbar (toolbar + meta) ─────────────────────────── */
+
+.editor-topbar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 24px;
+  height: 44px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+/* ── Format toolbar ──────────────────────────────────────────── */
+
+.format-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+
+.format-toolbar.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.format-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  font-family: inherit;
+  padding: 4px 9px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  min-width: 30px;
+  text-align: center;
+}
+
+.format-btn:hover {
+  background: var(--bg-muted);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.format-btn:active {
+  background: var(--accent-dim);
+  color: var(--accent);
+}
+
+.toggle-format-btn {
+  background: var(--bg-muted);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-family: inherit;
+  padding: 3px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+
+.toggle-format-btn:hover {
+  background: var(--border);
+  color: var(--text);
+}
+
+/* ── Editor meta (word count + saving) ──────────────────────── */
+
+.editor-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.word-count {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Saving indicator ────────────────────────────────────────── */
+
+.saving-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: pulse-ring 1s ease-in-out infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.25);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ── Editor body ─────────────────────────────────────────────── */
+
+.editor-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 28px 32px 32px;
+}
+
+.editor-body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.editor-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.editor-body::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+
+/* ── Editor title input ──────────────────────────────────────── */
+
+.editor-title {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text-heading);
+  font-size: 1.4375rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  margin-bottom: 16px;
+  font-family: inherit;
+  padding: 0;
+}
+
+.editor-title::placeholder {
+  color: var(--text-faint);
+  font-weight: 400;
+}
+
+/* ── Editor textarea ─────────────────────────────────────────── */
+
+.editor-textarea {
+  width: 100%;
+  flex: 1;
+  min-height: 240px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--text);
+  font-size: 0.9375rem;
+  font-family: inherit;
+  line-height: 1.75;
+  resize: none;
+  padding: 0;
+}
+
+.editor-textarea::placeholder {
+  color: var(--text-faint);
+}
+
+/* ── Editor tags ─────────────────────────────────────────────── */
+
+.editor-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding-top: 20px;
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+}

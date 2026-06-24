@@ -5,6 +5,15 @@ import CopyButton from "../components/CopyButton.astro";
 import Badge from "../components/Badge.astro";
 import FrameworkIcon from "../components/FrameworkIcon.astro";
 import LiveDemo from "../components/LiveDemo.astro";
+
+const STACKBLITZ_DEMOS = {
+  angular: "https://stackblitz.com/github/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/angular?file=src%2Fmain.ts",
+  react: "https://stackblitz.com/github/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/react?file=src%2FApp.jsx",
+  vue: "https://stackblitz.com/github/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/vue?file=src%2FApp.vue",
+  svelte: "https://stackblitz.com/github/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/svelte?file=src%2FApp.svelte",
+  webComponents: "https://stackblitz.com/github/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/web-components?file=main.js",
+  vanilla: "https://stackblitz.com/github/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/vanilla?file=main.js",
+} as const;
 ---
 
 <Base title="point-grab — Point at any element. Grab its full context.">
@@ -408,8 +417,11 @@ import LiveDemo from "../components/LiveDemo.astro";
           Reads the component tree via <code class="text-text-faint">window.ng</code> for component names, template references, and source locations.
         </p>
         <div class="mt-4 flex flex-wrap items-center gap-4 text-xs font-medium">
-          <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/angular" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
-            Example source
+          <a href={STACKBLITZ_DEMOS.angular} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
+            Open in StackBlitz
+          </a>
+          <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/angular" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-text-faint transition-colors hover:text-text-heading">
+            Source
           </a>
           <a href="/docs/install#angular" class="inline-flex items-center gap-1 text-text-faint transition-colors hover:text-text-heading">
             Install docs →
@@ -429,10 +441,14 @@ import LiveDemo from "../components/LiveDemo.astro";
         <p class="text-sm leading-relaxed text-text-muted">
           Walks the fiber tree via <code class="text-text-faint">__reactFiber$</code> for component names and <code class="text-text-faint">_debugSource</code> for file paths with line numbers.
         </p>
-        <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/react" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
-          <svg class="h-3.5 w-3.5" viewBox="0 0 28 28" fill="currentColor"><path d="M12.747 16.273h-7.46L18.925 1.5l-3.671 10.227h7.46L9.075 26.5l3.672-10.227z"/></svg>
-          Example source
-        </a>
+        <div class="mt-4 flex flex-wrap items-center gap-4 text-xs font-medium">
+          <a href={STACKBLITZ_DEMOS.react} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
+            Open in StackBlitz
+          </a>
+          <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/react" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-text-faint transition-colors hover:text-text-heading">
+            Source
+          </a>
+        </div>
       </div>
 
       <!-- Vue -->
@@ -447,10 +463,14 @@ import LiveDemo from "../components/LiveDemo.astro";
         <p class="text-sm leading-relaxed text-text-muted">
           Traverses the Vue instance tree, resolving SFC file paths and stripping <code class="text-text-faint">data-v-*</code> scoped hashes.
         </p>
-        <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/vue" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
-          <svg class="h-3.5 w-3.5" viewBox="0 0 28 28" fill="currentColor"><path d="M12.747 16.273h-7.46L18.925 1.5l-3.671 10.227h7.46L9.075 26.5l3.672-10.227z"/></svg>
-          Example source
-        </a>
+        <div class="mt-4 flex flex-wrap items-center gap-4 text-xs font-medium">
+          <a href={STACKBLITZ_DEMOS.vue} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
+            Open in StackBlitz
+          </a>
+          <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/vue" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-text-faint transition-colors hover:text-text-heading">
+            Source
+          </a>
+        </div>
       </div>
 
       <!-- Svelte -->
@@ -465,10 +485,14 @@ import LiveDemo from "../components/LiveDemo.astro";
         <p class="text-sm leading-relaxed text-text-muted">
           Reads <code class="text-text-faint">__svelte_meta</code> for component boundaries and <code class="text-text-faint">loc</code> for source mappings.
         </p>
-        <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/svelte" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
-          <svg class="h-3.5 w-3.5" viewBox="0 0 28 28" fill="currentColor"><path d="M12.747 16.273h-7.46L18.925 1.5l-3.671 10.227h7.46L9.075 26.5l3.672-10.227z"/></svg>
-          Example source
-        </a>
+        <div class="mt-4 flex flex-wrap items-center gap-4 text-xs font-medium">
+          <a href={STACKBLITZ_DEMOS.svelte} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
+            Open in StackBlitz
+          </a>
+          <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/svelte" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-text-faint transition-colors hover:text-text-heading">
+            Source
+          </a>
+        </div>
       </div>
 
       <!-- Web Components -->
@@ -483,10 +507,14 @@ import LiveDemo from "../components/LiveDemo.astro";
         <p class="text-sm leading-relaxed text-text-muted">
           Pierces Shadow DOM boundaries and maps custom element tags back to their class definitions.
         </p>
-        <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/web-components" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
-          <svg class="h-3.5 w-3.5" viewBox="0 0 28 28" fill="currentColor"><path d="M12.747 16.273h-7.46L18.925 1.5l-3.671 10.227h7.46L9.075 26.5l3.672-10.227z"/></svg>
-          Example source
-        </a>
+        <div class="mt-4 flex flex-wrap items-center gap-4 text-xs font-medium">
+          <a href={STACKBLITZ_DEMOS.webComponents} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
+            Open in StackBlitz
+          </a>
+          <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/web-components" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-text-faint transition-colors hover:text-text-heading">
+            Source
+          </a>
+        </div>
       </div>
 
       <!-- Vanilla JS -->
@@ -501,10 +529,14 @@ import LiveDemo from "../components/LiveDemo.astro";
         <p class="text-sm leading-relaxed text-text-muted">
           Pure DOM inspection with CSS selector generation. Zero dependencies, works in any page.
         </p>
-        <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/vanilla" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
-          <svg class="h-3.5 w-3.5" viewBox="0 0 28 28" fill="currentColor"><path d="M12.747 16.273h-7.46L18.925 1.5l-3.671 10.227h7.46L9.075 26.5l3.672-10.227z"/></svg>
-          Example source
-        </a>
+        <div class="mt-4 flex flex-wrap items-center gap-4 text-xs font-medium">
+          <a href={STACKBLITZ_DEMOS.vanilla} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
+            Open in StackBlitz
+          </a>
+          <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/vanilla" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-text-faint transition-colors hover:text-text-heading">
+            Source
+          </a>
+        </div>
       </div>
     </div>
   </Section>

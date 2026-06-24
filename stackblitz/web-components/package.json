@@ -1,0 +1,17 @@
+{
+  "name": "point-grab-example-web-components",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "vite"
+  },
+  "dependencies": {
+    "@point-grab/core": "^0.1.6",
+    "@point-grab/web-components": "^0.1.6"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}

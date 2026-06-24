@@ -1,0 +1,16 @@
+{
+  "name": "point-grab-example-vanilla",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "vite"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  },
+  "dependencies": {
+    "@point-grab/core": "^0.1.6"
+  }
+}

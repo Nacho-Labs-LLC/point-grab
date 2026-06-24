@@ -1,0 +1,19 @@
+{
+  "name": "point-grab-example-svelte",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "vite"
+  },
+  "dependencies": {
+    "svelte": "^5.0.0",
+    "@point-grab/core": "^0.1.6",
+    "@point-grab/svelte": "^0.1.6"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^5.0.0",
+    "vite": "^6.0.0"
+  }
+}
