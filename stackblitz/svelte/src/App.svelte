@@ -73,9 +73,22 @@
       <span class="inkwell-beta">beta</span>
     </div>
     <div class="pg-hint">
-      Hold <kbd>Cmd+C</kbd> / <kbd>Ctrl+C</kbd>, hover any element, click to grab its context
+      Hold <kbd>Cmd+C</kbd> / <kbd>Ctrl+C</kbd>, click a target, choose <strong>Add Comment</strong>, then finish with <strong>Confirm & Copy</strong>.
     </div>
   </header>
+
+  <section class="review-mission">
+    <div>
+      <div class="review-kicker">Comment-mode showcase</div>
+      <h1>Turn this editor into one batched review.</h1>
+      <p>Comment on a note row, the title field, the formatting toolbar, and the live save state. Then finish with Confirm & Copy so the whole editorial review lands in one prompt.</p>
+    </div>
+    <ul class="review-checklist">
+      <li>Sidebar note item that needs better hierarchy</li>
+      <li>Toolbar control that should be clearer</li>
+      <li>Editor field or save-state behavior to adjust</li>
+    </ul>
+  </section>
 
   <div class="app-layout">
     <!-- Left sidebar -->

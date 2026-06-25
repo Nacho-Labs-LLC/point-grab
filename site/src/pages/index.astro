@@ -205,10 +205,10 @@ const STACKBLITZ_DEMOS = {
     <div class="text-center">
       <Badge variant="amber" class="mb-4">Comment mode</Badge>
       <h2 class="text-3xl font-bold md:text-4xl">
-        Point at a bug. Tell your agent what to fix.
+        Review multiple elements. Confirm once. Paste one perfect prompt.
       </h2>
       <p class="mx-auto mt-4 max-w-2xl text-lg text-text-muted">
-        Don't just capture what's there — attach natural language instructions directly to any element. Your agent gets the context <em>and</em> your intent in one payload.
+        This is the real showcase flow: hold the key, hover an element, click, choose <em>Add Comment</em>, keep reviewing more targets, then hit <em>Confirm &amp; Copy</em> once to send a single AI-ready batch to your clipboard.
       </p>
     </div>
 
@@ -257,26 +257,33 @@ const STACKBLITZ_DEMOS = {
       </div>
 
       <!-- How it flows -->
-      <div class="mt-12 grid gap-4 sm:grid-cols-3">
+      <div class="mt-12 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <div class="flex items-start gap-3 rounded-lg border border-border bg-bg p-4">
           <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-point-grab-blue/10 text-xs font-bold text-point-grab-blue">1</div>
           <div>
-            <div class="text-sm font-medium text-text-heading">Click any element</div>
-            <p class="mt-1 text-xs text-text-faint">Choose "Add comment" from the actions menu</p>
+            <div class="text-sm font-medium text-text-heading">Grab the first target</div>
+            <p class="mt-1 text-xs text-text-faint">Hover, click, then choose <em>Add Comment</em> from the context menu.</p>
           </div>
         </div>
         <div class="flex items-start gap-3 rounded-lg border border-border bg-bg p-4">
           <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-point-grab-blue/10 text-xs font-bold text-point-grab-blue">2</div>
           <div>
-            <div class="text-sm font-medium text-text-heading">Type your instruction</div>
-            <p class="mt-1 text-xs text-text-faint">Natural language — "fix this", "make it responsive", "add a loading state"</p>
+            <div class="text-sm font-medium text-text-heading">Write the feedback</div>
+            <p class="mt-1 text-xs text-text-faint">Be specific: what should change, what feels broken, what the agent should do.</p>
           </div>
         </div>
         <div class="flex items-start gap-3 rounded-lg border border-border bg-bg p-4">
           <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-point-grab-blue/10 text-xs font-bold text-point-grab-blue">3</div>
           <div>
-            <div class="text-sm font-medium text-text-heading">Paste or auto-send</div>
-            <p class="mt-1 text-xs text-text-faint">Element + instruction on your clipboard and through MCP to your agent</p>
+            <div class="text-sm font-medium text-text-heading">Keep reviewing</div>
+            <p class="mt-1 text-xs text-text-faint">Comment on the next element, then the next one — animations, popovers, nested controls, whatever matters.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-3 rounded-lg border border-border bg-bg p-4">
+          <div class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-point-grab-blue/10 text-xs font-bold text-point-grab-blue">4</div>
+          <div>
+            <div class="text-sm font-medium text-text-heading">Confirm &amp; Copy once</div>
+            <p class="mt-1 text-xs text-text-faint">Point-grab batches every reviewed element into one AI-ready prompt on your clipboard and through MCP.</p>
           </div>
         </div>
       </div>

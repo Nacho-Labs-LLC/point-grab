@@ -11,7 +11,7 @@
       <div class="tour-dot" data-step="2"></div>
     </div>
     <p id="tour-instruction" class="text-sm text-text-muted">
-      Step 1 of 3 &mdash; Hold <kbd class="tour-kbd">&#8984;C</kbd> / <kbd class="tour-kbd">Ctrl+C</kbd>, hover any element, and click to grab it
+      Step 1 of 3 &mdash; Hold <kbd class="tour-kbd">&#8984;C</kbd> / <kbd class="tour-kbd">Ctrl+C</kbd>, click a target, then choose <em>Add Comment</em>.
     </p>
   </div>
 
@@ -230,8 +230,8 @@
         </svg>
       </div>
     </div>
-    <h3 class="text-sm font-semibold text-text-heading">That&rsquo;s the full flow</h3>
-    <p class="mt-1 text-xs text-text-muted">Element &rarr; context &rarr; AI. In under 3 seconds.</p>
+    <h3 class="text-sm font-semibold text-text-heading">That&rsquo;s the real showcase flow</h3>
+    <p class="mt-1 text-xs text-text-muted">Reviewed elements + comments &rarr; one AI-ready prompt. Confirm once, paste once.</p>
     <a
       href="#install"
       class="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-point-grab-blue px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-point-grab-blue-bright"
@@ -312,24 +312,24 @@ import { init as initPointGrab } from '../../../packages/core/src/index.ts';
   // ── Tour step definitions ─────────────────────────────────────
   var STEPS = [
     {
-      instruction: 'Step 1 of 3 — Hold <kbd class="tour-kbd">⌘C</kbd> / <kbd class="tour-kbd">Ctrl+C</kbd>, hover any element, and click to grab it',
-      userPrompt: 'Can you make this stat card stand out more?\n\nGrabbed element:\n<div class="rounded-lg border border-border bg-bg-muted p-3">\n  <div class="text-[10px] ... text-text-faint">Revenue</div>\n  <div class="mt-1 text-base font-bold text-text-heading">$12,847</div>\n  <div class="mt-0.5 text-[10px] text-success">+14.2%</div>\n</div>\n\nComponent: StatCard · Dashboard.jsx:47\nSelector: .stats-grid > div:first-child',
-      aiResponse: 'I can see the Revenue stat card in your Dashboard.\n\nTo give it an accent tint that makes it pop:\n\nSwap  border-border → border-indigo-500/40\nSwap  bg-bg-muted   → bg-indigo-500/5\n\nThat gives it a subtle indigo glow while keeping the dark theme consistent with the rest of your grid. Want me to add a hover scale effect too?',
-      progressLabel: 'Step 1 of 3 complete',
-      continueLabel: 'Next: Freeze an animation',
+      instruction: 'Step 1 of 3 — Hold <kbd class="tour-kbd">⌘C</kbd> / <kbd class="tour-kbd">Ctrl+C</kbd>, click a target, then choose Add Comment.',
+      userPrompt: 'Comment added: Make this revenue card stand out more and feel like the primary KPI.\n\nReviewed element:\n<div class="rounded-lg border border-border bg-bg-muted p-3">\n  <div class="text-[10px] ... text-text-faint">Revenue</div>\n  <div class="mt-1 text-base font-bold text-text-heading">$12,847</div>\n  <div class="mt-0.5 text-[10px] text-success">+14.2%</div>\n</div>\n\nComponent: StatCard · Dashboard.jsx:47\nSelector: .stats-grid > div:first-child',
+      aiResponse: 'Perfect first review item. I can see the Revenue stat card and your comment about making it the primary KPI.\n\nI\'d update it like this:\n\nSwap  border-border → border-indigo-500/40\nSwap  bg-bg-muted   → bg-indigo-500/5\n\nThat gives it a subtle indigo glow while keeping the dark theme consistent with the rest of your grid. Want me to add a hover scale effect too?',
+      progressLabel: 'Review item 1 added',
+      continueLabel: 'Next: Review an animated target',
     },
     {
-      instruction: 'Step 2 of 3 — The progress bar is animating. Press <kbd class="tour-kbd">F</kbd> to freeze it, then grab it.',
-      userPrompt: 'Froze the page to grab this progress bar — can you make it a gradient and add some height?\n\nGrabbed element:\n<div id="progress-bar"\n  class="h-full rounded-full bg-point-grab-blue transition-all"\n  style="width: 63%">\n</div>\n\nParent: #progress-track → Fulfillment card\nComponent: Dashboard · Dashboard.jsx:82',
-      aiResponse: 'Nice — freeze mode is exactly right for animated elements.\n\nFor a blue→violet gradient, replace bg-point-grab-blue with:\n\n  background: linear-gradient(to right, #3b82f6, #8b5cf6);\n\nIn Tailwind 4:\n  bg-gradient-to-r from-blue-500 to-violet-500\n\nAlso bump the track height to h-2.5 so the gradient has more room to breathe.',
-      progressLabel: 'Step 2 of 3 complete',
-      continueLabel: 'Next: Grab a popover element',
+      instruction: 'Step 2 of 3 — Freeze the animated progress bar with <kbd class="tour-kbd">F</kbd>, then add a second comment.',
+      userPrompt: 'Second review item: Freeze worked. Make this progress bar a gradient, give it more height, and keep the motion readable.\n\nReviewed element:\n<div id="progress-bar"\n  class="h-full rounded-full bg-point-grab-blue transition-all"\n  style="width: 63%">\n</div>\n\nParent: #progress-track → Fulfillment card\nComponent: Dashboard · Dashboard.jsx:82',
+      aiResponse: 'Nice — this is exactly why freeze mode exists.\n\nFor a blue→violet gradient, replace bg-point-grab-blue with:\n\n  background: linear-gradient(to right, #3b82f6, #8b5cf6);\n\nIn Tailwind 4:\n  bg-gradient-to-r from-blue-500 to-violet-500\n\nAlso bump the track height to h-2.5 so the gradient has more room to breathe.',
+      progressLabel: 'Review item 2 added',
+      continueLabel: 'Next: Review a popover element',
     },
     {
-      instruction: 'Step 3 of 3 — Click the 🔔 to open notifications, then grab one of the items inside.',
-      userPrompt: 'Opened the notification popover and grabbed one of the items. Can you add a dismiss button that shows on hover?\n\nGrabbed element:\n<div class="flex items-start gap-2.5 px-3 py-2.5">\n  <span class="h-2 w-2 rounded-full bg-point-grab-blue mt-1"></span>\n  <div>\n    <p class="text-[11px] text-text">New order #1847 received</p>\n    <p class="text-[10px] text-text-faint">2 min ago</p>\n  </div>\n</div>\n\nComponent: NotifPopover · Dashboard.jsx:118',
+      instruction: 'Step 3 of 3 — Open the notification popover, add one more comment, then confirm the whole review.',
+      userPrompt: 'Final review item: In this notification row, add a dismiss action that appears on hover and keeps the layout tidy.\n\nReviewed element:\n<div class="flex items-start gap-2.5 px-3 py-2.5">\n  <span class="h-2 w-2 rounded-full bg-point-grab-blue mt-1"></span>\n  <div>\n    <p class="text-[11px] text-text">New order #1847 received</p>\n    <p class="text-[10px] text-text-faint">2 min ago</p>\n  </div>\n</div>\n\nComponent: NotifPopover · Dashboard.jsx:118',
       aiResponse: 'Here\'s the updated notification item with a hover-reveal dismiss button:\n\n<div className="group flex items-start gap-2.5 px-3 py-2.5">\n  <span className="h-2 w-2 rounded-full bg-blue-500 mt-1 shrink-0" />\n  <div className="flex-1 min-w-0">\n    <p className="text-xs">New order #1847 received</p>\n    <p className="text-[10px] text-zinc-400">2 min ago</p>\n  </div>\n  <button className="opacity-0 group-hover:opacity-100\n    text-zinc-500 hover:text-zinc-300\n    text-xs transition-opacity ml-2">\n    ✕\n  </button>\n</div>\n\ngroup-hover keeps the ✕ hidden until the user hovers the row.',
-      progressLabel: 'Tour complete',
+      progressLabel: 'Ready to confirm the review',
       continueLabel: null,
     },
   ];
@@ -444,7 +444,7 @@ import { init as initPointGrab } from '../../../packages/core/src/index.ts';
     completeEl.classList.add('slide-up');
     // Mark all dots done
     dots.forEach(function (d) { d.classList.remove('active'); d.classList.add('done'); });
-    if (instrEl) instrEl.textContent = 'Done — element → context → AI in under 3 seconds.';
+    if (instrEl) instrEl.textContent = 'Done — reviewed elements + comments → one AI-ready prompt.';
   }
 
   // ── Continue button ───────────────────────────────────────────

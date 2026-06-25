@@ -433,3 +433,40 @@ body {
   margin-top: auto;
   border-top: 1px solid var(--border);
 }
+
+
+.review-mission {
+  margin: 1rem 1.25rem 0;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(129,140,248,0.12), rgba(129,140,248,0.04));
+  display: grid;
+  gap: 0.9rem;
+}
+.review-kicker {
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+.review-mission h1 {
+  font-size: 1.05rem;
+  color: var(--text-heading);
+  margin-bottom: 0.35rem;
+}
+.review-mission p {
+  color: var(--text);
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+.review-checklist {
+  margin: 0;
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
