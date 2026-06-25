@@ -269,3 +269,44 @@ kbd {
 .reply-send:not(:disabled):hover {
   background: #4f52e3;
 }
+
+
+.review-mission {
+  margin: 1rem 1.25rem 1.25rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: linear-gradient(180deg, rgba(99,102,241,0.12), rgba(99,102,241,0.04));
+  display: grid;
+  gap: 1rem;
+}
+
+.review-kicker {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.35rem;
+}
+
+.review-mission h1 {
+  font-size: 1.05rem;
+  color: var(--text-heading);
+  margin-bottom: 0.35rem;
+}
+
+.review-mission p {
+  font-size: 0.84rem;
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.review-checklist {
+  margin: 0;
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}

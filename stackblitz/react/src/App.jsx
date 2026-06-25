@@ -183,8 +183,21 @@ export default function App() {
       </header>
 
       <div className="feed-hint">
-        Hold <kbd>Cmd+C</kbd> / <kbd>Ctrl+C</kbd>, hover any element, click to grab its context for your AI
+        Hold <kbd>Cmd+C</kbd> / <kbd>Ctrl+C</kbd>, click a post, choose <strong>Add Comment</strong>, review a few elements, then hit <strong>Confirm & Copy</strong>.
       </div>
+
+      <section className="review-mission">
+        <div>
+          <div className="review-kicker">Comment-mode showcase</div>
+          <h1>Review this feed like you would in a real product pass.</h1>
+          <p>Best targets: a post body, the animated like button, the delayed new-posts banner, and the reply popover. The goal is not one grab — it is batching several reviewed elements into one AI-ready prompt.</p>
+        </div>
+        <ul className="review-checklist">
+          <li>Comment on a post body that needs copy changes</li>
+          <li>Comment on the heart animation or reply popover</li>
+          <li>Confirm & Copy the whole review batch</li>
+        </ul>
+      </section>
 
       <main className="feed">
         <NewPostsBanner count={newCount} onDismiss={() => setNewCount(0)} />
