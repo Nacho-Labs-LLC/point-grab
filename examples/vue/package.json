@@ -7,7 +7,7 @@
     "build": "vite build"
   },
   "dependencies": {
-    "vue": "^3.5.0",
+    "vue": "^3.5.39",
     "@point-grab/core": "workspace:*",
     "@point-grab/vue": "workspace:*"
   },
