@@ -8,6 +8,7 @@ export default defineConfig({
   timeout: 30_000,
   expect: { timeout: 10_000 },
   fullyParallel: false,
+  workers: process.env.CI ? 3 : 1,
   retries: process.env.CI ? 2 : 1,
   reporter: process.env.CI ? [['github'], ['list']] : [['list']],
 

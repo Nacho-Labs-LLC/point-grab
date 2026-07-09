@@ -12,7 +12,7 @@
     "@point-grab/vue": "workspace:*"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.0",
-    "vite": "^6.0.0"
+    "@vitejs/plugin-vue": "^6.0.7",
+    "vite": "^8.1.4"
   }
 }
