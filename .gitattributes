@@ -1,2 +1,0 @@
-# Shell wrappers must keep LF endings so they execute in Linux containers.
-scripts/bin/* text eol=lf
