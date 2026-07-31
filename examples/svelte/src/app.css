@@ -34,6 +34,93 @@ body {
   overflow: hidden;
 }
 
+/* ── Guided capture walkthrough ──────────────────────────────── */
+
+.walkthrough-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px 24px;
+  margin: 16px 20px 0;
+  padding: 18px 20px;
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  border-radius: 12px;
+  background: linear-gradient(120deg, rgba(52, 211, 153, 0.12), rgba(20, 26, 24, 0.94));
+}
+
+.walkthrough-eyebrow {
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.walkthrough-copy h2 {
+  margin-top: 3px;
+  color: var(--text-heading);
+  font-size: 1rem;
+}
+
+.walkthrough-copy p {
+  max-width: 70ch;
+  margin-top: 5px;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
+
+.walkthrough-actions {
+  align-self: center;
+}
+
+.walkthrough-start {
+  border: 0;
+  border-radius: 7px;
+  padding: 8px 12px;
+  background: var(--accent);
+  color: #06251b;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.walkthrough-progress {
+  color: var(--accent);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.walkthrough-preview {
+  grid-column: 1 / -1;
+  max-height: 170px;
+  margin: 0;
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #090c0b;
+  color: #b8d8cc;
+  font: 0.72rem/1.5 'SFMono-Regular', Consolas, monospace;
+  white-space: pre-wrap;
+}
+
+.walkthrough-target {
+  outline: 2px solid var(--accent) !important;
+  outline-offset: 4px;
+  box-shadow: 0 0 0 5px rgba(52, 211, 153, 0.14);
+  animation: walkthrough-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes walkthrough-pulse {
+  50% { box-shadow: 0 0 0 9px rgba(52, 211, 153, 0.04); }
+}
+
+@media (max-width: 640px) {
+  .walkthrough-panel { grid-template-columns: 1fr; }
+  .walkthrough-actions { align-self: start; }
+}
+
 /* ── Header ─────────────────────────────────────────────────── */
 
 .inkwell-header {
@@ -364,7 +451,8 @@ body {
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  padding: 28px 32px 32px;
+  /* Keep the guided tags clear of Point-grab's fixed bottom toolbar. */
+  padding: 28px 32px 100px;
 }
 
 .editor-body::-webkit-scrollbar {

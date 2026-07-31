@@ -1,0 +1,71 @@
+name: point-grab-dev
+
+x-workspace: &workspace
+  build:
+    context: .
+    dockerfile: Dockerfile.dev
+  working_dir: /workspace
+  volumes:
+    - .:/workspace
+    - point_grab_node_modules:/workspace/node_modules
+    - point_grab_pnpm_store:/pnpm/store
+  environment:
+    PNPM_STORE_DIR: /pnpm/store
+  init: true
+
+services:
+  install:
+    <<: *workspace
+    command: pnpm install --frozen-lockfile
+
+  packages:
+    <<: *workspace
+    depends_on:
+      install:
+        condition: service_completed_successfully
+    command: pnpm --filter './packages/*' dev
+
+  vanilla-demo:
+    <<: *workspace
+    depends_on:
+      install:
+        condition: service_completed_successfully
+      packages:
+        condition: service_started
+    command: pnpm --filter point-grab-example-vanilla dev --host 0.0.0.0 --port 5173
+    ports:
+      - "127.0.0.1:5173:5173"
+
+  site:
+    <<: *workspace
+    depends_on:
+      install:
+        condition: service_completed_successfully
+    command: pnpm --filter @point-grab/site dev --host 0.0.0.0 --port 4321
+    ports:
+      - "127.0.0.1:4321:4321"
+
+  e2e:
+    profiles: ["e2e"]
+    build:
+      context: .
+      dockerfile: Dockerfile.e2e
+    working_dir: /workspace
+    volumes:
+      - .:/workspace
+      - point_grab_node_modules:/workspace/node_modules
+      - point_grab_pnpm_store:/pnpm/store
+    environment:
+      CI: "true"
+      PLAYWRIGHT_BROWSERS_PATH: /ms-playwright
+    init: true
+    cpus: "2.0"
+    mem_limit: 4g
+    depends_on:
+      install:
+        condition: service_completed_successfully
+    command: pnpm exec playwright test
+
+volumes:
+  point_grab_node_modules:
+  point_grab_pnpm_store:

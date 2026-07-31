@@ -4,8 +4,8 @@
       <span class="eyebrow">Angular example</span>
       <h1>point-grab for Angular</h1>
       <p>
-        A real Angular demo surface for inspecting nested cards, metrics, and action controls. Hold
-        <kbd>Ctrl+C</kbd> / <kbd>Cmd+C</kbd>, hover an element, and click to capture it.
+        A real Angular demo surface for inspecting nested cards, metrics, and action controls. Toggle
+        <kbd>Ctrl+Shift+C</kbd> / <kbd>Cmd+Shift+C</kbd>, hover an element, and click to capture it.
       </p>
     </div>
 
@@ -19,9 +19,38 @@
     </div>
   </header>
 
+  <section class="walkthrough-panel" aria-label="Guided capture walkthrough">
+    <div class="walkthrough-copy">
+      <span class="section-kicker">Guided capture</span>
+      <h2>{{ walkthroughComplete() ? 'Walkthrough complete' : 'Turn two UI notes into one prompt' }}</h2>
+      @if (!walkthroughStarted()) {
+        <p>Start the guide, enter Capture Mode, then select two notes and accept their comments with a Skip in between.</p>
+      } @else if (walkthroughComplete()) {
+        <p>Your two accepted comments were combined by the real capture session and copied as one review prompt.</p>
+      } @else {
+        <p>Step {{ walkthroughStep() }} of 3 — {{ currentStepText() }}, then continue.</p>
+      }
+    </div>
+    <div class="walkthrough-actions">
+      @if (!walkthroughStarted() || walkthroughComplete()) {
+        <button class="walkthrough-start" type="button" (click)="startWalkthrough()">Start guided capture</button>
+      } @else {
+        <span class="walkthrough-progress" aria-live="polite">{{ reviewCount() }}/2 reviews accepted</span>
+      }
+    </div>
+    @if (promptPreview()) {
+      <pre class="walkthrough-preview" data-walkthrough-preview aria-label="Aggregate prompt preview">{{ promptPreview() }}</pre>
+    }
+  </section>
+
   <section class="metrics-grid">
-    @for (metric of metrics; track metric.label) {
-      <app-stat-card [label]="metric.label" [value]="metric.value" [hint]="metric.hint" />
+    @for (metric of metrics; track metric.label; let index = $index) {
+      <div
+        [class.walkthrough-target]="walkthroughStarted() && walkthroughStep() === 1 && index === 0"
+        [attr.data-walkthrough-target]="index === 0 ? 'metric-card' : null"
+      >
+        <app-stat-card [label]="metric.label" [value]="metric.value" [hint]="metric.hint" />
+      </div>
     }
   </section>
 
@@ -36,13 +65,21 @@
       </div>
 
       <div class="feed-list">
-        @for (post of posts; track post.id) {
-          <app-post-card [post]="post" />
+        @for (post of posts; track post.id; let index = $index) {
+          <app-post-card
+            [post]="post"
+            [class.walkthrough-target]="walkthroughStarted() && walkthroughStep() === 2 && index === 0"
+            [attr.data-walkthrough-target]="index === 0 ? 'post-copy' : null"
+          />
         }
       </div>
     </main>
 
-    <aside class="sidebar-card">
+    <aside
+      class="sidebar-card"
+      [class.walkthrough-target]="walkthroughStarted() && walkthroughStep() === 3"
+      data-walkthrough-target="operator-note"
+    >
       <span class="section-kicker">Operator notes</span>
       <h2>Best results</h2>
       <ol>

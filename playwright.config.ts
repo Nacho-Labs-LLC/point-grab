@@ -8,7 +8,9 @@ export default defineConfig({
   timeout: 30_000,
   expect: { timeout: 10_000 },
   fullyParallel: false,
-  retries: process.env.CI ? 2 : 1,
+  // Local Windows workstations must never fan out browser workers. Opt in explicitly in CI.
+  workers: process.env.PLAYWRIGHT_WORKERS ? Number(process.env.PLAYWRIGHT_WORKERS) : 1,
+  retries: process.env.PLAYWRIGHT_RETRIES ? Number(process.env.PLAYWRIGHT_RETRIES) : 0,
   reporter: process.env.CI ? [['github'], ['list']] : [['list']],
 
   use: {

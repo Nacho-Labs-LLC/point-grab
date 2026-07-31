@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, inject, onMounted, onBeforeUnmount } from 'vue';
 
 const colors = [
   { name: 'Black',  value: '#1a1a1a' },
@@ -60,6 +60,49 @@ function closeCart() {
   cartOpen.value = false;
 }
 
+const pointGrab = inject('$point-grab');
+const walkthroughStep = ref(1);
+const annotations = ref([]);
+const walkthroughComplete = ref(false);
+const promptPreview = computed(() => annotations.value.length
+  ? annotations.value.map(({ snippet, comment }, index) => `## Element ${index + 1}\n${snippet}\n\nComment: ${comment}`).join('\n\n---\n\n')
+  : 'Your accepted review comments will appear here exactly as Point-grab writes them to the clipboard.');
+
+pointGrab?.registerPlugin({
+  name: 'vue-walkthrough-preview',
+  hooks: {
+    onCopySuccess(snippet, _context, comment) {
+      if (!comment || annotations.value.some((item) => item.snippet === snippet && item.comment === comment)) return;
+      annotations.value.push({ snippet, comment });
+      walkthroughStep.value = annotations.value.length === 1 ? 2 : 3;
+    },
+  },
+});
+
+const handleCaptureSession = (event) => {
+  const { action, annotationCount } = event.detail || {};
+
+  if (action === 'accepted') {
+    walkthroughStep.value = annotationCount === 1 ? 2 : 3;
+    // The cart item was created before the session began; reveal that real reactive
+    // state as the next walkthrough target once the CTA review is accepted.
+    if (annotationCount === 1) openCart();
+  } else if (action === 'skipped' && walkthroughStep.value === 2) {
+    walkthroughStep.value = 3;
+  } else if (action === 'ended') {
+    walkthroughComplete.value = annotations.value.length > 0;
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('point-grab:capture-session', handleCaptureSession);
+});
+
+onBeforeUnmount(() => {
+  pointGrab?.unregisterPlugin('vue-walkthrough-preview');
+  window.removeEventListener('point-grab:capture-session', handleCaptureSession);
+});
+
 function starFill(index) {
   const rating = 4.8;
   if (index < Math.floor(rating)) return 'full';
@@ -82,6 +125,15 @@ function starFill(index) {
   </header>
 
   <main class="page-main">
+    <section class="walkthrough" aria-label="Point-grab capture walkthrough">
+      <span>Step {{ walkthroughStep }} of 3</span>
+      <strong>{{ walkthroughStep === 1 ? 'Capture the Add to Cart action' : walkthroughStep === 2 ? 'Skip the reactive cart total, then capture it' : 'End Capture Mode to finish your review' }}</strong>
+      <p>Start Capture Mode with Cmd+Shift+C / Ctrl+Shift+C or click the subtle Capture mode control below.</p>
+      <pre data-testid="prompt-preview">{{ promptPreview }}</pre>
+      <div v-if="walkthroughComplete" class="walkthrough-complete" data-testid="walkthrough-complete">
+        {{ annotations.length }} reviewed elements + comments are ready for your AI agent.
+      </div>
+    </section>
     <nav class="breadcrumb">
       <span>Shop</span>
       <span class="breadcrumb-sep">/</span>
@@ -161,7 +213,7 @@ function starFill(index) {
         </div>
 
         <button
-          :class="['add-to-cart-btn', { shake: btnShaking }]"
+          :class="['add-to-cart-btn', { shake: btnShaking, 'walkthrough-target': walkthroughStep === 1 }]"
           @click="addToCart"
         >
           Add to Cart
@@ -698,4 +750,18 @@ body {
   from { transform: translateX(100%); }
   to   { transform: translateX(0); }
 }
+.walkthrough {
+  margin: 0 0 1.5rem;
+  padding: 1rem;
+  display: grid;
+  gap: .45rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-raised);
+}
+.walkthrough > span { color: var(--accent); font-size: .72rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }
+.walkthrough > strong { color: var(--text-heading); }
+.walkthrough > p { color: var(--text-muted); font-size: .82rem; }
+.walkthrough pre { max-height: 130px; overflow: auto; white-space: pre-wrap; padding: .7rem; border-radius: 8px; background: var(--bg); color: #b9c3ff; font-size: .7rem; line-height: 1.45; }
+.walkthrough-complete { color: var(--green); font-size: .82rem; font-weight: 600; }
 </style>

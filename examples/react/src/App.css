@@ -269,3 +269,56 @@ kbd {
 .reply-send:not(:disabled):hover {
   background: #4f52e3;
 }
+
+.walkthrough-card, .prompt-panel, .completion-panel {
+  margin: 1rem 1.25rem;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-raised);
+}
+
+.walkthrough-card { border-color: rgba(99, 102, 241, 0.65); }
+.walkthrough-progress, .prompt-panel > div, .completion-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+}
+.walkthrough-progress { color: var(--accent); font-size: .75rem; font-weight: 700; margin-bottom: .5rem; }
+.walkthrough-card strong, .prompt-panel strong, .completion-panel strong { color: var(--text-heading); }
+.walkthrough-card p, .prompt-panel span, .completion-panel span { margin-top: .35rem; color: var(--text-muted); font-size: .82rem; line-height: 1.45; }
+
+.walkthrough-target {
+  position: relative;
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 8px;
+  animation: walkthrough-pulse 1.6s ease-in-out infinite;
+}
+@keyframes walkthrough-pulse {
+  50% { outline-color: #a5b4fc; box-shadow: 0 0 0 5px rgba(99, 102, 241, .12); }
+}
+
+.prompt-panel pre {
+  max-height: 220px;
+  overflow: auto;
+  margin-top: .75rem;
+  padding: .75rem;
+  border-radius: 8px;
+  background: #0b0b10;
+  color: #c4b5fd;
+  font: 11px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: pre-wrap;
+}
+
+.completion-panel { border-color: var(--green); flex-wrap: wrap; }
+.completion-panel button {
+  border: 0;
+  border-radius: 7px;
+  padding: .45rem .75rem;
+  background: var(--accent);
+  color: white;
+  cursor: pointer;
+  font-weight: 700;
+}

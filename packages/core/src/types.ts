@@ -11,6 +11,15 @@ export interface Annotation {
   comment: string;
 }
 
+export type CaptureSessionAction = 'accepted' | 'skipped' | 'updated' | 'ended';
+
+export interface CaptureSessionEventDetail {
+  action: CaptureSessionAction;
+  annotationCount: number;
+  annotations: readonly Annotation[];
+  target?: ElementContext;
+}
+
 /** Serializable subset of ElementContext — no live DOM reference. */
 export interface HistoryContext {
   html: string;
@@ -48,14 +57,16 @@ export type ClassFilter = (className: string) => boolean;
 export type HtmlCleaner = { pattern: RegExp; replacement: string };
 
 export interface PointGrabOptions {
-  /** Keyboard shortcut to activate. Default: "Meta+C" (Mac) / "Ctrl+C" (Win) */
+  /** Keyboard shortcut to toggle capture mode. Default: "Meta+Shift+C" (Mac) / "Ctrl+Shift+C" (Win) */
   activationKey: string;
-  /** Whether activation requires hold or toggle. Default: 'hold' */
+  /** Whether activation toggles on/off. Default: 'toggle' */
   activationMode: 'hold' | 'toggle';
   /** Milliseconds to hold before activating in hold mode. Default: 0 */
   keyHoldDuration: number;
   /** Max lines of HTML to include in copied context. Default: 20 */
   maxContextLines: number;
+  /** Maximum accepted captures in one session. Default: 3 */
+  maxCaptureCount: number;
   /** Master on/off switch. Default: true */
   enabled: boolean;
   /** Allow activation while focused in input/textarea. Default: false */

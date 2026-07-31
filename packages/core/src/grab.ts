@@ -5,11 +5,13 @@ import type {
   ComponentResolver,
   SourceResolver,
   ElementContext,
-  Annotation,
   HistoryContext,
   HistoryEntry,
   ThemeMode,
   PendingAction,
+  Annotation,
+  CaptureSessionAction,
+  CaptureSessionEventDetail,
 } from './types';
 import { createStore } from './store';
 import { createOverlayRenderer } from './overlay/overlay-renderer';
@@ -20,6 +22,7 @@ import { createKeyboardHandler, isMac } from './keyboard/keyboard-handler';
 import { copyElement, buildElementContext } from './clipboard/copy';
 import { createPluginRegistry } from './plugins/plugin-registry';
 import { createMcpWebhookPlugin } from './plugins/mcp-webhook-plugin';
+import { createCaptureSession } from './capture-session';
 import { createThemeManager } from './toolbar/theme-manager';
 import { createToolbarRenderer } from './toolbar/toolbar-renderer';
 import { createHistoryPopover } from './toolbar/history-popover';
@@ -28,9 +31,25 @@ import { createCommentPopover } from './toolbar/comment-popover';
 import { copyElementSnippet, copyElementHtml, copyElementStyles, copyWithComment, copyAnnotationsAsPrompt } from './toolbar/copy-actions';
 import { createFreezeOverlay } from './overlay/freeze-overlay';
 import { showSelectFeedback, disposeFeedbackStyles } from './overlay/select-feedback';
+import { createCaptureMarkers } from './overlay/capture-markers';
 import { TOOLBAR_TOAST_OFFSET } from './constants';
 
 const MAX_HISTORY = 50;
+const CAPTURE_SESSION_EVENT = 'point-grab:capture-session';
+
+export function createCaptureSessionEventDetail(
+  action: CaptureSessionAction,
+  annotations: readonly Annotation[],
+  target?: ElementContext,
+): CaptureSessionEventDetail {
+  return { action, annotationCount: annotations.length, annotations: [...annotations], target };
+}
+
+function emitCaptureSessionEvent(action: CaptureSessionAction, annotations: readonly Annotation[], target?: ElementContext): void {
+  window.dispatchEvent(new CustomEvent<CaptureSessionEventDetail>(CAPTURE_SESSION_EVENT, {
+    detail: createCaptureSessionEventDetail(action, annotations, target),
+  }));
+}
 
 function toHistoryContext(ctx: ElementContext): HistoryContext {
   return {
@@ -51,10 +70,11 @@ function toHistoryContext(ctx: ElementContext): HistoryContext {
 
 function getDefaultOptions(): PointGrabOptions {
   return {
-    activationKey: isMac() ? 'Meta+C' : 'Ctrl+C',
-    activationMode: 'hold',
+    activationKey: isMac() ? 'Meta+Shift+C' : 'Ctrl+Shift+C',
+    activationMode: 'toggle',
     keyHoldDuration: 0,
     maxContextLines: 20,
+    maxCaptureCount: 3,
     enabled: true,
     enableInInputs: false,
     devOnly: true,
@@ -127,9 +147,12 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
   let lastSelectedContext: ElementContext | null = null;
   let idCounter = 0;
 
-  // Multi-comment mode state
-  let annotations: Annotation[] = [];
-  let commentModeActive = false;
+  // One explicit session owns the repeated target → comment → continue flow.
+  const captureSession = createCaptureSession();
+  const captureMarkers = createCaptureMarkers();
+  const capturePoints: Array<{ x: number; y: number }> = [];
+  let editingIndex: number | null = null;
+  let lastCapturePoint: { x: number; y: number } | null = null;
 
   function nextId(): string {
     return `point-grab-${++idCounter}-${Date.now()}`;
@@ -147,6 +170,7 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
       || historyPopover.isPopoverElement(el)
       || actionsMenu.isMenuElement(el)
       || commentPopover.isPopoverElement(el)
+      || captureMarkers.isMarkerElement(el)
       || freezeOverlay.isFreezeElement(el);
   }
 
@@ -178,7 +202,37 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
   }
 
   function updateToolbar(): void {
-    toolbar.update(store.state, annotations.length);
+    toolbar.update(store.state, captureSession.getAnnotations().length, captureSession.isActive());
+  }
+
+  async function syncCapturePrompt(): Promise<void> {
+    const annotations = [...captureSession.getAnnotations()];
+    if (annotations.length > 0) {
+      await copyAnnotationsAsPrompt(annotations, store.state.options.maxContextLines, pluginRegistry, store.state.options.htmlCleaners);
+    }
+    emitCaptureSessionEvent('updated', annotations);
+    updateToolbar();
+  }
+
+  function renderCaptureMarkers(): void {
+    captureMarkers.clear();
+    capturePoints.forEach((point, index) => {
+      captureMarkers.add(point.x, point.y, index + 1, () => {
+        const annotation = captureSession.getAnnotations()[index];
+        if (!annotation) return;
+        editingIndex = index;
+        commentPopover.show('multi', point, {
+          comment: annotation.comment,
+          onDelete: () => {
+            captureSession.remove(index);
+            capturePoints.splice(index, 1);
+            editingIndex = null;
+            renderCaptureMarkers();
+            void syncCapturePrompt();
+          },
+        });
+      });
+    });
   }
 
   // --- Close all popovers ---
@@ -189,7 +243,7 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
   }
 
   // --- Pending action execution ---
-  async function executePendingAction(pending: PendingAction, element: Element): Promise<void> {
+  async function executePendingAction(pending: PendingAction, element: Element, point?: { x: number; y: number }): Promise<void> {
     const classFilters = store.state.options.classFilters;
     const htmlCleaners = store.state.options.htmlCleaners;
     const context = buildElementContext(element, componentResolver, sourceResolver, classFilters, htmlCleaners);
@@ -215,7 +269,8 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
         await copyElementHtml(context, pluginRegistry, htmlCleaners);
         break;
       case 'comment':
-        commentPopover.show(commentModeActive ? 'multi' : 'single');
+        lastCapturePoint = point ?? null;
+        commentPopover.show(captureSession.isActive() ? 'multi' : 'single', point);
         return; // Don't deactivate — user still needs to type
     }
   }
@@ -236,15 +291,26 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
         pluginRegistry.callHook('onElementHover', element);
       }
     },
-    async onSelect(element) {
+    async onSelect(element, point) {
       const pending = store.state.toolbar.pendingAction;
 
       if (pending) {
-        await executePendingAction(pending, element);
+        await executePendingAction(pending, element, point);
         // Comment flow keeps picker active
         if (pending.type !== 'comment') {
           doDeactivate();
         }
+        return;
+      }
+
+      // Capture sessions are comment-first: selecting a target opens its dialog.
+      if (captureSession.isActive()) {
+        if (captureSession.getAnnotations().length >= store.state.options.maxCaptureCount) {
+          showToast(`Capture limit reached (${store.state.options.maxCaptureCount}). End Capture Mode to finish.`);
+          return;
+        }
+        store.state.toolbar = { ...store.state.toolbar, pendingAction: { type: 'comment' } };
+        await executePendingAction({ type: 'comment' }, element, point);
         return;
       }
 
@@ -289,13 +355,12 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
     // explicitly asked to keep selection mode alive.
     if (!force && store.state.frozen) return;
 
+    // Capture mode is a deliberate session, not tied to holding the shortcut.
+    if (!force && captureSession.isActive()) return;
+
     store.state.active = false;
     store.state.frozen = false;
     freezeOverlay.hide();
-
-    if (commentModeActive && annotations.length === 0) {
-      commentModeActive = false;
-    }
 
     store.state.toolbar = { ...store.state.toolbar, pendingAction: null };
     picker.deactivate();
@@ -313,14 +378,29 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
     updateToolbar();
   }
 
-  // --- Copy all annotations as a single prompt ---
-  async function copyAnnotationsPrompt(): Promise<void> {
-    if (annotations.length === 0) return;
-    const htmlCleaners = store.state.options.htmlCleaners;
-    const maxLines = store.state.options.maxContextLines;
-    await copyAnnotationsAsPrompt(annotations, maxLines, pluginRegistry, htmlCleaners);
-    annotations = [];
-    commentModeActive = false;
+  function startCaptureMode(): void {
+    if (!captureSession.isActive()) {
+      captureSession.start();
+      captureMarkers.clear();
+      capturePoints.length = 0;
+    }
+    doActivate();
+    updateToolbar();
+  }
+
+  // --- End an explicit capture session ---
+  async function endCaptureMode(): Promise<void> {
+    const annotations = captureSession.end();
+    if (annotations.length > 0) {
+      const htmlCleaners = store.state.options.htmlCleaners;
+      const maxLines = store.state.options.maxContextLines;
+      await copyAnnotationsAsPrompt(annotations, maxLines, pluginRegistry, htmlCleaners);
+    }
+    emitCaptureSessionEvent('ended', annotations);
+    captureMarkers.clear();
+    capturePoints.length = 0;
+    editingIndex = null;
+    lastCapturePoint = null;
     store.state.toolbar = { ...store.state.toolbar, pendingAction: null };
     closeAllPopovers();
     doDeactivate(true);
@@ -331,11 +411,7 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
   const toolbar = createToolbarRenderer({
     onSelectionMode() {
       closeAllPopovers();
-      if (store.state.active) {
-        doDeactivate();
-      } else {
-        doActivate();
-      }
+      startCaptureMode();
     },
 
     onHistory() {
@@ -386,14 +462,18 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
 
     onDismiss() {
       closeAllPopovers();
+      if (captureSession.isActive()) captureSession.end();
+      captureMarkers.clear();
+      capturePoints.length = 0;
+      editingIndex = null;
+      lastCapturePoint = null;
       doDeactivate(true);
       store.state.toolbar = { ...store.state.toolbar, visible: false };
       toolbar.hide();
     },
 
     onCopyPrompt() {
-      closeAllPopovers();
-      copyAnnotationsPrompt();
+      void endCaptureMode();
     },
   });
 
@@ -449,9 +529,10 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
     },
 
     onComment() {
-      if (!commentModeActive) {
-        commentModeActive = true;
-        annotations = [];
+      if (!captureSession.isActive()) {
+        captureSession.start();
+        captureMarkers.clear();
+        capturePoints.length = 0;
       }
       if (lastSelectedContext) {
         commentPopover.show('multi');
@@ -474,35 +555,52 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
     async onSubmit(comment: string) {
       if (!lastSelectedContext) return;
 
-      if (commentModeActive) {
-        annotations.push({ context: lastSelectedContext, comment });
+      if (captureSession.isActive()) {
+        const isEditing = editingIndex !== null;
+        if (isEditing) {
+          captureSession.updateComment(editingIndex!, comment);
+          editingIndex = null;
+        } else {
+          captureSession.accept(lastSelectedContext, comment);
+          if (lastCapturePoint) {
+            capturePoints.push(lastCapturePoint);
+            lastCapturePoint = null;
+            renderCaptureMarkers();
+          }
+        }
         showSelectFeedback(lastSelectedContext.element);
-        showToast(`Review item ${annotations.length} added`, {
-          componentName: lastSelectedContext.componentName,
-          filePath: lastSelectedContext.filePath,
-          line: lastSelectedContext.line,
-          column: lastSelectedContext.column,
-          cssClasses: lastSelectedContext.cssClasses,
-        });
+        const htmlCleaners = store.state.options.htmlCleaners;
+        await copyAnnotationsAsPrompt(
+          [...captureSession.getAnnotations()],
+          store.state.options.maxContextLines,
+          pluginRegistry,
+          htmlCleaners,
+        );
+        emitCaptureSessionEvent(isEditing ? 'updated' : 'accepted', captureSession.getAnnotations(), lastSelectedContext);
         store.state.toolbar = { ...store.state.toolbar, pendingAction: { type: 'comment' } };
+        doActivate();
         updateToolbar();
       } else {
         const htmlCleaners = store.state.options.htmlCleaners;
         await copyWithComment(lastSelectedContext, comment, store.state.options.maxContextLines, pluginRegistry, htmlCleaners);
-        if (store.state.active) {
-          doDeactivate();
-        }
+        if (store.state.active) doDeactivate();
       }
     },
     onCancel() {
-      if (commentModeActive && annotations.length > 0) {
+      if (captureSession.isActive() && editingIndex !== null) {
+        editingIndex = null;
+        doActivate();
+        return;
+      }
+      if (captureSession.isActive()) {
+        captureSession.skip();
+        lastCapturePoint = null;
+        emitCaptureSessionEvent('skipped', captureSession.getAnnotations(), lastSelectedContext ?? undefined);
         store.state.toolbar = { ...store.state.toolbar, pendingAction: { type: 'comment' } };
-      } else {
-        commentModeActive = false;
-        annotations = [];
-        if (store.state.active) {
-          doDeactivate();
-        }
+        doActivate();
+        updateToolbar();
+      } else if (store.state.active) {
+        doDeactivate();
       }
     },
   });
@@ -557,8 +655,14 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
     getActivationMode: () => store.state.options.activationMode,
     getKeyHoldDuration: () => store.state.options.keyHoldDuration,
     getEnableInInputs: () => store.state.options.enableInInputs,
-    onActivate: doActivate,
-    onDeactivate: doDeactivate,
+    onActivate: startCaptureMode,
+    onDeactivate: () => {
+      if (captureSession.isActive() && store.state.options.activationMode === 'toggle') {
+        void endCaptureMode();
+      } else if (!captureSession.isActive()) {
+        doDeactivate();
+      }
+    },
     isActive: () => store.state.active,
   });
 
@@ -650,6 +754,7 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
       freezeOverlay.dispose();
       disposeToast();
       disposeFeedbackStyles();
+      captureMarkers.dispose();
       pluginRegistry.dispose();
       closeAllPopovers();
       toolbar.dispose();
@@ -666,8 +771,14 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
     keyboard.start();
   }
 
-  // Toolbar starts hidden — it appears when selection mode is first activated
+  // Keep the main toolbar hidden until capture starts, but create the subtle
+  // bottom capture affordance immediately for mouse-first discovery.
   store.state.toolbar = { ...store.state.toolbar, visible: false };
+  if (merged.showToolbar) {
+    toolbar.show();
+    toolbar.hide();
+    updateToolbar();
+  }
 
   // React to enabled option changes
   store.subscribe((state, key) => {

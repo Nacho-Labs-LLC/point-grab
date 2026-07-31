@@ -21,7 +21,7 @@ Point at any element in a running web app. Get its full context -- cleaned HTML,
 </script>
 ```
 
-That's it. Hold `Cmd+C` (Mac) or `Ctrl+C` (Windows/Linux), hover over any element, and click. The context is on your clipboard.
+That's it. Press `Cmd+Shift+C` (Mac) or `Ctrl+Shift+C` (Windows/Linux) to toggle Capture Mode, then click elements to build an AI-ready review prompt.
 
 The IIFE bundle exposes a global `PointGrab`; it does not auto-initialize or create `window.__POINT_GRAB__`.
 
@@ -52,6 +52,7 @@ import { init } from '@point-grab/core';
 const inspector = init({
   activationMode: 'toggle',  // toggle instead of hold
   maxContextLines: 30,        // more HTML context
+  maxCaptureCount: 5,         // accepted comments per capture session (default: 3)
   themeMode: 'light',
 });
 ```

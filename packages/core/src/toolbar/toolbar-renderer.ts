@@ -19,7 +19,7 @@ export interface ToolbarCallbacks {
 export interface ToolbarRenderer {
   show(): void;
   hide(): void;
-  update(state: PointGrabState, annotationCount?: number): void;
+  update(state: PointGrabState, annotationCount?: number, captureModeActive?: boolean): void;
   isToolbarElement(el: Element): boolean;
   dispose(): void;
 }
@@ -78,6 +78,25 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
         background: var(--point-grab-toolbar-hover, #1e293b);
         color: var(--point-grab-accent, #3b82f6);
       }
+      [data-point-grab-btn="captureHint"] {
+        position: fixed;
+        bottom: 16px;
+        left: 50%;
+        z-index: ${Z_INDEX_TOOLBAR};
+        transform: translateX(-50%);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 11px;
+        border: 1px solid var(--point-grab-toolbar-border, #1e293b);
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--point-grab-toolbar-bg, #0f172a) 82%, transparent);
+        color: var(--point-grab-toolbar-text, #94a3b8);
+        font: 12px/1 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        opacity: .72;
+        cursor: pointer;
+      }
+      [data-point-grab-btn="captureHint"]:hover { opacity: 1; color: var(--point-grab-accent, #3b82f6); }
       #${TOOLBAR_ID} button.point-grab-btn-active {
         color: var(--point-grab-toolbar-active, #3b82f6);
       }
@@ -175,6 +194,8 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
     buttons.theme = createButton('theme', ICON_SUN, 'Toggle theme', callbacks.onThemeToggle);
     buttons.enable = createButton('enable', ICON_POWER, 'Enable/Disable', callbacks.onEnableToggle);
     buttons.dismiss = createButton('dismiss', ICON_DISMISS, 'Dismiss toolbar', callbacks.onDismiss);
+    buttons.captureHint = createButton('captureHint', ICON_GRAB, 'Start Capture Mode', callbacks.onSelectionMode);
+    buttons.captureHint.append(' Capture mode');
 
     buttons.copyPrompt = createButton('copyPrompt', ICON_COPY, 'Confirm & Copy reviewed elements', () => callbacks.onCopyPrompt?.());
     buttons.copyPrompt.classList.add('point-grab-copy-prompt-btn');
@@ -201,8 +222,9 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
     container.appendChild(buttons.dismiss);
 
     document.body.appendChild(container);
+    document.body.appendChild(buttons.captureHint);
 
-    // Track all elements for isToolbarElement checks
+    // Track all elements
     allElements.clear();
     allElements.add(container);
     allElements.add(leftGroup);
@@ -224,25 +246,41 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
       }
     },
 
-    update(state: PointGrabState, annotationCount?: number): void {
+    update(state: PointGrabState, annotationCount?: number, captureModeActive = false): void {
       if (!container) return;
 
-      // Copy Prompt button with annotation badge
+      // End Capture Mode is the persistent session control. The count is
+      // supporting context, not the condition for showing the action.
       if (buttons.copyPrompt) {
-        if (annotationCount && annotationCount > 0) {
+        const label = buttons.copyPrompt.querySelector('.point-grab-copy-prompt-label') as HTMLElement | null;
+        if (captureModeActive) {
           buttons.copyPrompt.style.display = '';
-          let badge = buttons.copyPrompt.querySelector('.point-grab-badge') as HTMLElement;
-          if (!badge) {
-            badge = document.createElement('span');
-            badge.className = 'point-grab-badge';
-            buttons.copyPrompt.appendChild(badge);
-          }
-          badge.textContent = String(annotationCount);
-          buttons.copyPrompt.title = annotationCount === 1 ? 'Confirm & Copy 1 reviewed element' : `Confirm & Copy ${annotationCount} reviewed elements`;
+          if (label) label.textContent = 'End Capture Mode';
+          buttons.copyPrompt.title = annotationCount
+            ? `End Capture Mode (${annotationCount} captured)`
+            : 'End Capture Mode';
           buttons.copyPrompt.setAttribute('aria-label', buttons.copyPrompt.title);
+
+          let badge = buttons.copyPrompt.querySelector('.point-grab-badge') as HTMLElement | null;
+          if (annotationCount && annotationCount > 0) {
+            if (!badge) {
+              badge = document.createElement('span');
+              badge.className = 'point-grab-badge';
+              buttons.copyPrompt.appendChild(badge);
+            }
+            badge.textContent = String(annotationCount);
+          } else {
+            badge?.remove();
+          }
         } else {
           buttons.copyPrompt.style.display = 'none';
+          if (label) label.textContent = 'Confirm & Copy';
+          buttons.copyPrompt.querySelector('.point-grab-badge')?.remove();
         }
+      }
+
+      if (buttons.captureHint) {
+        buttons.captureHint.style.display = captureModeActive ? 'none' : '';
       }
 
       // Selection mode active state
@@ -291,6 +329,7 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
     },
 
     dispose(): void {
+      buttons.captureHint?.remove();
       container?.remove();
       document.getElementById(STYLE_ID)?.remove();
       container = null;

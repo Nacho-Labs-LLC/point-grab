@@ -13,10 +13,24 @@
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#818cf8" stroke-width="1.5"/><circle cx="10" cy="10" r="3.5" fill="#818cf8"/></svg>
         Wavely
       </div>
-      <p class="pg-hint">Hold <kbd>Cmd+C</kbd> / <kbd>Ctrl+C</kbd>, hover any element, click to grab its context for your AI</p>
+      <p class="pg-hint">Start Capture Mode with <kbd>Cmd+Shift+C</kbd> / <kbd>Ctrl+Shift+C</kbd>, or click Capture mode below.</p>
     </header>
 
     <div class="player">
+      <aside class="walkthrough quest-list" aria-label="Point-grab feature quests" data-testid="quest-list">
+        <p class="walkthrough-step">Try these quests</p>
+        <h1 class="walkthrough-title">Build a useful review as you explore</h1>
+        <p class="walkthrough-copy">Complete any item in any order. Nothing is locked.</p>
+        <div class="quest-rows">
+          <div class="quest-row" role="checkbox" aria-checked="false" data-quest-id="queue-comment" data-quest-status="pending">Comment a queue item</div>
+          <div class="quest-row" role="checkbox" aria-checked="false" data-quest-id="progress-skip" data-quest-status="pending">Skip the moving progress track</div>
+          <div class="quest-row" role="checkbox" aria-checked="false" data-quest-id="volume-comment" data-quest-status="pending">Comment the volume control</div>
+          <div class="quest-row" role="checkbox" aria-checked="false" data-quest-id="end-review" data-quest-status="pending">End Capture Mode with two notes</div>
+        </div>
+        <pre class="prompt-preview" data-testid="prompt-preview" aria-label="Aggregate review prompt">Your accepted review comments will appear here.</pre>
+        <div class="walkthrough-complete" hidden data-testid="walkthrough-complete"></div>
+      </aside>
+
       <div class="now-playing">
         <div class="album-art" id="album-art"></div>
         <div class="track-meta">

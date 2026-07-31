@@ -362,3 +362,28 @@ kbd {
 }
 
 .hidden { display: none !important; }
+
+.quest-rows { display: grid; gap: 7px; margin: 12px 0; }
+.quest-row { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: .78rem; }
+.quest-row::before { content: '○'; color: #818cf8; font-size: 1rem; }
+.quest-row[data-quest-status="complete"] { color: #a7f3d0; }
+.quest-row[data-quest-status="complete"]::before { content: '✓'; color: #34d399; }
+
+.walkthrough {
+  border: 1px solid rgba(129, 140, 248, 0.45);
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.16), rgba(19, 19, 26, 0.96));
+  border-radius: 16px;
+  padding: 1rem 1.125rem;
+}
+.walkthrough-progress { display: flex; gap: 0.35rem; margin-bottom: 0.65rem; }
+.walkthrough-progress span { width: 28px; height: 4px; border-radius: 99px; background: var(--border); }
+.walkthrough-progress .is-active { background: var(--accent); }
+.walkthrough-step { color: var(--accent); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; }
+.walkthrough-title { color: var(--text-heading); font-size: 1rem; margin-top: 0.3rem; }
+.walkthrough-copy { color: var(--text-muted); font-size: 0.82rem; line-height: 1.45; margin-top: 0.35rem; }
+.prompt-preview { max-height: 120px; overflow: auto; white-space: pre-wrap; margin-top: 0.85rem; padding: 0.65rem; border-radius: 8px; background: #09090d; border: 1px solid var(--border); color: #c4b5fd; font: 0.7rem/1.45 ui-monospace, SFMono-Regular, Consolas, monospace; }
+.walkthrough-complete { margin-top: 0.85rem; padding-top: 0.85rem; border-top: 1px solid var(--border); color: var(--green); font-size: 0.82rem; }
+.walkthrough-complete p { color: var(--text-muted); margin-top: 0.35rem; }
+.copy-prompt { margin-top: 0.6rem; border: 0; border-radius: 7px; background: var(--accent); color: white; padding: 0.42rem 0.65rem; font-weight: 700; cursor: pointer; }
+.walkthrough-target { outline: 2px solid #a5b4fc !important; outline-offset: 4px; box-shadow: 0 0 0 5px rgba(129, 140, 248, 0.16); animation: walkthrough-pulse 1.5s ease-in-out infinite; }
+@keyframes walkthrough-pulse { 50% { outline-color: #e0e7ff; } }

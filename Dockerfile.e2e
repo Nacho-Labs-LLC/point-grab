@@ -1,0 +1,10 @@
+# Browser-test runner with Playwright's pinned Chromium and Linux dependencies.
+FROM mcr.microsoft.com/playwright:v1.60.0-noble
+
+RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
+
+ENV PNPM_HOME=/pnpm
+ENV PATH=${PNPM_HOME}:${PATH}
+ENV PLAYWRIGHT_BROWSERS_PATH=/ms-playwright
+
+WORKDIR /workspace

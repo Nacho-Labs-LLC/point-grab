@@ -9,7 +9,7 @@ test.describe('web-components example', () => {
   });
 
   test('toolbar appears after first activation and persists', async ({ page }) => {
-    await expect(page.locator(SEL.toolbar)).not.toBeAttached();
+    await expect(page.locator(SEL.toolbar)).toHaveClass(/point-grab-toolbar-hidden/);
     await activateInspector(page);
     await expect(page.locator(SEL.toolbar)).toBeVisible();
     await deactivateInspector(page);
@@ -90,5 +90,30 @@ test.describe('web-components example', () => {
     await page.mouse.click(box!.x + box!.width / 2, box!.y + 230);
     await deactivateInspector(page);
     await expect(page.locator(SEL.toastVisible)).toBeVisible({ timeout: 8_000 });
+  });
+
+  test('guided capture walkthrough preserves two Shadow DOM comments in order', async ({ page }) => {
+    await page.getByRole('button', { name: 'Start Capture Mode' }).click();
+    await expect(page.getByText('Step 1 of 3')).toBeVisible();
+    await page.getByRole('button', { name: 'Actions' }).click();
+    await page.getByRole('menuitem', { name: 'Add Comment' }).click();
+
+    await page.locator('forge-button').filter({ hasText: 'Deploy' }).click();
+    await page.getByRole('textbox', { name: 'What should change about this element?' }).fill('Clarify the deploy action.');
+    await page.getByRole('button', { name: 'Accept' }).click();
+
+    await page.locator('forge-badge[variant="success"]').first().click();
+    await page.getByRole('button', { name: 'Skip' }).click();
+    await expect(page.getByText('Step 3 of 3')).toBeVisible();
+
+    await page.locator('forge-tooltip').filter({ hasText: 'Message' }).hover();
+    await page.locator('forge-tooltip').filter({ hasText: 'Message' }).click();
+    await page.getByRole('textbox', { name: 'What should change about this element?' }).fill('Keep this tooltip message concise.');
+    await page.getByRole('button', { name: 'Accept' }).click();
+
+    await expect(page.getByTestId('prompt-preview')).toContainText('Clarify the deploy action.');
+    await expect(page.getByTestId('prompt-preview')).toContainText('Keep this tooltip message concise.');
+    await page.getByRole('button', { name: /End Capture Mode/ }).click();
+    await expect(page.getByText('2 reviewed elements + comments are ready for your AI agent.')).toBeVisible();
   });
 });
