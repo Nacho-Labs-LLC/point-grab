@@ -77,10 +77,11 @@ export function showSelectFeedback(element: Element): void {
   pill.innerHTML = `${CHECK_SVG} Copied`;
   document.body.appendChild(pill);
 
-  // Position pill centered above the element (or below if no room)
-  const pillWidth = 70; // approximate
+  // Measure after insertion so the pill stays truly centered for the active font and label.
+  const pillWidth = pill.offsetWidth || 70;
+  const pillHeight = pill.offsetHeight || 18;
   let pillLeft = rect.left + rect.width / 2 - pillWidth / 2;
-  let pillTop = rect.top - 24;
+  let pillTop = rect.top - pillHeight - 6;
   if (pillTop < 4) {
     pillTop = rect.bottom + 6;
   }
