@@ -11,7 +11,7 @@
     "clean": "rm -rf dist .astro"
   },
   "dependencies": {
-    "astro": "^5.7.10"
+    "astro": "^7.1.4"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
