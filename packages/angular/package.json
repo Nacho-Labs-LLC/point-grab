@@ -41,8 +41,8 @@
     "clean": "rm -rf dist .turbo"
   },
   "peerDependencies": {
-    "@point-grab/core": "workspace:*",
-    "@angular/core": ">=17.0.0"
+    "@angular/core": ">=17.0.0",
+    "@point-grab/core": "workspace:*"
   },
   "peerDependenciesMeta": {
     "@angular/core": {
@@ -50,7 +50,7 @@
     }
   },
   "devDependencies": {
-    "@angular/core": "^22.0.0",
+    "@angular/core": "^22.1.0",
     "tsup": "^8.3.0",
     "typescript": "^5.7.0"
   },
