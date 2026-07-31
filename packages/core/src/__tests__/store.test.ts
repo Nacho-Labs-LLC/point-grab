@@ -8,6 +8,7 @@ function makeOptions(overrides: Partial<PointGrabOptions> = {}): PointGrabOption
     activationMode: 'hold',
     keyHoldDuration: 0,
     maxContextLines: 20,
+    maxCaptureCount: 3,
     enabled: true,
     enableInInputs: false,
     devOnly: true,

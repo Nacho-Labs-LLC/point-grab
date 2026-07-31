@@ -9,6 +9,7 @@ const options: PointGrabOptions = {
   activationMode: 'toggle',
   keyHoldDuration: 0,
   maxContextLines: 20,
+  maxCaptureCount: 3,
   enabled: true,
   enableInInputs: false,
   devOnly: false,
