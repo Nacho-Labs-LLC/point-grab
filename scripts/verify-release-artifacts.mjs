@@ -1,9 +1,12 @@
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const root = path.resolve(new URL('..', import.meta.url).pathname);
+const root = path.resolve(fileURLToPath(new URL('..', import.meta.url)));
+const pnpm = 'pnpm';
+const tar = process.platform === 'win32' ? path.join(process.env.SystemRoot, 'System32', 'tar.exe') : 'tar';
 const version = '0.1.6';
 const packages = [
   { name: '@point-grab/core', dir: 'packages/core', install: ['@point-grab/core'] },
@@ -20,21 +23,33 @@ const createdTarballs = [];
 const tempRoot = mkdtempSync(path.join(tmpdir(), 'point-grab-release-'));
 
 function run(cmd, args, cwd) {
-  return execFileSync(cmd, args, { cwd, stdio: 'pipe', encoding: 'utf8' });
+  return execFileSync(cmd, args, {
+    cwd,
+    encoding: 'utf8',
+    shell: process.platform === 'win32' && (cmd === pnpm || cmd === 'npm'),
+    stdio: 'pipe',
+  });
+}
+
+function runPnpm(args, cwd) {
+  if (process.env.npm_execpath) {
+    return run(process.execPath, [process.env.npm_execpath, ...args], cwd);
+  }
+  return run(pnpm, args, cwd);
 }
 
 try {
   for (const pkg of packages) {
     const cwd = path.join(root, pkg.dir);
-    run('corepack', ['pnpm', 'pack', '--pack-destination', cwd], cwd);
+    runPnpm(['pack', '--pack-destination', cwd], cwd);
     const tgz = `${pkg.name.replace('@', '').replace('/', '-')}-${version}.tgz`;
     const tgzPath = path.join(cwd, tgz);
     createdTarballs.push(tgzPath);
     tarballs.set(pkg.name, tgzPath);
 
     const inspectDir = path.join(tempRoot, pkg.name.replace(/[@/]/g, '_'));
-    run('mkdir', ['-p', inspectDir], root);
-    run('tar', ['-xzf', tgzPath, '-C', inspectDir], root);
+    mkdirSync(inspectDir, { recursive: true });
+    run(tar, ['-xzf', tgzPath, '-C', inspectDir], root);
     const manifest = JSON.parse(readFileSync(path.join(inspectDir, 'package', 'package.json'), 'utf8'));
     if (JSON.stringify(manifest).includes('workspace:')) {
       throw new Error(`${pkg.name} packed manifest still contains workspace protocol`);
