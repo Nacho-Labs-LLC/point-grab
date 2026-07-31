@@ -1,0 +1,74 @@
+name: Publish npm packages
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    name: Publish point-grab packages
+    runs-on: ubuntu-latest
+    environment: npm-publish
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - run: pnpm run test
+      - run: pnpm run test:e2e
+      - run: pnpm run verify:release
+
+      - name: Verify release tag and package versions
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const packages = [
+            'angular', 'core', 'mcp-server', 'react', 'svelte', 'vue', 'web-components'
+          ].map((name) => `packages/${name}/package.json`);
+          const versions = packages.map((path) => JSON.parse(fs.readFileSync(path, 'utf8')).version);
+          if (new Set(versions).size !== 1) throw new Error(`Package versions differ: ${versions.join(', ')}`);
+          if (process.env.RELEASE_TAG !== `v${versions[0]}`) {
+            throw new Error(`Expected tag v${versions[0]}, received ${process.env.RELEASE_TAG}`);
+          }
+          NODE
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+
+      - name: Inspect publish tarballs
+        run: |
+          for dir in packages/angular packages/core packages/mcp-server packages/react packages/svelte packages/vue packages/web-components; do
+            (cd "$dir" && npm pack --dry-run)
+          done
+
+      - name: Refuse to overwrite published versions
+        run: |
+          for dir in packages/angular packages/core packages/mcp-server packages/react packages/svelte packages/vue packages/web-components; do
+            name=$(node -p "require('./$dir/package.json').name")
+            version=$(node -p "require('./$dir/package.json').version")
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "$name@$version is already published; aborting."
+              exit 1
+            fi
+          done
+
+      - name: Publish packages with provenance
+        run: |
+          for dir in packages/core packages/angular packages/react packages/svelte packages/vue packages/web-components packages/mcp-server; do
+            (cd "$dir" && npm publish --provenance --access public)
+          done
