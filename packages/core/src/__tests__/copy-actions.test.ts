@@ -45,7 +45,7 @@ describe('comment-mode copy actions', () => {
     expect(navigator.clipboard.writeText).toHaveBeenCalledTimes(1);
     const copied = vi.mocked(navigator.clipboard.writeText).mock.calls[0][0];
     expect(copied).toContain('Submit Order');
-    expect(copied).toContain('selector: button.btn-primary');
+    expect(copied).not.toContain('selector:');
     expect(copied).toContain('Disable this button while saving.');
     expect(copied).toContain('/* Comment: Disable this button while saving. */');
   });
@@ -78,8 +78,7 @@ describe('comment-mode copy actions', () => {
     expect(copied).toContain('## Element 2');
     expect(copied).toContain('Make the primary action more obvious.');
     expect(copied).toContain('Change this wording to something clearer.');
-    expect(copied).toContain('selector: button.btn-primary');
-    expect(copied).toContain('selector: div.status-pill');
+    expect(copied).not.toContain('selector:');
     expect(copied).toContain('---');
   });
 });

@@ -15,6 +15,8 @@ export type {
   ToolbarState,
   PendingAction,
   Annotation,
+  CaptureSessionAction,
+  CaptureSessionEventDetail,
   ComponentResolver,
   SourceResolver,
   ClassFilter,

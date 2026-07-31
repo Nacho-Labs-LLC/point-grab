@@ -3,8 +3,13 @@ import { Z_INDEX_POPOVER, TOOLBAR_POPOVER_OFFSET } from '../constants';
 const POPOVER_ID = '__point-grab-comment-popover__';
 const STYLE_ID = '__point-grab-comment-styles__';
 
+export interface CommentPopoverOptions {
+  comment?: string;
+  onDelete?: () => void;
+}
+
 export interface CommentPopover {
-  show(mode?: 'single' | 'multi'): void;
+  show(mode?: 'single' | 'multi', anchor?: { x: number; y: number }, options?: CommentPopoverOptions): void;
   hide(): void;
   isVisible(): boolean;
   isPopoverElement(el: Element): boolean;
@@ -19,7 +24,10 @@ export interface CommentPopoverCallbacks {
 export function createCommentPopover(callbacks: CommentPopoverCallbacks): CommentPopover {
   let popover: HTMLDivElement | null = null;
   let textarea: HTMLTextAreaElement | null = null;
+  let cancelBtn: HTMLButtonElement | null = null;
+  let deleteBtn: HTMLButtonElement | null = null;
   let submitBtn: HTMLButtonElement | null = null;
+  let onDelete: (() => void) | null = null;
   let visible = false;
   let currentMode: 'single' | 'multi' = 'single';
   let keydownHandler: ((e: KeyboardEvent) => void) | null = null;
@@ -94,6 +102,12 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
         background: var(--point-grab-popover-hover, #1e293b);
         color: var(--point-grab-popover-text, #e2e8f0);
       }
+      #${POPOVER_ID} .point-grab-comment-delete {
+        margin-right: auto;
+        background: transparent;
+        color: #f87171;
+      }
+      #${POPOVER_ID} .point-grab-comment-delete:hover { background: rgba(248, 113, 113, 0.12); }
       #${POPOVER_ID} .point-grab-comment-submit {
         background: var(--point-grab-accent, #3b82f6);
         color: #fff;
@@ -122,7 +136,7 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
     const footer = document.createElement('div');
     footer.className = 'point-grab-comment-footer';
 
-    const cancelBtn = document.createElement('button');
+    cancelBtn = document.createElement('button');
     cancelBtn.className = 'point-grab-comment-btn point-grab-comment-cancel';
     cancelBtn.textContent = 'Cancel';
     cancelBtn.addEventListener('click', (e) => {
@@ -130,6 +144,17 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
       e.stopPropagation();
       doHide();
       callbacks.onCancel();
+    });
+
+    deleteBtn = document.createElement('button');
+    deleteBtn.className = 'point-grab-comment-btn point-grab-comment-delete';
+    deleteBtn.textContent = 'Delete';
+    deleteBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const handler = onDelete;
+      doHide();
+      handler?.();
     });
 
     submitBtn = document.createElement('button');
@@ -156,6 +181,7 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
     });
 
     footer.appendChild(cancelBtn);
+    footer.appendChild(deleteBtn);
     footer.appendChild(submitBtn);
     popover.appendChild(textarea);
     popover.appendChild(footer);
@@ -196,12 +222,34 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
   }
 
   return {
-    show(mode?: 'single' | 'multi'): void {
+    show(mode?: 'single' | 'multi', anchor?: { x: number; y: number }, options?: CommentPopoverOptions): void {
       const el = ensurePopover();
       currentMode = mode ?? 'single';
-      textarea!.value = '';
+      onDelete = options?.onDelete ?? null;
+      textarea!.value = options?.comment ?? '';
+      if (deleteBtn) deleteBtn.style.display = onDelete ? '' : 'none';
+      if (cancelBtn) {
+        cancelBtn.textContent = currentMode === 'multi' ? 'Skip' : 'Cancel';
+      }
       if (submitBtn) {
-        submitBtn.textContent = currentMode === 'multi' ? 'Add to Review' : 'Copy Commented Grab';
+        submitBtn.textContent = currentMode === 'multi' ? 'Accept' : 'Copy Commented Grab';
+      }
+      if (anchor) {
+        const width = 340;
+        const height = 150;
+        const left = Math.max(8, Math.min(window.innerWidth - width - 8, anchor.x + 14));
+        const top = anchor.y + height + 8 > window.innerHeight
+          ? Math.max(8, anchor.y - height - 14)
+          : Math.max(8, anchor.y + 14);
+        el.style.left = `${left}px`;
+        el.style.top = `${top}px`;
+        el.style.bottom = 'auto';
+        el.style.transform = 'none';
+      } else {
+        el.style.left = '50%';
+        el.style.top = 'auto';
+        el.style.bottom = TOOLBAR_POPOVER_OFFSET;
+        el.style.transform = 'translateX(-50%)';
       }
       visible = true;
       void el.offsetHeight;
@@ -234,6 +282,7 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
       document.getElementById(STYLE_ID)?.remove();
       popover = null;
       textarea = null;
+      cancelBtn = null;
       submitBtn = null;
       visible = false;
     },

@@ -26,11 +26,6 @@ export function generateSnippet(context: ElementContext, maxContextLines: number
 
   const parts: string[] = [truncated];
 
-  // Selector line
-  if (context.selector) {
-    parts.push(`selector: ${context.selector}`);
-  }
-
   // Semantic description
   if (context.elementDescription) {
     parts.push(context.elementDescription);

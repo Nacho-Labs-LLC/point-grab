@@ -8,16 +8,14 @@ export const SEL = {
   freeze: '#__point-grab-freeze-overlay__',
 } as const;
 
-/** Hold Ctrl+C (Linux activation combo). Inspector activates immediately in hold mode. */
+/** Toggle the default Ctrl+Shift+C capture shortcut on. */
 export async function activateInspector(page: Page): Promise<void> {
-  await page.keyboard.down('Control');
-  await page.keyboard.down('c');
+  await page.keyboard.press('Control+Shift+c');
 }
 
-/** Release Ctrl+C — deactivates inspector in hold mode. */
+/** Toggle the default Ctrl+Shift+C capture shortcut off. */
 export async function deactivateInspector(page: Page): Promise<void> {
-  await page.keyboard.up('c');
-  await page.keyboard.up('Control');
+  await page.keyboard.press('Control+Shift+c');
 }
 
 /**
@@ -30,6 +28,8 @@ export async function captureElement(page: Page, target: Locator): Promise<Locat
   await target.hover();
   await expect(page.locator(SEL.overlay)).toBeVisible({ timeout: 5_000 });
   await target.click();
+  await page.getByRole('textbox', { name: 'What should change about this element?' }).fill('Review this element.');
+  await page.getByRole('button', { name: 'Accept' }).click();
   await deactivateInspector(page);
   const toast = page.locator(SEL.toastVisible);
   await expect(toast).toBeVisible({ timeout: 8_000 });

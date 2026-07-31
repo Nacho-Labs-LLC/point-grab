@@ -1,6 +1,6 @@
 import { initPointGrabWebComponents } from '@point-grab/web-components';
 
-initPointGrabWebComponents({ activationMode: 'hold', devOnly: false });
+const pointGrab = initPointGrabWebComponents({ devOnly: false });
 
 // --- <forge-app> ---
 class ForgeApp extends HTMLElement {
@@ -91,6 +91,11 @@ class ForgeApp extends HTMLElement {
           color: #5a5248;
           margin-top: 0.5rem;
         }
+        .walkthrough { margin: 1.5rem auto 0; max-width: 640px; border: 1px solid rgba(249,115,22,.5); border-radius: .75rem; padding: 1rem; background: rgba(249,115,22,.06); }
+        .walkthrough-progress { display: flex; gap: .35rem; margin-bottom: .55rem; }.walkthrough-progress span { width: 28px; height: 4px; border-radius: 9px; background: #2e2924; }.walkthrough-progress .is-active { background: #f97316; }
+        .walkthrough-step { color: #fb923c; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; }.walkthrough-title { color: #f0ebe4; font-size: 1rem; margin: .25rem 0; }.walkthrough-copy { color: #8a8078; font-size: .8rem; line-height: 1.45; }
+        .prompt-preview { display: block; max-height: 120px; overflow: auto; white-space: pre-wrap; margin-top: .75rem; padding: .6rem; background: #0f0d0a; border: 1px solid #2e2924; border-radius: .4rem; color: #fdba74; font: .7rem/1.45 ui-monospace, monospace; }.walkthrough-complete { margin-top: .75rem; padding-top: .75rem; border-top: 1px solid #2e2924; color: #86efac; font-size: .82rem; }.walkthrough-complete p { color: #8a8078; }.copy-prompt { margin-top: .5rem; border: 0; border-radius: .35rem; background: #f97316; color: #0f0d0a; font-weight: 700; padding: .4rem .6rem; cursor: pointer; }
+        .walkthrough-target { outline: 2px solid #fdba74; outline-offset: 4px; animation: walkthrough-pulse 1.5s ease-in-out infinite; } @keyframes walkthrough-pulse { 50% { outline-color: #fff7ed; } }
       </style>
 
       <header class="forge-header">
@@ -103,8 +108,16 @@ class ForgeApp extends HTMLElement {
           </svg>
           <span class="forge-header-wordmark">Forge UI</span>
         </div>
-        <span class="forge-header-hint">Hold Cmd+C / Ctrl+C, hover any element, click to grab</span>
+        <span class="forge-header-hint">Start Capture Mode with Cmd+Shift+C / Ctrl+Shift+C, or click Capture mode below.</span>
       </header>
+
+      <section class="walkthrough" aria-live="polite">
+        <div class="walkthrough-progress"><span class="is-active"></span><span></span><span></span></div>
+        <p class="walkthrough-step">Step 1 of 3</p><h1 class="walkthrough-title">Capture a nested custom-element control</h1>
+        <p class="walkthrough-copy">Click Capture mode below, then select the highlighted Deploy control and choose Accept.</p>
+        <pre class="prompt-preview" data-testid="prompt-preview">Your accepted review comments will appear here.</pre>
+        <div class="walkthrough-complete" hidden><strong></strong><p>Paste this into your AI agent, or copy the exact aggregate prompt.</p><button type="button" class="copy-prompt">Copy prompt</button></div>
+      </section>
 
       <main class="forge-main">
 
@@ -569,3 +582,46 @@ class ForgeCard extends HTMLElement {
   }
 }
 customElements.define('forge-card', ForgeCard);
+
+// Assemble the visible aggregate from the same capture-session snippets Point-grab copies.
+const forgeApp = document.querySelector('forge-app');
+const walkthroughRoot = forgeApp.shadowRoot;
+const walkthrough = walkthroughRoot.querySelector('.walkthrough');
+const walkthroughStep = walkthrough.querySelector('.walkthrough-step');
+const walkthroughTitle = walkthrough.querySelector('.walkthrough-title');
+const walkthroughCopy = walkthrough.querySelector('.walkthrough-copy');
+const walkthroughDots = [...walkthrough.querySelectorAll('.walkthrough-progress span')];
+const promptPreview = walkthrough.querySelector('[data-testid="prompt-preview"]');
+const completion = walkthrough.querySelector('.walkthrough-complete');
+const completionTitle = completion.querySelector('strong');
+const copyPromptButton = completion.querySelector('.copy-prompt');
+const annotations = [];
+let walkthroughStage = 1;
+const stages = {
+  1: ['Capture a nested custom-element control', 'Select the highlighted Deploy control, add a comment in the dialog, and choose Accept.', () => walkthroughRoot.querySelector('forge-button')],
+  2: ['Skip a live Shadow DOM badge', 'Select the highlighted auto-incrementing badge, then choose Skip to keep the session active.', () => walkthroughRoot.querySelector('forge-badge[variant="success"]')],
+  3: ['Capture tooltip shadow content', 'The Message tooltip is visible. Select it, add your second comment, and choose Accept.', () => walkthroughRoot.querySelector('forge-tooltip')],
+};
+function renderPromptPreview() { promptPreview.textContent = annotations.length ? annotations.map(({ snippet, comment }, index) => `## Element ${index + 1}\n${snippet}\n\nComment: ${comment}`).join('\n\n---\n\n') : 'Your accepted review comments will appear here.'; }
+function renderWalkthrough() {
+  walkthroughRoot.querySelectorAll('.walkthrough-target').forEach((element) => element.classList.remove('walkthrough-target'));
+  const [title, copy, target] = stages[walkthroughStage]; walkthroughStep.textContent = `Step ${walkthroughStage} of 3`; walkthroughTitle.textContent = title; walkthroughCopy.textContent = copy;
+  walkthroughDots.forEach((dot, index) => dot.classList.toggle('is-active', index < walkthroughStage)); target()?.classList.add('walkthrough-target');
+}
+function showCompletion() { if (!annotations.length) return; completionTitle.textContent = `${annotations.length} reviewed element${annotations.length === 1 ? '' : 's'} + comments are ready for your AI agent.`; completion.hidden = false; walkthroughRoot.querySelectorAll('.walkthrough-target').forEach((element) => element.classList.remove('walkthrough-target')); }
+pointGrab.registerPlugin({ name: 'web-components-walkthrough-preview', hooks: { onCopySuccess(snippet, _context, comment) {
+  if (!comment || annotations.some((annotation) => annotation.snippet === snippet && annotation.comment === comment)) return;
+  annotations.push({ snippet, comment }); renderPromptPreview(); if (annotations.length === 1) { walkthroughStage = 2; renderWalkthrough(); }
+} } });
+window.addEventListener('point-grab:capture-session', (event) => {
+  const { action } = event.detail || {};
+  if (action === 'skipped' && walkthroughStage === 2) {
+    walkthroughStage = 3;
+    const tooltip = walkthroughRoot.querySelector('forge-tooltip');
+    tooltip.shadowRoot.querySelector('.tooltip-bubble').style.cssText = 'opacity: 1; visibility: visible;';
+    renderWalkthrough();
+  }
+  if (action === 'ended') showCompletion();
+});
+copyPromptButton.addEventListener('click', async () => { await navigator.clipboard.writeText(promptPreview.textContent || ''); copyPromptButton.textContent = 'Copied prompt'; });
+renderWalkthrough();

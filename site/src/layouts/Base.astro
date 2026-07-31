@@ -53,9 +53,35 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
       href="https://fonts.googleapis.com/css2?family=Inter:wght@300..800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Matomo Analytics: Point-grab site ID 5 -->
+    <script is:inline>
+      var _paq = window._paq = window._paq || [];
+      _paq.push(['trackPageView']);
+      _paq.push(['enableLinkTracking']);
+      (function () {
+        var u = 'https://analytics.therchrdsns.com/';
+        _paq.push(['setTrackerUrl', u + 'matomo.php']);
+        _paq.push(['setSiteId', '5']);
+        var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
+        g.async = true;
+        g.src = u + 'matomo.js';
+        s.parentNode.insertBefore(g, s);
+      })();
+    </script>
+    <!-- End Matomo Analytics -->
   </head>
 
   <body class="min-h-screen">
+    <noscript>
+      <p>
+        <img
+          src="https://analytics.therchrdsns.com/matomo.php?idsite=5&rec=1"
+          style="border:0"
+          alt=""
+        />
+      </p>
+    </noscript>
     <Nav />
 
     <!-- Spacer for fixed nav -->

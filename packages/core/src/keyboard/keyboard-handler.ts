@@ -68,10 +68,10 @@ function parseKeyCombo(combo: string): ParsedKey {
 }
 
 function matchesCombo(e: KeyboardEvent, parsed: ParsedKey): boolean {
-  if (parsed.meta && !e.metaKey) return false;
-  if (parsed.ctrl && !e.ctrlKey) return false;
-  if (parsed.shift && !e.shiftKey) return false;
-  if (parsed.alt && !e.altKey) return false;
+  if (parsed.meta !== e.metaKey) return false;
+  if (parsed.ctrl !== e.ctrlKey) return false;
+  if (parsed.shift !== e.shiftKey) return false;
+  if (parsed.alt !== e.altKey) return false;
 
   return e.key.toLowerCase() === parsed.key;
 }
@@ -120,8 +120,8 @@ export function createKeyboardHandler(deps: KeyboardHandlerDeps): KeyboardHandle
   function handleKeyUp(e: KeyboardEvent): void {
     const parsed = parseKeyCombo(deps.getActivationKey());
 
-    // For key-up we check if the released key matches the main key
-    if (e.key.toLowerCase() !== parsed.key) return;
+    // Toggle only when the released key still satisfies the configured combo.
+    if (!matchesCombo(e, parsed)) return;
 
     const mode = deps.getActivationMode();
 

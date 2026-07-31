@@ -1,6 +1,6 @@
 import { init } from '@point-grab/core';
 
-init({ activationMode: 'hold', devOnly: false });
+const pointGrab = init({ devOnly: false });
 
 const tracks = [
   { title: 'Neon Dreams',   artist: 'Synthwave Collective', album: 'Chrome Horizon', duration: '3:47', color: 'linear-gradient(135deg,#4f46e5,#7c3aed,#db2777)' },
@@ -147,3 +147,41 @@ function renderQueue() {
 }
 
 loadTrack(currentIdx);
+
+// The quest list observes real capture-session events; it never drives product state.
+const questList = document.querySelector('[data-testid="quest-list"]');
+const promptPreview = document.querySelector('[data-testid="prompt-preview"]');
+const completion = document.querySelector('[data-testid="walkthrough-complete"]');
+const annotations = [];
+const quests = { 'queue-comment': false, 'progress-skip': false, 'volume-comment': false, 'end-review': false };
+function targetMatches(target, selector) {
+  const element = target?.element;
+  return !!element && (element.matches(selector) || !!element.closest(selector));
+}
+function renderPromptPreview() {
+  promptPreview.textContent = annotations.length ? annotations.map(({ snippet, comment }, index) => `## Element ${index + 1}\n${snippet}\n\nComment: ${comment}`).join('\n\n---\n\n') : 'Your accepted review comments will appear here.';
+}
+function renderQuests() {
+  Object.entries(quests).forEach(([id, complete]) => {
+    const row = questList.querySelector(`[data-quest-id="${id}"]`);
+    row.dataset.questStatus = complete ? 'complete' : 'pending';
+    row.setAttribute('aria-checked', String(complete));
+  });
+}
+pointGrab.registerPlugin({ name: 'vanilla-quest-preview', hooks: { onCopySuccess(snippet, _context, comment) {
+  if (!comment || annotations.some((annotation) => annotation.snippet === snippet && annotation.comment === comment)) return;
+  annotations.push({ snippet, comment }); renderPromptPreview();
+} } });
+window.addEventListener('point-grab:capture-session', (event) => {
+  const { action, target, annotationCount } = event.detail || {};
+  if (action === 'accepted' && targetMatches(target, '.queue-item')) quests['queue-comment'] = true;
+  if (action === 'accepted' && targetMatches(target, '.volume-wrap')) quests['volume-comment'] = true;
+  if (action === 'skipped' && targetMatches(target, '.progress-track')) quests['progress-skip'] = true;
+  if (action === 'ended' && annotationCount >= 2) {
+    quests['end-review'] = true;
+    completion.hidden = false;
+    completion.textContent = `${annotationCount} reviewed elements + comments are ready for your AI agent.`;
+  }
+  renderQuests();
+});
+renderQuests();

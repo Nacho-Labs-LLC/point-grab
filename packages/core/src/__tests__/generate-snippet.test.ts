@@ -29,10 +29,11 @@ describe('generateSnippet', () => {
     expect(result).toBe('<button>Click</button>');
   });
 
-  it('includes selector line', () => {
+  it('does not include the generated selector in the default prompt', () => {
     const ctx = makeContext({ selector: 'div.card#main' });
     const result = generateSnippet(ctx, 20);
-    expect(result).toContain('selector: div.card#main');
+    expect(result).not.toContain('selector:');
+    expect(result).not.toContain('div.card#main');
   });
 
   it('includes element description when present', () => {

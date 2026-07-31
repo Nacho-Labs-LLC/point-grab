@@ -20,7 +20,7 @@ export interface ElementPickerDeps {
   getFreezeElement?: () => HTMLElement | null;
   getElementFromPoint?: () => ((x: number, y: number) => Element | null) | null;
   onHover: (element: Element | null) => void;
-  onSelect: (element: Element) => void;
+  onSelect: (element: Element, point: { x: number; y: number }) => void;
 }
 
 export function createElementPicker(deps: ElementPickerDeps): ElementPicker {
@@ -83,7 +83,7 @@ export function createElementPicker(deps: ElementPickerDeps): ElementPicker {
     e.stopPropagation();
 
     if (hoveredElement) {
-      deps.onSelect(hoveredElement);
+      deps.onSelect(hoveredElement, { x: e.clientX, y: e.clientY });
     }
   }
 

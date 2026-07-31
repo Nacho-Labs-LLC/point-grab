@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { pointGrab } from '@point-grab/svelte';
+  import { pointGrab, getPointGrabApi, registerPointGrabPlugin } from '@point-grab/svelte';
   import './app.css';
 
   const initialNotes = [
@@ -14,6 +14,11 @@
   let toolbarOpen = $state(false);
   let saving = $state(false);
   let nextId = $state(4);
+  let walkthroughStarted = $state(false);
+  let walkthroughComplete = $state(false);
+  let reviewCount = $state(0);
+  let walkthroughStep = $state(1);
+  let promptPreview = $state('');
 
   let saveTimer = null;
 
@@ -59,23 +64,96 @@
     selectedNoteId = id;
   }
 
+  function startWalkthrough() {
+    walkthroughStarted = true;
+    walkthroughComplete = false;
+    reviewCount = 0;
+    walkthroughStep = 1;
+    promptPreview = '';
+  }
+
+  async function syncPromptPreview() {
+    try {
+      const prompt = await navigator.clipboard.readText();
+      const count = (prompt.match(/^## Element /gm) ?? []).length;
+      if (count > 0) {
+        promptPreview = prompt;
+        reviewCount = Math.min(count, 2);
+      }
+    } catch {
+      // Clipboard reads can be denied outside a user gesture. A later accepted
+      // review retries the preview without replacing the real capture flow.
+    }
+  }
+
+  function handleCaptureSession(event) {
+    if (!walkthroughStarted) return;
+    const { action, annotationCount } = event.detail || {};
+
+    if (action === 'accepted') {
+      reviewCount = Math.min(annotationCount, 2);
+      walkthroughStep = annotationCount === 1 ? 2 : 3;
+      void syncPromptPreview();
+    } else if (action === 'skipped' && walkthroughStep === 2) {
+      walkthroughStep = 3;
+    } else if (action === 'ended') {
+      walkthroughComplete = reviewCount >= 2;
+    }
+  }
+
   onMount(() => {
+    window.addEventListener('point-grab:capture-session', handleCaptureSession);
+    registerPointGrabPlugin({
+      name: 'svelte-guided-walkthrough',
+      hooks: {
+        onCopySuccess: () => {
+          if (walkthroughStarted) void syncPromptPreview();
+        },
+      },
+    });
+
     return () => {
       if (saveTimer) clearTimeout(saveTimer);
+      window.removeEventListener('point-grab:capture-session', handleCaptureSession);
+      getPointGrabApi()?.unregisterPlugin('svelte-guided-walkthrough');
     };
   });
 </script>
 
-<div use:pointGrab={{ activationMode: 'hold', devOnly: false }}>
+<div use:pointGrab={{ devOnly: false }}>
   <header class="inkwell-header">
     <div class="inkwell-logo">
       <span class="inkwell-logotype">Inkwell</span>
       <span class="inkwell-beta">beta</span>
     </div>
     <div class="pg-hint">
-      Hold <kbd>Cmd+C</kbd> / <kbd>Ctrl+C</kbd>, hover any element, click to grab its context
+      Toggle Point Grab with <kbd>Cmd+Shift+C</kbd> / <kbd>Ctrl+Shift+C</kbd>, then hover any element
     </div>
   </header>
+
+  <section class="walkthrough-panel" aria-label="Guided capture walkthrough">
+    <div class="walkthrough-copy">
+      <span class="walkthrough-eyebrow">Guided capture</span>
+      <h2>{walkthroughComplete ? 'Walkthrough complete' : 'Turn two UI notes into one prompt'}</h2>
+      {#if !walkthroughStarted}
+        <p>Start the guide, enter Capture Mode, then select two notes and accept their comments with a Skip in between.</p>
+      {:else if walkthroughComplete}
+        <p>Your two accepted comments were combined by the real capture session and copied as one review prompt.</p>
+      {:else}
+        <p>Step {walkthroughStep} of 3 — {walkthroughStep === 1 ? 'review the note title' : walkthroughStep === 2 ? 'skip the editor body to keep the session active' : 'review the tags'}, then continue.</p>
+      {/if}
+    </div>
+    <div class="walkthrough-actions">
+      {#if !walkthroughStarted || walkthroughComplete}
+        <button class="walkthrough-start" onclick={startWalkthrough}>Start guided capture</button>
+      {:else}
+        <span class="walkthrough-progress" aria-live="polite">{reviewCount}/2 reviews accepted</span>
+      {/if}
+    </div>
+    {#if promptPreview}
+      <pre class="walkthrough-preview" data-walkthrough-preview aria-label="Aggregate prompt preview">{promptPreview}</pre>
+    {/if}
+  </section>
 
   <div class="app-layout">
     <!-- Left sidebar -->
@@ -129,6 +207,8 @@
         <div class="editor-body">
           <input
             class="editor-title"
+            class:walkthrough-target={walkthroughStarted && walkthroughStep === 1}
+            data-walkthrough-target="note-title"
             type="text"
             value={selectedNote.title}
             oninput={updateTitle}
@@ -137,13 +217,19 @@
 
           <textarea
             class="editor-textarea"
+            class:walkthrough-target={walkthroughStarted && walkthroughStep === 2}
+            data-walkthrough-target="note-body"
             value={selectedNote.body}
             oninput={updateBody}
             placeholder="Start writing…"
           ></textarea>
 
           {#if selectedNote.tags.length > 0}
-            <div class="editor-tags">
+            <div
+              class="editor-tags"
+              class:walkthrough-target={walkthroughStarted && walkthroughStep === 3}
+              data-walkthrough-target="note-tags"
+            >
               {#each selectedNote.tags as tag}
                 <span class="tag">{tag}</span>
               {/each}

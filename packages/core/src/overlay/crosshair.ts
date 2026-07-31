@@ -1,4 +1,4 @@
-import { Z_INDEX_CROSSHAIR } from '../constants';
+import { Z_INDEX_LABEL } from '../constants';
 
 const CROSSHAIR_STYLE_ID = '__point-grab-crosshair-styles__';
 const H_LINE_ID = '__point-grab-crosshair-h__';
@@ -25,9 +25,10 @@ export function createCrosshair(): Crosshair {
       .point-grab-crosshair-line {
         position: fixed;
         pointer-events: none;
-        z-index: ${Z_INDEX_CROSSHAIR};
+        z-index: ${Z_INDEX_LABEL};
         background: var(--point-grab-accent, #3b82f6);
-        opacity: 0.25;
+        opacity: 0.7;
+        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.45), 0 0 8px var(--point-grab-accent, #3b82f6);
         transition: none;
       }
       #${H_LINE_ID} {
