@@ -27,7 +27,7 @@ test.describe('web-components example', () => {
 
   test('captures forge-app host element and shows success toast', async ({ page }) => {
     const toast = await captureElement(page, page.locator('forge-app'));
-    await expect(toast).toContainText('Copied to clipboard');
+    await expect(toast).toContainText('Confirmed & copied');
   });
 
   test('toast shows a custom element component name', async ({ page }) => {
@@ -42,11 +42,11 @@ test.describe('web-components example', () => {
     await page.mouse.move(box!.x + box!.width / 2, box!.y + 80);
     await expect(page.locator(SEL.overlay)).toBeVisible({ timeout: 5_000 });
     await page.mouse.click(box!.x + box!.width / 2, box!.y + 80);
-    await deactivateInspector(page);
+    await page.getByRole('textbox', { name: 'What should change about this element?' }).fill('Review this component.');
+    await page.getByRole('button', { name: 'Accept' }).click();
     const toast = page.locator(SEL.toastVisible);
     await expect(toast).toBeVisible({ timeout: 8_000 });
-    // Toast should contain "Component" label — any custom element was resolved
-    await expect(toast).toContainText('Component');
+    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain('in ForgeApp');
   });
 
   test('freeze mode overlays the page', async ({ page }) => {
@@ -68,7 +68,8 @@ test.describe('web-components example', () => {
     await page.mouse.move(box!.x + box!.width / 2, box!.y + 100);
     await expect(page.locator(SEL.overlay)).toBeVisible({ timeout: 5_000 });
     await page.mouse.click(box!.x + box!.width / 2, box!.y + 100);
-    await deactivateInspector(page);
+    await page.getByRole('textbox', { name: 'What should change about this element?' }).fill('Review this shadow DOM element.');
+    await page.getByRole('button', { name: 'Accept' }).click();
     await expect(page.locator(SEL.toastVisible)).toBeVisible({ timeout: 8_000 });
 
     const text = await page.evaluate(() => navigator.clipboard.readText());
@@ -88,7 +89,8 @@ test.describe('web-components example', () => {
     await page.mouse.move(box!.x + box!.width / 2, box!.y + 230);
     await expect(page.locator(SEL.overlay)).toBeVisible({ timeout: 5_000 });
     await page.mouse.click(box!.x + box!.width / 2, box!.y + 230);
-    await deactivateInspector(page);
+    await page.getByRole('textbox', { name: 'What should change about this element?' }).fill('Review this badge.');
+    await page.getByRole('button', { name: 'Accept' }).click();
     await expect(page.locator(SEL.toastVisible)).toBeVisible({ timeout: 8_000 });
   });
 

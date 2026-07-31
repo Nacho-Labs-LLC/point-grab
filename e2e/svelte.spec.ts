@@ -11,7 +11,8 @@ async function captureElement(page: Page, target: Locator): Promise<Locator> {
   await target.hover();
   await expect(page.locator(SEL.overlay)).toBeVisible({ timeout: 5_000 });
   await target.click();
-  await toggleInspector(page);
+  await page.getByRole('textbox', { name: 'What should change about this element?' }).fill('Review this element.');
+  await page.getByRole('button', { name: 'Accept' }).click();
   const toast = page.locator(SEL.toastVisible);
   await expect(toast).toBeVisible({ timeout: 8_000 });
   return toast;
@@ -40,12 +41,12 @@ test.describe('svelte example', () => {
 
   test('captures element and shows success toast', async ({ page }) => {
     const toast = await captureElement(page, page.locator('.note-item').first());
-    await expect(toast).toContainText('Copied to clipboard');
+    await expect(toast).toContainText('Confirmed & copied');
   });
 
   test('toast shows Svelte component name', async ({ page }) => {
-    const toast = await captureElement(page, page.locator('.note-item').first());
-    await expect(toast).toContainText('App');
+    await captureElement(page, page.locator('.note-item').first());
+    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain('in App');
   });
 
   test('freeze mode overlays the page', async ({ page }) => {
@@ -69,13 +70,13 @@ test.describe('svelte example', () => {
     await page.locator('.toggle-format-btn').click();
     await expect(page.locator('.format-toolbar')).toHaveClass(/visible/);
     const toast = await captureElement(page, page.locator('.format-btn').first());
-    await expect(toast).toContainText('Copied to clipboard');
+    await expect(toast).toContainText('Confirmed & copied');
   });
 
   test('word count updates as user types', async ({ page }) => {
     await expect(page.locator('.word-count')).toBeVisible();
     const toast = await captureElement(page, page.locator('.word-count'));
-    await expect(toast).toContainText('Copied to clipboard');
+    await expect(toast).toContainText('Confirmed & copied');
   });
 
   test('clipboard content contains HTML of captured element', async ({ page }) => {
@@ -84,7 +85,8 @@ test.describe('svelte example', () => {
     await page.locator('.note-item').first().hover();
     await expect(page.locator(SEL.overlay)).toBeVisible();
     await page.locator('.note-item').first().click();
-    await toggleInspector(page);
+    await page.getByRole('textbox', { name: 'What should change about this element?' }).fill('Preserve the captured markup.');
+    await page.getByRole('button', { name: 'Accept' }).click();
     await expect(page.locator(SEL.toastVisible)).toBeVisible({ timeout: 8_000 });
     const text = await page.evaluate(() => navigator.clipboard.readText());
     expect(text).toMatch(/<[a-z]/);

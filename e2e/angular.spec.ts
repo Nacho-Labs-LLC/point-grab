@@ -11,7 +11,8 @@ async function captureElement(page: Page, target: Locator): Promise<Locator> {
   await target.hover();
   await expect(page.locator(SEL.overlay)).toBeVisible({ timeout: 5_000 });
   await target.click();
-  await toggleInspector(page);
+  await page.getByRole('textbox', { name: 'What should change about this element?' }).fill('Review this element.');
+  await page.getByRole('button', { name: 'Accept' }).click();
   const toast = page.locator(SEL.toastVisible);
   await expect(toast).toBeVisible({ timeout: 8_000 });
   return toast;
@@ -40,18 +41,18 @@ test.describe('angular example', () => {
 
   test('captures element and shows success toast', async ({ page }) => {
     const toast = await captureElement(page, page.locator('.post-card').first());
-    await expect(toast).toContainText('Copied to clipboard');
+    await expect(toast).toContainText('Confirmed & copied');
   });
 
   test('toast shows Angular component name', async ({ page }) => {
-    const toast = await captureElement(page, page.locator('.post-copy').first());
-    await expect(toast).toContainText('PostCardComponent');
+    await captureElement(page, page.locator('.post-copy').first());
+    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain('in PostCardComponent');
   });
 
   test('capturing a detail panel is inspectable after expanding the card', async ({ page }) => {
     await page.locator('.ghost-btn').first().click();
-    const toast = await captureElement(page, page.locator('.detail-panel').first());
-    await expect(toast).toContainText('PostCardComponent');
+    await captureElement(page, page.locator('.detail-panel').first());
+    await expect.poll(() => page.evaluate(() => navigator.clipboard.readText())).toContain('in PostCardComponent');
   });
 
   test('freeze mode overlays the page', async ({ page }) => {
