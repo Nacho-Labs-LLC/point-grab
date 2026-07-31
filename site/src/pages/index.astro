@@ -588,12 +588,12 @@ const STACKBLITZ_DEMOS = {
             <div class="border-b border-border px-4 py-2.5">
               <span class="text-xs text-text-faint">App.tsx</span>
             </div>
-            <pre class="overflow-x-auto p-6 text-sm leading-relaxed"><code><span class="text-[#a78bfa]">import</span> <span class="text-text-faint">{</span> <span class="text-text">usePointGrab</span> <span class="text-text-faint">}</span> <span class="text-[#a78bfa]">from</span> <span class="text-success">'@point-grab/react'</span>
+            <pre class="overflow-x-auto p-6 text-sm leading-relaxed"><code><span class="text-[#a78bfa]">import</span> <span class="text-text-faint">&#123;</span> <span class="text-text">usePointGrab</span> <span class="text-text-faint">&#125;</span> <span class="text-[#a78bfa]">from</span> <span class="text-success">'@point-grab/react'</span>
 
-<span class="text-[#a78bfa]">function</span> <span class="text-point-grab-blue">App</span><span class="text-text-faint">() {</span>
+<span class="text-[#a78bfa]">function</span> <span class="text-point-grab-blue">App</span><span class="text-text-faint">() &#123;</span>
   <span class="text-point-grab-blue">usePointGrab</span><span class="text-text-faint">()</span>
   <span class="text-[#a78bfa]">return</span> <span class="text-text-faint">&lt;</span><span class="text-point-grab-blue">div</span><span class="text-text-faint">&gt;</span><span class="text-text">...</span><span class="text-text-faint">&lt;/</span><span class="text-point-grab-blue">div</span><span class="text-text-faint">&gt;</span>
-<span class="text-text-faint">}</span></code></pre>
+<span class="text-text-faint">&#125;</span></code></pre>
           </div>
         </div>
 
@@ -607,12 +607,12 @@ const STACKBLITZ_DEMOS = {
             <div class="border-b border-border px-4 py-2.5">
               <span class="text-xs text-text-faint">main.ts</span>
             </div>
-            <pre class="overflow-x-auto p-6 text-sm leading-relaxed"><code><span class="text-[#a78bfa]">import</span> <span class="text-text-faint">{</span> <span class="text-text">bootstrapApplication</span> <span class="text-text-faint">}</span> <span class="text-[#a78bfa]">from</span> <span class="text-success">'@angular/platform-browser'</span>
-<span class="text-[#a78bfa]">import</span> <span class="text-text-faint">{</span> <span class="text-text">initPointGrabAngular</span> <span class="text-text-faint">}</span> <span class="text-[#a78bfa]">from</span> <span class="text-success">'@point-grab/angular'</span>
-<span class="text-[#a78bfa]">import</span> <span class="text-text-faint">{</span> <span class="text-text">appConfig</span> <span class="text-text-faint">}</span> <span class="text-[#a78bfa]">from</span> <span class="text-success">'./app/app.config'</span>
-<span class="text-[#a78bfa]">import</span> <span class="text-text-faint">{</span> <span class="text-text">App</span> <span class="text-text-faint">}</span> <span class="text-[#a78bfa]">from</span> <span class="text-success">'./app/app'</span>
+            <pre class="overflow-x-auto p-6 text-sm leading-relaxed"><code><span class="text-[#a78bfa]">import</span> <span class="text-text-faint">&#123;</span> <span class="text-text">bootstrapApplication</span> <span class="text-text-faint">&#125;</span> <span class="text-[#a78bfa]">from</span> <span class="text-success">'@angular/platform-browser'</span>
+<span class="text-[#a78bfa]">import</span> <span class="text-text-faint">&#123;</span> <span class="text-text">initPointGrabAngular</span> <span class="text-text-faint">&#125;</span> <span class="text-[#a78bfa]">from</span> <span class="text-success">'@point-grab/angular'</span>
+<span class="text-[#a78bfa]">import</span> <span class="text-text-faint">&#123;</span> <span class="text-text">appConfig</span> <span class="text-text-faint">&#125;</span> <span class="text-[#a78bfa]">from</span> <span class="text-success">'./app/app.config'</span>
+<span class="text-[#a78bfa]">import</span> <span class="text-text-faint">&#123;</span> <span class="text-text">App</span> <span class="text-text-faint">&#125;</span> <span class="text-[#a78bfa]">from</span> <span class="text-success">'./app/app'</span>
 
-<span class="text-text">initPointGrabAngular</span><span class="text-text-faint">({</span> <span class="text-text">activationMode</span><span class="text-text-faint">:</span> <span class="text-success">'hold'</span><span class="text-text-faint">,</span> <span class="text-text">devOnly</span><span class="text-text-faint">:</span> <span class="text-text">false</span> <span class="text-text-faint">})</span>
+<span class="text-text">initPointGrabAngular</span><span class="text-text-faint">(&#123;</span> <span class="text-text">activationMode</span><span class="text-text-faint">:</span> <span class="text-success">'hold'</span><span class="text-text-faint">,</span> <span class="text-text">devOnly</span><span class="text-text-faint">:</span> <span class="text-text">false</span> <span class="text-text-faint">&#125;)</span>
 <span class="text-text">bootstrapApplication</span><span class="text-text-faint">(</span><span class="text-text">App</span><span class="text-text-faint">,</span> <span class="text-text">appConfig</span><span class="text-text-faint">).catch((</span><span class="text-text">err</span><span class="text-text-faint">) =&gt; console.error(</span><span class="text-text">err</span><span class="text-text-faint">))</span></code></pre>
           </div>
         </div>
@@ -627,7 +627,7 @@ const STACKBLITZ_DEMOS = {
             <div class="border-b border-border px-4 py-2.5">
               <span class="text-xs text-text-faint">main.ts</span>
             </div>
-            <pre class="overflow-x-auto p-6 text-sm leading-relaxed"><code><span class="text-[#a78bfa]">import</span> <span class="text-text-faint">{</span> <span class="text-text">PointGrabPlugin</span> <span class="text-text-faint">}</span> <span class="text-[#a78bfa]">from</span> <span class="text-success">'@point-grab/vue'</span>
+            <pre class="overflow-x-auto p-6 text-sm leading-relaxed"><code><span class="text-[#a78bfa]">import</span> <span class="text-text-faint">&#123;</span> <span class="text-text">PointGrabPlugin</span> <span class="text-text-faint">&#125;</span> <span class="text-[#a78bfa]">from</span> <span class="text-success">'@point-grab/vue'</span>
 
 <span class="text-text">app</span><span class="text-text-faint">.</span><span class="text-point-grab-blue">use</span><span class="text-text-faint">(</span><span class="text-text">PointGrabPlugin</span><span class="text-text-faint">)</span>
 <span class="text-text">app</span><span class="text-text-faint">.</span><span class="text-point-grab-blue">mount</span><span class="text-text-faint">(</span><span class="text-success">'#app'</span><span class="text-text-faint">)</span></code></pre>
@@ -645,7 +645,7 @@ const STACKBLITZ_DEMOS = {
               <span class="text-xs text-text-faint">+layout.svelte</span>
             </div>
             <pre class="overflow-x-auto p-6 text-sm leading-relaxed"><code><span class="text-text-faint">&lt;</span><span class="text-point-grab-blue">script</span><span class="text-text-faint">&gt;</span>
-  <span class="text-[#a78bfa]">import</span> <span class="text-text-faint">{</span> <span class="text-text">pointGrab</span> <span class="text-text-faint">}</span> <span class="text-[#a78bfa]">from</span> <span class="text-success">'@point-grab/svelte'</span>
+  <span class="text-[#a78bfa]">import</span> <span class="text-text-faint">&#123;</span> <span class="text-text">pointGrab</span> <span class="text-text-faint">&#125;</span> <span class="text-[#a78bfa]">from</span> <span class="text-success">'@point-grab/svelte'</span>
 <span class="text-text-faint">&lt;/</span><span class="text-point-grab-blue">script</span><span class="text-text-faint">&gt;</span>
 
 <span class="text-text-faint">&lt;</span><span class="text-point-grab-blue">div</span> <span class="text-[#a78bfa]">use</span><span class="text-text-faint">:</span><span class="text-point-grab-blue">pointGrab</span><span class="text-text-faint">&gt;</span>
