@@ -44,7 +44,8 @@ describe('comment-mode copy actions', () => {
     expect(ok).toBe(true);
     expect(navigator.clipboard.writeText).toHaveBeenCalledTimes(1);
     const copied = vi.mocked(navigator.clipboard.writeText).mock.calls[0][0];
-    expect(copied).toContain('Submit Order');
+    expect(copied).toContain('[<button.btn-primary> (CheckoutForm at src/components/CheckoutForm.tsx:8:1)]');
+    expect(copied).not.toContain('Submit Order');
     expect(copied).not.toContain('selector:');
     expect(copied).toContain('Disable this button while saving.');
     expect(copied).toContain('/* Comment: Disable this button while saving. */');

@@ -8,9 +8,9 @@
     <p class="mt-1 text-xs text-text-muted">Complete any item in any order. Nothing is locked.</p>
     <div class="quest-rows mt-3">
       <div class="quest-row" role="checkbox" aria-checked="false" data-quest-id="revenue-comment" data-quest-status="pending">Comment the Revenue KPI</div>
-      <div class="quest-row" role="checkbox" aria-checked="false" data-quest-id="fulfillment-skip" data-quest-status="pending">Skip the Fulfillment card</div>
+      <div class="quest-row" role="checkbox" aria-checked="false" data-quest-id="fulfillment-batch" data-quest-status="pending">Add Fulfillment without a comment</div>
       <div class="quest-row" role="checkbox" aria-checked="false" data-quest-id="notification-comment" data-quest-status="pending">Comment the order notification</div>
-      <div class="quest-row" role="checkbox" aria-checked="false" data-quest-id="end-review" data-quest-status="pending">End Capture Mode with two notes</div>
+      <div class="quest-row" role="checkbox" aria-checked="false" data-quest-id="end-review" data-quest-status="pending">End & Copy Batch</div>
     </div>
     <pre class="mt-3 max-h-40 overflow-auto rounded-lg border border-border bg-bg p-3 font-mono text-[11px] leading-relaxed text-text-muted" data-testid="prompt-preview">Your accepted review comments will appear here exactly as Point-grab writes them to the clipboard.</pre>
     <div class="mt-3 hidden rounded-lg border border-success/25 bg-success/5 p-3 text-xs text-success" data-testid="walkthrough-complete"></div>
@@ -53,7 +53,7 @@ import { init as initPointGrab } from '../../../packages/core/src/index.ts';
   const preview = root.querySelector('[data-testid="prompt-preview"]');
   const completion = root.querySelector('[data-testid="walkthrough-complete"]');
   const annotations = [];
-  const quests = { 'revenue-comment': false, 'fulfillment-skip': false, 'notification-comment': false, 'end-review': false };
+  const quests = { 'revenue-comment': false, 'fulfillment-batch': false, 'notification-comment': false, 'end-review': false };
 
   function targetMatches(target, selector) {
     const element = target?.element;
@@ -74,18 +74,18 @@ import { init as initPointGrab } from '../../../packages/core/src/index.ts';
 
   const pointGrab = initPointGrab({ devOnly: false, mcpWebhook: false });
   pointGrab.registerPlugin({ name: 'site-live-demo-preview', hooks: { onCopySuccess(snippet, _context, comment) {
-    if (!comment || annotations.some((item) => item.snippet === snippet && item.comment === comment)) return;
+    if (annotations.some((item) => item.snippet === snippet && item.comment === comment)) return;
     annotations.push({ snippet, comment });
     renderPreview();
   } } });
   window.addEventListener('point-grab:capture-session', (event) => {
     const { action, target, annotationCount } = event.detail || {};
     if (action === 'accepted' && targetMatches(target, '#revenue-card')) quests['revenue-comment'] = true;
-    if (action === 'skipped' && targetMatches(target, '#fulfillment-card')) quests['fulfillment-skip'] = true;
+    if (action === 'accepted' && targetMatches(target, '#fulfillment-card')) quests['fulfillment-batch'] = true;
     if (action === 'accepted' && targetMatches(target, '#notif-wrapper')) quests['notification-comment'] = true;
     if (action === 'ended' && annotationCount >= 2) {
       quests['end-review'] = true;
-      completion.textContent = `${annotationCount} reviewed elements + comments are ready for your AI agent.`;
+      completion.textContent = `${annotationCount} reviewed elements are ready for your AI agent.`;
       completion.classList.remove('hidden');
     }
     renderQuests();

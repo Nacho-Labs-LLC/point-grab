@@ -1,44 +1,27 @@
 import type { ElementContext, HtmlCleaner } from '../types';
-import { cleanFrameworkAttrs } from '../utils';
 
-function truncateHtml(html: string, maxLines: number): string {
-  const lines = html.split('\n');
-  if (lines.length <= maxLines) return html;
+function describeElement(element: Element): string {
+  const tag = element.tagName.toLowerCase();
+  if (element.id) return `<${tag}#${element.id}>`;
 
-  return lines.slice(0, maxLines).join('\n') + '\n  ...';
+  const className = typeof element.className === 'string' ? element.className.trim().split(/\s+/).filter(Boolean)[0] : '';
+  return `<${tag}${className ? `.${className}` : ''}>`;
 }
 
 function formatLocation(name: string | null, filePath: string | null, line: number | null, column: number | null): string {
-  let locationLine = '';
-  if (name) locationLine += `in ${name}`;
-  if (filePath) {
-    const loc = filePath +
-      (line != null ? `:${line}` : '') +
-      (line != null && column != null ? `:${column}` : '');
-    locationLine += locationLine ? ` at ${loc}` : `at ${loc}`;
-  }
-  return locationLine;
+  const location = filePath
+    ? `${filePath}${line != null ? `:${line}` : ''}${line != null && column != null ? `:${column}` : ''}`
+    : '';
+  if (name && location) return `${name} at ${location}`;
+  return name || (location ? `at ${location}` : '');
 }
 
-export function generateSnippet(context: ElementContext, maxContextLines: number, htmlCleaners: HtmlCleaner[] = []): string {
-  const cleaned = cleanFrameworkAttrs(context.html, htmlCleaners);
-  const truncated = truncateHtml(cleaned, maxContextLines);
+export function generateSnippet(context: ElementContext, _maxContextLines: number, _htmlCleaners: HtmlCleaner[] = []): string {
+  const element = describeElement(context.element);
+  const parent = context.element.parentElement ? ` in ${describeElement(context.element.parentElement)}` : '';
+  const source = context.componentStack[0]
+    ? formatLocation(context.componentStack[0].name, context.componentStack[0].filePath, context.componentStack[0].line, context.componentStack[0].column)
+    : formatLocation(context.componentName, context.filePath, context.line, context.column);
 
-  const parts: string[] = [truncated];
-
-  // Semantic description
-  if (context.elementDescription) {
-    parts.push(context.elementDescription);
-  }
-
-  // Component location
-  if (context.componentStack.length > 0) {
-    for (const entry of context.componentStack) {
-      parts.push(formatLocation(entry.name, entry.filePath, entry.line, entry.column));
-    }
-  } else if (context.componentName || context.filePath) {
-    parts.push(formatLocation(context.componentName, context.filePath, context.line, context.column));
-  }
-
-  return parts.join('\n');
+  return `[${element}${parent}${source ? ` (${source})` : ''}]`;
 }

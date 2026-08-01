@@ -1,6 +1,6 @@
 import type { PointGrabState } from '../store';
 import { Z_INDEX_TOOLBAR } from '../constants';
-import { ICON_GRAB, ICON_HISTORY, ICON_ELLIPSIS, ICON_FREEZE, ICON_SUN, ICON_MOON, ICON_SYSTEM, ICON_POWER, ICON_DISMISS, ICON_COPY } from './toolbar-icons';
+import { ICON_GRAB, ICON_HISTORY, ICON_FREEZE, ICON_SUN, ICON_MOON, ICON_SYSTEM, ICON_POWER, ICON_DISMISS, ICON_COPY } from './toolbar-icons';
 
 const TOOLBAR_ID = '__point-grab-toolbar__';
 const STYLE_ID = '__point-grab-toolbar-styles__';
@@ -8,7 +8,7 @@ const STYLE_ID = '__point-grab-toolbar-styles__';
 export interface ToolbarCallbacks {
   onSelectionMode: () => void;
   onHistory: () => void;
-  onActions: () => void;
+
   onFreeze: () => void;
   onThemeToggle: () => void;
   onEnableToggle: () => void;
@@ -80,7 +80,7 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
       }
       [data-point-grab-btn="captureHint"] {
         position: fixed;
-        bottom: 16px;
+        bottom: 72px;
         left: 50%;
         z-index: ${Z_INDEX_TOOLBAR};
         transform: translateX(-50%);
@@ -189,7 +189,7 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
 
     buttons.selection = createButton('selection', ICON_GRAB, 'Selection mode', callbacks.onSelectionMode);
     buttons.history = createButton('history', ICON_HISTORY, 'History', callbacks.onHistory);
-    buttons.actions = createButton('actions', ICON_ELLIPSIS, 'Actions', callbacks.onActions);
+
     buttons.freeze = createButton('freeze', ICON_FREEZE, 'Freeze page (F)', callbacks.onFreeze);
     buttons.theme = createButton('theme', ICON_SUN, 'Toggle theme', callbacks.onThemeToggle);
     buttons.enable = createButton('enable', ICON_POWER, 'Enable/Disable', callbacks.onEnableToggle);
@@ -212,7 +212,7 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
     leftGroup.className = 'point-grab-toolbar-left';
     leftGroup.appendChild(buttons.selection);
     leftGroup.appendChild(buttons.history);
-    leftGroup.appendChild(buttons.actions);
+
     leftGroup.appendChild(buttons.copyPrompt);
     leftGroup.appendChild(buttons.freeze);
     leftGroup.appendChild(divider);
@@ -255,23 +255,13 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
         const label = buttons.copyPrompt.querySelector('.point-grab-copy-prompt-label') as HTMLElement | null;
         if (captureModeActive) {
           buttons.copyPrompt.style.display = '';
-          if (label) label.textContent = 'End Capture Mode';
-          buttons.copyPrompt.title = annotationCount
-            ? `End Capture Mode (${annotationCount} captured)`
-            : 'End Capture Mode';
+          const countLabel = `${annotationCount ?? 0}/${state.options.maxCaptureCount}`;
+          if (label) label.textContent = `End & Copy Batch (${countLabel})`;
+          buttons.copyPrompt.title = `End & Copy Batch (${countLabel})`;
           buttons.copyPrompt.setAttribute('aria-label', buttons.copyPrompt.title);
 
           let badge = buttons.copyPrompt.querySelector('.point-grab-badge') as HTMLElement | null;
-          if (annotationCount && annotationCount > 0) {
-            if (!badge) {
-              badge = document.createElement('span');
-              badge.className = 'point-grab-badge';
-              buttons.copyPrompt.appendChild(badge);
-            }
-            badge.textContent = String(annotationCount);
-          } else {
-            badge?.remove();
-          }
+          badge?.remove();
         } else {
           buttons.copyPrompt.style.display = 'none';
           if (label) label.textContent = 'Confirm & Copy';
@@ -280,7 +270,10 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
       }
 
       if (buttons.captureHint) {
-        buttons.captureHint.style.display = captureModeActive ? 'none' : '';
+        buttons.captureHint.style.display = '';
+        buttons.captureHint.lastChild!.textContent = captureModeActive
+          ? ' Esc cancel · F freeze · Click for actions'
+          : ' Capture mode';
       }
 
       // Selection mode active state

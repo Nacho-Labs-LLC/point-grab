@@ -303,14 +303,23 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
         return;
       }
 
-      // Capture sessions are comment-first: selecting a target opens its dialog.
+      // Capture sessions preserve the selected target while its contextual actions are shown.
       if (captureSession.isActive()) {
         if (captureSession.getAnnotations().length >= store.state.options.maxCaptureCount) {
           showToast(`Capture limit reached (${store.state.options.maxCaptureCount}). End Capture Mode to finish.`);
           return;
         }
-        store.state.toolbar = { ...store.state.toolbar, pendingAction: { type: 'comment' } };
-        await executePendingAction({ type: 'comment' }, element, point);
+        const context = buildElementContext(
+          element,
+          componentResolver,
+          sourceResolver,
+          store.state.options.classFilters,
+          store.state.options.htmlCleaners,
+        );
+        lastSelectedElement = new WeakRef(element);
+        lastSelectedContext = context;
+        lastCapturePoint = point;
+        actionsMenu.show(point);
         return;
       }
 
@@ -424,15 +433,6 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
       }
     },
 
-    onActions() {
-      historyPopover.hide();
-      commentPopover.hide();
-      if (actionsMenu.isVisible()) {
-        actionsMenu.hide();
-      } else {
-        actionsMenu.show();
-      }
-    },
 
     onFreeze() {
       closeAllPopovers();
@@ -497,6 +497,20 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
   });
 
   // --- Actions Menu ---
+  async function addSelectedToReview(comment: string): Promise<void> {
+    if (!lastSelectedContext || !captureSession.isActive()) return;
+    captureSession.accept(lastSelectedContext, comment);
+    if (lastCapturePoint) {
+      capturePoints.push(lastCapturePoint);
+      lastCapturePoint = null;
+      renderCaptureMarkers();
+    }
+    showSelectFeedback(lastSelectedContext.element);
+    await syncCapturePrompt();
+    emitCaptureSessionEvent('accepted', captureSession.getAnnotations(), lastSelectedContext);
+    doActivate();
+  }
+
   const actionsMenu = createActionsMenu({
     onCopyElement() {
       const htmlCleaners = store.state.options.htmlCleaners;
@@ -528,25 +542,12 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
       }
     },
 
-    onComment() {
-      if (!captureSession.isActive()) {
-        captureSession.start();
-        captureMarkers.clear();
-        capturePoints.length = 0;
-      }
-      if (lastSelectedContext) {
-        commentPopover.show('multi');
-      } else {
-        store.state.toolbar = { ...store.state.toolbar, pendingAction: { type: 'comment' } };
-        doActivate();
-      }
-      updateToolbar();
+    onAddToReview(comment: string) {
+      void addSelectedToReview(comment);
     },
 
-    onClearHistory() {
-      lastSelectedContext = null;
-      lastSelectedElement = null;
-      store.state.toolbar = { ...store.state.toolbar, history: [] };
+    onCancel() {
+      lastCapturePoint = null;
     },
   });
 
