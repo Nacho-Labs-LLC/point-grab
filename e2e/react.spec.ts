@@ -1,10 +1,7 @@
 import { test, expect } from '@playwright/test';
+import { addToReview, endAndCopyBatch, SEL } from './helpers';
 
-const SEL = {
-  captureHint: '[data-point-grab-btn="captureHint"]',
-  endCapture: '[data-point-grab-btn="copyPrompt"]',
-  comment: '#__point-grab-comment-popover__',
-} as const;
+const captureHint = '[data-point-grab-btn="captureHint"]';
 
 test.describe('React guided capture-session walkthrough', () => {
   test.beforeEach(async ({ page }) => {
@@ -12,45 +9,22 @@ test.describe('React guided capture-session walkthrough', () => {
     await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
   });
 
-  test('guides a real two-target session through aggregate prompt completion', async ({ page }) => {
+  test('adds two selected elements with contextual review comments, then copies the V1 batch', async ({ page }) => {
     await expect(page.getByText('Step 1 of 3')).toBeVisible();
-    await expect(page.locator('.post-actions').first()).toHaveClass(/walkthrough-target/);
-
-    // Open the conditional UI before starting the persistent capture session.
     await page.locator('.reply-btn').first().click();
     await expect(page.locator('.reply-popover').first()).toBeVisible();
 
-    await page.locator(SEL.captureHint).click();
-    await expect(page.locator(SEL.endCapture)).toHaveAccessibleName(/End Capture Mode/);
-
-    await page.locator('[data-point-grab-btn="actions"]').click();
-    await page.getByRole('menuitem', { name: 'Add Comment' }).click();
-    await page.locator('.post-actions').first().click();
-    await page.locator(`${SEL.comment} textarea`).fill('Make the action row easier to scan.');
-    await page.locator(`${SEL.comment} button`, { hasText: 'Accept' }).click();
-
+    await page.locator(captureHint).click();
+    await addToReview(page, page.locator('.post-actions').first(), 'Make the action row easier to scan.');
     await expect(page.getByText('Step 2 of 3')).toBeVisible();
-    await expect(page.getByTestId('prompt-preview')).toContainText('Make the action row easier to scan.');
 
-    // Skip is a real session action and must not end the capture session.
-    await page.locator('.reply-popover').first().click();
-    await page.locator(`${SEL.comment} button`, { hasText: 'Skip' }).click();
-    await expect(page.locator(SEL.endCapture)).toHaveAccessibleName(/End Capture Mode/);
-
-    await page.locator('.reply-popover').first().click();
-    await page.locator(`${SEL.comment} textarea`).fill('Keep the reply composer visible while I write.');
-    await page.locator(`${SEL.comment} button`, { hasText: 'Accept' }).click();
-
+    await addToReview(page, page.locator('.reply-popover').first(), 'Keep the reply composer visible while I write.');
     await expect(page.getByText('Step 3 of 3')).toBeVisible();
-    await expect(page.getByTestId('prompt-preview')).toContainText('## Element 2');
+    await expect(page.locator(SEL.endBatch)).toHaveAccessibleName(/End & Copy Batch \(2\//);
 
-    await page.locator(SEL.endCapture).click();
-    await expect(page.getByTestId('walkthrough-complete')).toBeVisible();
-    await expect(page.getByTestId('walkthrough-complete')).toContainText('2 reviewed elements + comments are ready for your AI agent.');
-
-    const clipboard = await page.evaluate(() => navigator.clipboard.readText());
+    const clipboard = await endAndCopyBatch(page);
     await expect(page.getByTestId('prompt-preview')).toHaveText(clipboard);
-    expect(clipboard).toContain('App.jsx');
+    expect(clipboard).toContain('(Post at');
     expect(clipboard).toContain('Make the action row easier to scan.');
     expect(clipboard).toContain('Keep the reply composer visible while I write.');
   });

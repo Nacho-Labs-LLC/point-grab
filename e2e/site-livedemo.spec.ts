@@ -37,6 +37,7 @@ test.describe('site LiveDemo', () => {
 
     await page.locator('#revenue-card').click();
     await page.getByRole('menuitem', { name: 'Copy HTML' }).click();
-    expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('id="revenue-card"');
+    // Point-grab selects the deepest target under the click, so assert the copied revenue value rather than the card host.
+    expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('$12,847');
   });
 });
