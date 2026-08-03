@@ -9,7 +9,7 @@
   "dependencies": {
     "@point-grab/core": "workspace:*",
     "@point-grab/react": "workspace:*",
-    "react": "^18.3.0",
+    "react": "^19.2.8",
     "react-dom": "^18.3.0"
   },
   "devDependencies": {
