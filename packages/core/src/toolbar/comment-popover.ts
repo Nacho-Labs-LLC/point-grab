@@ -116,7 +116,7 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
     popover.setAttribute('aria-label', 'Add comment');
 
     textarea = document.createElement('textarea');
-    textarea.placeholder = 'Add a comment...';
+    textarea.placeholder = 'What should change about this element?';
     textarea.rows = 3;
 
     const footer = document.createElement('div');
@@ -134,7 +134,7 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
 
     submitBtn = document.createElement('button');
     submitBtn.className = 'point-grab-comment-btn point-grab-comment-submit';
-    submitBtn.textContent = 'Copy with Comment';
+    submitBtn.textContent = 'Copy Commented Grab';
     submitBtn.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -149,7 +149,7 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
         setTimeout(() => {
           if (textarea) {
             textarea.style.borderColor = '';
-            textarea.setAttribute('placeholder', 'Add a comment...');
+            textarea.setAttribute('placeholder', 'What should change about this element?');
           }
         }, 2000);
       }
@@ -201,7 +201,7 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
       currentMode = mode ?? 'single';
       textarea!.value = '';
       if (submitBtn) {
-        submitBtn.textContent = currentMode === 'multi' ? 'Add Comment' : 'Copy with Comment';
+        submitBtn.textContent = currentMode === 'multi' ? 'Add to Review' : 'Copy Commented Grab';
       }
       visible = true;
       void el.offsetHeight;

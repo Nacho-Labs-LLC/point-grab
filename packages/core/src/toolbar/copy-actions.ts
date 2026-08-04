@@ -79,7 +79,7 @@ export async function copyWithComment(
     snippet = pluginRegistry.callTransformHook(snippet, context);
   }
   const full = `${snippet}\n\n/* Comment: ${comment} */`;
-  const ok = await writeAndToast(full, 'Copied with comment', context);
+  const ok = await writeAndToast(full, 'Copied commented grab', context);
   if (ok) pluginRegistry?.callHook('onCopySuccess', full, context, comment);
   return ok;
 }
@@ -103,8 +103,8 @@ export async function copyAnnotationsAsPrompt(
   }
 
   const full = sections.join('\n\n---\n\n');
-  const label = annotations.length === 1 ? '1 annotation' : `${annotations.length} annotations`;
-  const ok = await writeAndToast(full, `Copied ${label} as prompt`);
+  const label = annotations.length === 1 ? '1 reviewed element' : `${annotations.length} reviewed elements`;
+  const ok = await writeAndToast(full, `Confirmed & copied ${label}`);
   if (ok && pluginRegistry) {
     for (const { context, comment } of annotations) {
       let snippet = generateSnippet(context, maxLines, htmlCleaners);

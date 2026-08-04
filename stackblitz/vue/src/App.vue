@@ -82,6 +82,19 @@ function starFill(index) {
   </header>
 
   <main class="page-main">
+    <section class="review-mission">
+      <div>
+        <div class="review-kicker">Comment-mode showcase</div>
+        <h2>Review this product page in batches.</h2>
+        <p>Use Add Comment on the color swatches, the shake-on-error Add to Cart button, and the cart drawer. Then finish with Confirm & Copy so your AI gets one combined review prompt.</p>
+      </div>
+      <ul class="review-checklist">
+        <li>Comment on a variant picker problem</li>
+        <li>Comment on the validation shake or cart badge bump</li>
+        <li>Comment on the cart drawer layout once it opens</li>
+      </ul>
+    </section>
+
     <nav class="breadcrumb">
       <span>Shop</span>
       <span class="breadcrumb-sep">/</span>
@@ -223,6 +236,41 @@ function starFill(index) {
 </template>
 
 <style>
+.review-mission {
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(124,140,248,0.12), rgba(124,140,248,0.04));
+  display: grid;
+  gap: 0.9rem;
+}
+.review-kicker {
+  color: #a5b4fc;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+.review-mission h2 {
+  color: var(--text-heading);
+  font-size: 1.05rem;
+}
+.review-mission p {
+  color: var(--text);
+  font-size: 0.85rem;
+  line-height: 1.55;
+}
+.review-checklist {
+  margin: 0;
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.35rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
