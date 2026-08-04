@@ -32,19 +32,56 @@ function isComponentFiber(fiber: FiberNode): boolean {
   return fiber.tag === 0 || fiber.tag === 1;
 }
 
+function isDecimalInteger(value: string): boolean {
+  if (value.length === 0) return false;
+
+  for (let index = 0; index < value.length; index += 1) {
+    const code = value.charCodeAt(index);
+    if (code < 48 || code > 57) return false;
+  }
+
+  return true;
+}
+
+function getStackLocation(line: string): SourceResult | null {
+  let location: string;
+
+  if (line.endsWith(')')) {
+    const openingParenthesis = line.lastIndexOf('(');
+    if (openingParenthesis === -1) return null;
+    location = line.slice(openingParenthesis + 1, -1);
+  } else if (line.startsWith('at ')) {
+    location = line.slice(3);
+  } else {
+    return null;
+  }
+
+  const columnSeparator = location.lastIndexOf(':');
+  if (columnSeparator === -1) return null;
+  const lineSeparator = location.lastIndexOf(':', columnSeparator - 1);
+  if (lineSeparator === -1) return null;
+
+  const filePath = location.slice(0, lineSeparator);
+  const lineNumber = location.slice(lineSeparator + 1, columnSeparator);
+  const columnNumber = location.slice(columnSeparator + 1);
+  if (!filePath || !isDecimalInteger(lineNumber) || !isDecimalInteger(columnNumber)) return null;
+
+  return {
+    filePath,
+    line: Number(lineNumber),
+    column: Number(columnNumber),
+  };
+}
+
 function getDebugStackSource(fiber: FiberNode): SourceResult | null {
   const stack = fiber._debugStack?.stack;
   if (!stack) return null;
 
   for (const line of stack.split('\n')) {
-    const match = line.match(/\((.+):(\d+):(\d+)\)$/) ?? line.match(/at (.+):(\d+):(\d+)$/);
-    if (!match || match[1].includes('node_modules')) continue;
+    const source = getStackLocation(line);
+    if (!source?.filePath || source.filePath.includes('node_modules')) continue;
 
-    return {
-      filePath: match[1],
-      line: Number(match[2]),
-      column: Number(match[3]),
-    };
+    return source;
   }
 
   return null;
