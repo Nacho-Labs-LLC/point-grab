@@ -7,6 +7,9 @@ interface FiberNode {
     lineNumber?: number;
     columnNumber?: number;
   } | null;
+  _debugStack?: {
+    stack?: string;
+  } | null;
   _debugOwner?: FiberNode | null;
 }
 
@@ -29,11 +32,25 @@ function isComponentFiber(fiber: FiberNode): boolean {
   return fiber.tag === 0 || fiber.tag === 1;
 }
 
-export function resolveSource(element: Element): SourceResult {
-  const fiber = getFiber(element);
-  if (!fiber) return { filePath: null, line: null, column: null };
+function getDebugStackSource(fiber: FiberNode): SourceResult | null {
+  const stack = fiber._debugStack?.stack;
+  if (!stack) return null;
 
-  // Check _debugSource on the fiber itself first
+  for (const line of stack.split('\n')) {
+    const match = line.match(/\((.+):(\d+):(\d+)\)$/) ?? line.match(/at (.+):(\d+):(\d+)$/);
+    if (!match || match[1].includes('node_modules')) continue;
+
+    return {
+      filePath: match[1],
+      line: Number(match[2]),
+      column: Number(match[3]),
+    };
+  }
+
+  return null;
+}
+
+function getDebugSource(fiber: FiberNode): SourceResult | null {
   if (fiber._debugSource) {
     return {
       filePath: fiber._debugSource.fileName ?? null,
@@ -42,15 +59,23 @@ export function resolveSource(element: Element): SourceResult {
     };
   }
 
+  return getDebugStackSource(fiber);
+}
+
+export function resolveSource(element: Element): SourceResult {
+  const fiber = getFiber(element);
+  if (!fiber) return { filePath: null, line: null, column: null };
+
+  // React 18 exposes _debugSource; React 19 replaced it with _debugStack.
+  const ownSource = getDebugSource(fiber);
+  if (ownSource) return ownSource;
+
   // Walk up to find the nearest component with source info
   let current: FiberNode | null = fiber.return;
   while (current) {
-    if (isComponentFiber(current) && current._debugSource) {
-      return {
-        filePath: current._debugSource.fileName ?? null,
-        line: current._debugSource.lineNumber ?? null,
-        column: current._debugSource.columnNumber ?? null,
-      };
+    if (isComponentFiber(current)) {
+      const source = getDebugSource(current);
+      if (source) return source;
     }
     current = current.return;
   }
@@ -58,13 +83,8 @@ export function resolveSource(element: Element): SourceResult {
   // Try _debugOwner chain as a fallback
   let owner = fiber._debugOwner ?? null;
   while (owner) {
-    if (owner._debugSource) {
-      return {
-        filePath: owner._debugSource.fileName ?? null,
-        line: owner._debugSource.lineNumber ?? null,
-        column: owner._debugSource.columnNumber ?? null,
-      };
-    }
+    const source = getDebugSource(owner);
+    if (source) return source;
     owner = owner._debugOwner ?? null;
   }
 
