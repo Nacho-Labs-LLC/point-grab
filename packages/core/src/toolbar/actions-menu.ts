@@ -41,7 +41,7 @@ export function createActionsMenu(callbacks: ActionsMenuCallbacks): ActionsMenu 
     { icon: ICON_COPY, label: 'Copy Element', action: callbacks.onCopyElement },
     { icon: ICON_STYLES, label: 'Copy Styles', action: callbacks.onCopyStyles },
     { icon: ICON_CODE, label: 'Copy HTML', action: callbacks.onCopyHtml },
-    { icon: ICON_COMMENT, label: 'Comment', action: callbacks.onComment },
+    { icon: ICON_COMMENT, label: 'Add Comment', action: callbacks.onComment },
     { separator: true },
     { icon: ICON_TRASH, label: 'Clear History', action: callbacks.onClearHistory },
   ];

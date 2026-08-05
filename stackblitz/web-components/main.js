@@ -91,6 +91,43 @@ class ForgeApp extends HTMLElement {
           color: #5a5248;
           margin-top: 0.5rem;
         }
+
+        .forge-review-mission {
+          margin-bottom: 2rem;
+          padding: 1rem 1rem 1.1rem;
+          border: 1px solid #2e2924;
+          border-radius: 16px;
+          background: linear-gradient(180deg, rgba(249,115,22,0.12), rgba(249,115,22,0.03));
+          display: grid;
+          gap: 0.75rem;
+        }
+
+        .forge-review-kicker {
+          font-size: 0.6875rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.08em;
+          color: #fb923c;
+        }
+
+        .forge-review-title {
+          color: #f0ebe4;
+          font-size: 1rem;
+          font-weight: 700;
+        }
+
+        .forge-review-copy, .forge-review-mission li {
+          color: #c8bfb6;
+          line-height: 1.6;
+          font-size: 0.84rem;
+        }
+
+        .forge-review-mission ul {
+          margin: 0;
+          padding-left: 1rem;
+          display: grid;
+          gap: 0.35rem;
+        }
       </style>
 
       <header class="forge-header">
@@ -103,10 +140,21 @@ class ForgeApp extends HTMLElement {
           </svg>
           <span class="forge-header-wordmark">Forge UI</span>
         </div>
-        <span class="forge-header-hint">Hold Cmd+C / Ctrl+C, hover any element, click to grab</span>
+        <span class="forge-header-hint">Hold Cmd+C / Ctrl+C, click a target, choose Add Comment, then finish with Confirm & Copy</span>
       </header>
 
       <main class="forge-main">
+
+        <section class="forge-review-mission">
+          <div class="forge-review-kicker">Comment-mode showcase</div>
+          <div class="forge-review-title">Review nested custom elements, then confirm once.</div>
+          <p class="forge-review-copy">This demo is here to prove shadow DOM review flows. Comment on a tooltip trigger, a badge, and a card, then use Confirm & Copy to batch the whole review into one prompt.</p>
+          <ul>
+            <li>Review a shadow-DOM button or tooltip trigger</li>
+            <li>Review an auto-incrementing badge</li>
+            <li>Finish with one confirmed review batch</li>
+          </ul>
+        </section>
 
         <section class="forge-section">
           <div class="forge-section-heading">Buttons</div>

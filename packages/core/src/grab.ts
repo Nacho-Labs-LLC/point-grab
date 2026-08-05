@@ -449,8 +449,10 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
     },
 
     onComment() {
-      commentModeActive = true;
-      annotations = [];
+      if (!commentModeActive) {
+        commentModeActive = true;
+        annotations = [];
+      }
       if (lastSelectedContext) {
         commentPopover.show('multi');
       } else {
@@ -475,7 +477,7 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
       if (commentModeActive) {
         annotations.push({ context: lastSelectedContext, comment });
         showSelectFeedback(lastSelectedContext.element);
-        showToast(`Annotation ${annotations.length} added`, {
+        showToast(`Review item ${annotations.length} added`, {
           componentName: lastSelectedContext.componentName,
           filePath: lastSelectedContext.filePath,
           line: lastSelectedContext.line,

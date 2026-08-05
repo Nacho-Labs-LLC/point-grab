@@ -81,6 +81,24 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
       #${TOOLBAR_ID} button.point-grab-btn-active {
         color: var(--point-grab-toolbar-active, #3b82f6);
       }
+      #${TOOLBAR_ID} button.point-grab-copy-prompt-btn {
+        width: auto;
+        min-width: 32px;
+        padding: 0 12px;
+        gap: 8px;
+        border-radius: 999px;
+        background: var(--point-grab-accent, #3b82f6);
+        color: #fff;
+      }
+      #${TOOLBAR_ID} button.point-grab-copy-prompt-btn:hover {
+        background: var(--point-grab-accent-hover, #2563eb);
+        color: #fff;
+      }
+      #${TOOLBAR_ID} .point-grab-copy-prompt-label {
+        font-size: 12px;
+        font-weight: 600;
+        white-space: nowrap;
+      }
       #${TOOLBAR_ID} button.point-grab-btn-disabled {
         opacity: 0.4;
         color: var(--point-grab-toolbar-text, #94a3b8);
@@ -158,7 +176,12 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
     buttons.enable = createButton('enable', ICON_POWER, 'Enable/Disable', callbacks.onEnableToggle);
     buttons.dismiss = createButton('dismiss', ICON_DISMISS, 'Dismiss toolbar', callbacks.onDismiss);
 
-    buttons.copyPrompt = createButton('copyPrompt', ICON_COPY, 'Copy all annotations as prompt', () => callbacks.onCopyPrompt?.());
+    buttons.copyPrompt = createButton('copyPrompt', ICON_COPY, 'Confirm & Copy reviewed elements', () => callbacks.onCopyPrompt?.());
+    buttons.copyPrompt.classList.add('point-grab-copy-prompt-btn');
+    const copyPromptLabel = document.createElement('span');
+    copyPromptLabel.className = 'point-grab-copy-prompt-label';
+    copyPromptLabel.textContent = 'Confirm & Copy';
+    buttons.copyPrompt.appendChild(copyPromptLabel);
     buttons.copyPrompt.style.display = 'none';
 
     const divider = document.createElement('span');
@@ -215,6 +238,8 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
             buttons.copyPrompt.appendChild(badge);
           }
           badge.textContent = String(annotationCount);
+          buttons.copyPrompt.title = annotationCount === 1 ? 'Confirm & Copy 1 reviewed element' : `Confirm & Copy ${annotationCount} reviewed elements`;
+          buttons.copyPrompt.setAttribute('aria-label', buttons.copyPrompt.title);
         } else {
           buttons.copyPrompt.style.display = 'none';
         }
