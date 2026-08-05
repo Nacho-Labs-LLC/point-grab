@@ -46,7 +46,7 @@
   "devDependencies": {
     "@point-grab/core": "workspace:*",
     "tsup": "^8.3.0",
-    "typescript": "^5.7.0"
+    "typescript": "^7.0.2"
   },
   "publishConfig": {
     "access": "public"
