@@ -1,0 +1,78 @@
+{
+  "name": "@point-grab/solid",
+  "version": "0.1.6",
+  "description": "SolidJS adapter and Vite transform for point-grab",
+  "author": {
+    "name": "Nate Richardson",
+    "email": "hello@nacholabs.net",
+    "url": "https://github.com/naterchrdsn"
+  },
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nacho-Labs-LLC/point-grab.git",
+    "directory": "packages/solid"
+  },
+  "homepage": "https://point-grab.com",
+  "bugs": "https://github.com/Nacho-Labs-LLC/point-grab/issues",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "import": "./dist/vite.js"
+    }
+  },
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "point-grab",
+    "solid",
+    "solidjs",
+    "vite",
+    "element-picker",
+    "developer-tools",
+    "ai"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "lint": "tsc --noEmit",
+    "clean": "rm -rf dist .turbo"
+  },
+  "peerDependencies": {
+    "@point-grab/core": "workspace:*",
+    "solid-js": ">=1.7.0",
+    "vite": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "solid-js": {
+      "optional": false
+    },
+    "vite": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@babel/core": "^7.26.10",
+    "@babel/types": "^7.26.10"
+  },
+  "devDependencies": {
+    "@point-grab/core": "workspace:*",
+    "@types/babel__core": "^7.20.5",
+    "jsdom": "^30.0.1",
+    "tsup": "^8.3.0",
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.10"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
