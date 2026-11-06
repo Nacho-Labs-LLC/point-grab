@@ -137,6 +137,7 @@ function formatEntry(entry: GrabEntry) {
       framework: entry.context.framework,
       sessionId: entry.context.sessionId ?? null,
       computedStyles: entry.context.computedStyles,
+      ...(entry.context.screenGrab ? { screenGrab: { ...entry.context.screenGrab, data: undefined } } : {}),
     },
   };
 }
@@ -432,6 +433,7 @@ function searchHistory(
     const normalizedQuery = query.toLowerCase();
     results = results.filter(
       (entry) =>
+        (entry.context.screenGrab?.comment.toLowerCase().includes(normalizedQuery) ?? false) ||
         entry.context.html.toLowerCase().includes(normalizedQuery) ||
         (entry.context.componentName?.toLowerCase().includes(normalizedQuery) ?? false) ||
         (entry.context.filePath?.toLowerCase().includes(normalizedQuery) ?? false) ||
@@ -500,7 +502,7 @@ function buildCaptureLinks(history: GrabHistory, entries: GrabEntry[], includeLa
   });
 }
 
-function buildToolResult(payload: unknown, resourceLinks: ReturnType<typeof buildCaptureLinks> = []) {
+function buildToolResult(payload: unknown, resourceLinks: ReturnType<typeof buildCaptureLinks> = [], image?: GrabContext['screenGrab']) {
   return {
     content: [
       {
@@ -508,6 +510,7 @@ function buildToolResult(payload: unknown, resourceLinks: ReturnType<typeof buil
         text: JSON.stringify(payload, null, 2),
       },
       ...resourceLinks,
+      ...(image ? [{ type: 'image' as const, data: image.data, mimeType: image.mimeType }] : []),
     ],
   };
 }
@@ -569,6 +572,20 @@ function readComponentStack(
     }));
 }
 
+function readScreenGrab(value: unknown): GrabContext['screenGrab'] {
+  if (value === undefined) return undefined;
+  const fail = () => { throw new Error('Invalid Screen Grab: expected a PNG up to 2 MiB, dimensions up to 8192 and a valid region/comment.'); };
+  if (!isRecord(value) || value.mimeType !== 'image/png' || typeof value.data !== 'string' || value.data.length > 2796204 || !/^[A-Za-z0-9+/]+={0,2}$/.test(value.data)) return fail();
+  const bytes = Buffer.from(value.data, 'base64');
+  if (bytes.length < 24 || bytes.length > 2 * 1024 * 1024 || bytes.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a' || bytes.toString('base64') !== value.data) return fail();
+  if (!Number.isInteger(value.width) || !Number.isInteger(value.height) || Number(value.width) < 1 || Number(value.height) < 1 || Number(value.width) > 8192 || Number(value.height) > 8192 || Number(value.width) * Number(value.height) > 16777216) return fail();
+  if (bytes.readUInt32BE(16) !== value.width || bytes.readUInt32BE(20) !== value.height) return fail();
+  const region = value.region;
+  if (!isRecord(region) || !['x', 'y', 'width', 'height'].every((key) => typeof region[key] === 'number' && Number.isFinite(region[key]) && Number(region[key]) >= 0) || Number(region.width) < 1 || Number(region.height) < 1) return fail();
+  if (typeof value.comment !== 'string' || value.comment.length > 10000) return fail();
+  return { mimeType: 'image/png', data: value.data, width: Number(value.width), height: Number(value.height), region: { x: Number(region.x), y: Number(region.y), width: Number(region.width), height: Number(region.height) }, comment: value.comment };
+}
+
 function parseIncomingGrab(data: unknown) {
   if (!isRecord(data)) {
     throw new Error('Invalid grab payload');
@@ -582,6 +599,7 @@ function parseIncomingGrab(data: unknown) {
   }
 
   const computedStyles = readStringRecord(data.computedStyles);
+  const screenGrab = readScreenGrab(data.screenGrab);
 
   return {
     snippet: readString(data.snippet) ?? '',
@@ -601,6 +619,7 @@ function parseIncomingGrab(data: unknown) {
       framework: readNullableString(data.framework),
       sessionId: readNullableString(data.sessionId),
       computedStyles,
+      ...(screenGrab ? { screenGrab } : {}),
     } satisfies GrabContext,
   };
 }
@@ -637,15 +656,16 @@ function startWebhookServer(
       return;
     }
 
-    const maxBodySize = 1024 * 512;
+    const maxBodySize = 4 * 1024 * 1024;
     let body = '';
     let overflow = false;
 
     req.on('data', (chunk: Buffer) => {
+      if (overflow) return;
       body += chunk.toString();
-      if (body.length > maxBodySize) {
+      if (Buffer.byteLength(body) > maxBodySize) {
         overflow = true;
-        req.destroy();
+        body = '';
       }
     });
 
@@ -660,7 +680,7 @@ function startWebhookServer(
         const entry = await processIncomingGrab(JSON.parse(body));
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ success: true, id: entry.id }));
+        res.end(JSON.stringify({ success: true, id: entry.id, ...(entry.context.screenGrab ? { imageAccepted: true } : {}) }));
 
         const framework = entry.context.framework ? ` [${entry.context.framework}]` : '';
         console.error(
@@ -668,7 +688,7 @@ function startWebhookServer(
         );
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Internal server error';
-        const statusCode = message.startsWith('Missing required field') ? 400 : 500;
+        const statusCode = message.startsWith('Missing required field') || message.startsWith('Invalid Screen Grab') ? 400 : 500;
         console.error('[point-grab] Failed to process grab:', error);
         res.writeHead(statusCode, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: message }));
@@ -934,6 +954,7 @@ export function createPointGrabMcpServer(
   server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
     const history = await historyStore.readHistory();
     const payload = resolveResourcePayload(history, request.params.uri);
+    const image = 'id' in payload ? history.entries.find((entry) => entry.id === payload.id)?.context.screenGrab : undefined;
 
     return {
       contents: [
@@ -942,6 +963,7 @@ export function createPointGrabMcpServer(
           mimeType: RESOURCE_MIME_TYPE,
           text: JSON.stringify(payload, null, 2),
         },
+        ...(image ? [{ uri: `${request.params.uri}#image`, mimeType: image.mimeType, blob: image.data }] : []),
       ],
     };
   });
@@ -1025,7 +1047,8 @@ export function createPointGrabMcpServer(
 
           return buildToolResult(
             formatEntry(entry),
-            buildCaptureLinks(history, [entry], history.entries[0]?.id === entry.id)
+            buildCaptureLinks(history, [entry], history.entries[0]?.id === entry.id),
+            entry.context.screenGrab
           );
         }
 

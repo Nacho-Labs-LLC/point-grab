@@ -29,11 +29,13 @@ import { copyElementSnippet, copyElementHtml, copyElementStyles, copyWithComment
 import { createFreezeOverlay } from './overlay/freeze-overlay';
 import { showSelectFeedback, disposeFeedbackStyles } from './overlay/select-feedback';
 import { TOOLBAR_TOAST_OFFSET } from './constants';
+import { createScreenGrab } from './screen-grab';
 
 const MAX_HISTORY = 50;
 
 function toHistoryContext(ctx: ElementContext): HistoryContext {
   return {
+    ...(ctx.screenGrab ? { screenGrab: ctx.screenGrab } : {}),
     html: ctx.html,
     componentName: ctx.componentName,
     filePath: ctx.filePath,
@@ -130,6 +132,32 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
   // Multi-comment mode state
   let annotations: Annotation[] = [];
   let commentModeActive = false;
+  let screenGrabBusy = false;
+  let disposed = false;
+
+  const screenGrab = createScreenGrab({
+    onBusy(busy) {
+      screenGrabBusy = busy;
+      if (busy) { closeAllPopovers(); doDeactivate(true); toolbar.hide(); }
+      else if (store.state.toolbar.visible) toolbar.show();
+    },
+    async onSubmit(grab) {
+      const transports = pluginRegistry.getPlugins().filter((plugin) => plugin.hooks?.onScreenGrab);
+      if (transports.length !== 1) throw new Error('Screen Grab needs exactly one image transport. Enable mcpWebhook or register an onScreenGrab plugin.');
+      const context: ElementContext = {
+        element: document.documentElement, html: '<!-- Screen Grab -->',
+        componentName: null, filePath: null, line: null, column: null,
+        componentStack: [], selector: 'screen-region', cssClasses: [],
+        textContent: null, ariaLabel: null, role: null, elementDescription: 'Screen Grab region',
+        screenGrab: grab,
+      };
+      const snippet = `Screen Grab (${grab.width} × ${grab.height})\n\n${grab.comment}`;
+      await transports[0].hooks!.onScreenGrab!(context, snippet);
+      if (disposed) return;
+      addHistoryEntry(context, snippet);
+      showToast('Screen Grab sent');
+    },
+  });
 
   function nextId(): string {
     return `point-grab-${++idCounter}-${Date.now()}`;
@@ -159,8 +187,10 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
       timestamp: Date.now(),
     };
 
-    lastSelectedElement = new WeakRef(context.element);
-    lastSelectedContext = context;
+    if (!context.screenGrab) {
+      lastSelectedElement = new WeakRef(context.element);
+      lastSelectedContext = context;
+    }
 
     const history = [entry, ...store.state.toolbar.history].slice(0, MAX_HISTORY);
     store.state.toolbar = { ...store.state.toolbar, history };
@@ -266,6 +296,7 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
   });
 
   function doActivate(): void {
+    if (screenGrabBusy) return;
     if (!store.state.options.enabled) return;
     if (store.state.active) return;
 
@@ -329,6 +360,9 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
 
   // --- Toolbar ---
   const toolbar = createToolbarRenderer({
+    onScreenGrab() {
+      if (store.state.options.enabled) screenGrab.open();
+    },
     onSelectionMode() {
       closeAllPopovers();
       if (store.state.active) {
@@ -532,6 +566,7 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
 
   // --- Freeze key handler (F key during selection mode) ---
   function handleFreezeKey(e: KeyboardEvent): void {
+    if (screenGrabBusy) return;
     if (e.key.toLowerCase() !== 'f') return;
     const tag = (e.target as Element)?.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA') return;
@@ -640,6 +675,8 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
     },
 
     dispose(): void {
+      disposed = true;
+      screenGrab.dispose();
       doDeactivate();
       document.removeEventListener('click', handleDocumentClick);
       document.removeEventListener('keydown', handleFreezeKey, true);

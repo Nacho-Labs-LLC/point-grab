@@ -45,6 +45,10 @@ const pointGrab = init({
 });
 ```
 
+## Screen Grab
+
+Click **Screen Grab** in the toolbar to explicitly share this tab, drag a custom rectangular crop, preview it and send an image with a comment. Nothing is captured before the sharing click or sent before **Send**. Requires browser tab-sharing support and an image-aware MCP server (or custom image transport); image clipboard copying is not implemented. See [Screen Grab](../../docs/screen-grab.md) for permissions, transport, limits and verification.
+
 ## What gets captured
 
 A capture can include:

@@ -6,6 +6,16 @@ export type PendingAction =
   | { type: 'copy-html' }
   | { type: 'comment' };
 
+/** PNG data is base64 without a data URL prefix; region is in selection viewport pixels. */
+export interface ScreenGrab {
+  mimeType: 'image/png';
+  data: string;
+  width: number;
+  height: number;
+  region: { x: number; y: number; width: number; height: number };
+  comment: string;
+}
+
 export interface Annotation {
   context: ElementContext;
   comment: string;
@@ -13,6 +23,7 @@ export interface Annotation {
 
 /** Serializable subset of ElementContext — no live DOM reference. */
 export interface HistoryContext {
+  screenGrab?: ScreenGrab;
   html: string;
   componentName: string | null;
   filePath: string | null;
@@ -82,6 +93,7 @@ export interface ComponentStackEntry {
 }
 
 export interface ElementContext {
+  screenGrab?: ScreenGrab;
   element: Element;
   html: string;
   componentName: string | null;
@@ -98,6 +110,8 @@ export interface ElementContext {
 }
 
 export interface PluginHooks {
+  /** Explicit image send. Resolve only after transport acknowledgement; reject on failure. */
+  onScreenGrab?: (context: ElementContext, snippet: string) => Promise<void>;
   onActivate?: () => void;
   onDeactivate?: () => void;
   onElementHover?: (element: Element) => void;

@@ -86,12 +86,16 @@ export function createKeyboardHandler(deps: KeyboardHandlerDeps): KeyboardHandle
   let holdTimer: ReturnType<typeof setTimeout> | null = null;
   let holdActivated = false;
   let listening = false;
+  let toggleArmed = false;
 
   function handleKeyDown(e: KeyboardEvent): void {
     if (!deps.getEnableInInputs() && isInputElement(e.target)) return;
 
     const parsed = parseKeyCombo(deps.getActivationKey());
     if (!matchesCombo(e, parsed)) return;
+
+    // A real text selection belongs to the browser's normal copy command.
+    if (parsed.key === 'c' && (parsed.ctrl || parsed.meta) && window.getSelection()?.toString()) return;
 
     const mode = deps.getActivationMode();
     const holdDuration = deps.getKeyHoldDuration();
@@ -114,6 +118,7 @@ export function createKeyboardHandler(deps: KeyboardHandlerDeps): KeyboardHandle
     } else {
       // toggle mode
       e.preventDefault();
+      toggleArmed = true;
     }
   }
 
@@ -136,6 +141,8 @@ export function createKeyboardHandler(deps: KeyboardHandlerDeps): KeyboardHandle
       }
     } else {
       // toggle mode: toggle on key-up so we don't double-fire
+      if (!toggleArmed) return;
+      toggleArmed = false;
       if (deps.isActive()) {
         deps.onDeactivate();
       } else {
@@ -163,6 +170,7 @@ export function createKeyboardHandler(deps: KeyboardHandlerDeps): KeyboardHandle
       holdActivated = false;
 
       document.removeEventListener('keydown', handleKeyDown, true);
+      toggleArmed = false;
       document.removeEventListener('keyup', handleKeyUp, true);
     },
 
