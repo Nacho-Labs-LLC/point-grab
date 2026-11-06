@@ -47,7 +47,7 @@ const pointGrab = init({
 
 ## Screen Grab
 
-Click **Screen Grab** in the toolbar to explicitly share this tab, drag a custom rectangular crop, preview it and send an image with a comment. Nothing is captured before the sharing click or sent before **Send**. Requires browser tab-sharing support and an image-aware MCP server (or custom image transport); image clipboard copying is not implemented. See [Screen Grab](../../docs/screen-grab.md) for permissions, transport, limits and verification.
+Click **Add screenshot** in the toolbar to choose, paste or drop a screenshot you took with your system screenshot tool. Drag a custom rectangular crop with live sizing, preview it, and explicitly send the image with a comment. No screen-sharing API is required; PointGrab does not invoke native screen snipping or manufacture DOM screenshots. Nothing is sent before **Send** and image clipboard copying is not implemented. Requires an image-aware MCP server or custom image transport. See [screenshot flow](../../docs/screen-grab.md) for the remaining native-capture gap, transport, limits and verification.
 
 ## What gets captured
 

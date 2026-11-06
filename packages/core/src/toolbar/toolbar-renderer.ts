@@ -182,9 +182,9 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
     buttons.selection = createButton('selection', ICON_GRAB, 'Selection mode', callbacks.onSelectionMode);
     buttons.history = createButton('history', ICON_HISTORY, 'History', callbacks.onHistory);
     buttons.actions = createButton('actions', ICON_ELLIPSIS, 'Actions', callbacks.onActions);
-    buttons.screenGrab = createButton('screenGrab', ICON_GRAB, 'Screen Grab', () => callbacks.onScreenGrab?.());
+    buttons.screenGrab = createButton('screenGrab', ICON_GRAB, 'Add screenshot', () => callbacks.onScreenGrab?.());
     buttons.screenGrab.classList.add('point-grab-screen-btn');
-    buttons.screenGrab.append('Screen Grab');
+    buttons.screenGrab.append('Add screenshot');
     buttons.freeze = createButton('freeze', ICON_FREEZE, 'Freeze page (F)', callbacks.onFreeze);
     buttons.theme = createButton('theme', ICON_SUN, 'Toggle theme', callbacks.onThemeToggle);
     buttons.enable = createButton('enable', ICON_POWER, 'Enable/Disable', callbacks.onEnableToggle);

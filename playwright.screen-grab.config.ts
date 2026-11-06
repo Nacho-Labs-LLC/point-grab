@@ -9,7 +9,7 @@ export default defineConfig({
     permissions: ['clipboard-read', 'clipboard-write'],
     launchOptions: {
       ...(process.env.AGENT_BROWSER_EXECUTABLE_PATH ? { executablePath: process.env.AGENT_BROWSER_EXECUTABLE_PATH } : {}),
-      args: ['--no-sandbox', '--auto-select-tab-capture-source-by-title=Point Grab Screen Test'],
+      args: ['--no-sandbox'],
     },
     trace: 'retain-on-failure', screenshot: 'only-on-failure',
   },
