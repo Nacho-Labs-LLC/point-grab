@@ -6,7 +6,6 @@ const TOOLBAR_ID = '__point-grab-toolbar__';
 const STYLE_ID = '__point-grab-toolbar-styles__';
 
 export interface ToolbarCallbacks {
-  onScreenGrab?: () => void;
   onSelectionMode: () => void;
   onHistory: () => void;
   onActions: () => void;
@@ -102,14 +101,6 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
         font-weight: 600;
         white-space: nowrap;
       }
-      #${TOOLBAR_ID} button.point-grab-screen-btn {
-        width: auto;
-        flex-shrink: 0;
-        gap: 6px;
-        padding: 0 10px;
-        white-space: nowrap;
-        font: 12px system-ui;
-      }
       #${TOOLBAR_ID} button.point-grab-btn-disabled {
         opacity: 0.4;
         color: var(--point-grab-toolbar-text, #94a3b8);
@@ -182,9 +173,6 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
     buttons.selection = createButton('selection', ICON_GRAB, 'Selection mode', callbacks.onSelectionMode);
     buttons.history = createButton('history', ICON_HISTORY, 'History', callbacks.onHistory);
     buttons.actions = createButton('actions', ICON_ELLIPSIS, 'Actions', callbacks.onActions);
-    buttons.screenGrab = createButton('screenGrab', ICON_GRAB, 'Add screenshot', () => callbacks.onScreenGrab?.());
-    buttons.screenGrab.classList.add('point-grab-screen-btn');
-    buttons.screenGrab.append('Add screenshot');
     buttons.freeze = createButton('freeze', ICON_FREEZE, 'Freeze page (F)', callbacks.onFreeze);
     buttons.theme = createButton('theme', ICON_SUN, 'Toggle theme', callbacks.onThemeToggle);
     buttons.enable = createButton('enable', ICON_POWER, 'Enable/Disable', callbacks.onEnableToggle);
@@ -206,7 +194,6 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
     leftGroup.appendChild(buttons.selection);
     leftGroup.appendChild(buttons.history);
     leftGroup.appendChild(buttons.actions);
-    leftGroup.appendChild(buttons.screenGrab);
     leftGroup.appendChild(buttons.copyPrompt);
     leftGroup.appendChild(buttons.freeze);
     leftGroup.appendChild(divider);

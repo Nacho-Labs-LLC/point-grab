@@ -47,7 +47,8 @@ test.afterEach(() => { expect(errors).toEqual([]); });
 
 async function open(page: Page) {
   await page.keyboard.press('Control+c');
-  await page.getByRole('button', { name: 'Add screenshot', exact: true }).click();
+  await page.getByRole('button', { name: 'Actions', exact: true }).click();
+  await page.getByText('Add screenshot', { exact: true }).click();
   await expect(page.getByRole('dialog', { name: 'Add or paste a screenshot', exact: true })).toBeVisible();
 }
 async function upload(page: Page) {
@@ -231,7 +232,8 @@ test('queued existing comments survive opening and cancelling screenshot intake'
   await page.getByText('Add Comment', { exact: true }).click(); await page.locator('#target').click();
   await page.getByRole('dialog', { name: 'Add comment' }).getByRole('textbox').fill('Do not lose queued comment');
   await page.getByRole('button', { name: 'Add to Review', exact: true }).click();
-  await page.getByRole('button', { name: 'Add screenshot', exact: true }).click();
+  await page.getByRole('button', { name: 'Actions', exact: true }).click();
+  await page.getByText('Add screenshot', { exact: true }).click();
   await page.getByRole('dialog', { name: 'Add or paste a screenshot' }).getByRole('button', { name: 'Cancel', exact: true }).click();
   await page.getByRole('button', { name: /Confirm & Copy/ }).click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toContain('Do not lose queued comment');
@@ -239,7 +241,8 @@ test('queued existing comments survive opening and cancelling screenshot intake'
 
 test('built core demo honestly exposes Add screenshot and Cancel restores normal UI', async ({ page }) => {
   await page.goto(`${url}/demo`);
-  await page.getByRole('button', { name: 'Add screenshot', exact: true }).click();
+  await page.getByRole('button', { name: 'Actions', exact: true }).click();
+  await page.getByText('Add screenshot', { exact: true }).click();
   await expect(page.getByRole('dialog')).toContainText('system screenshot tool');
   await page.keyboard.press('Escape'); await expect(page.getByRole('dialog')).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Actions', exact: true })).toBeVisible();

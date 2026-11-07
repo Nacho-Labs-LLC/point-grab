@@ -157,12 +157,18 @@ export function createScreenGrab(callbacks: {
       if (region.width > 8192 || region.height > 8192 || region.width * region.height > 16777216) {
         size.textContent = 'Region exceeds the image dimension limit. Drag a smaller region.'; return;
       }
-      const crop = document.createElement('canvas'); crop.width = region.width; crop.height = region.height;
-      crop.getContext('2d')!.drawImage(source, region.x, region.y, region.width, region.height, 0, 0, crop.width, crop.height);
-      const data = crop.toDataURL('image/png').split(',')[1];
-      if (!data || data.length * 3 / 4 > MAX_PNG_BYTES) { size.textContent = 'Region exceeds the 2 MiB PNG limit. Drag a smaller region.'; return; }
-      frame = null;
-      preview({ mimeType: 'image/png', data, width: crop.width, height: crop.height, region, comment: '' });
+      try {
+        const crop = document.createElement('canvas'); crop.width = region.width; crop.height = region.height;
+        const context = crop.getContext('2d');
+        if (!context) throw new Error('Canvas is unavailable.');
+        context.drawImage(source, region.x, region.y, region.width, region.height, 0, 0, crop.width, crop.height);
+        const data = crop.toDataURL('image/png').split(',')[1];
+        if (!data || data.length * 3 / 4 > MAX_PNG_BYTES) { size.textContent = 'Region exceeds the 2 MiB PNG limit. Drag a smaller region.'; return; }
+        frame = null;
+        preview({ mimeType: 'image/png', data, width: crop.width, height: crop.height, region, comment: '' });
+      } catch {
+        size.textContent = 'Could not prepare screenshot. Try another region, Retake, or Cancel.';
+      }
     };
   }
 
@@ -182,7 +188,8 @@ export function createScreenGrab(callbacks: {
       if (sending) return;
       sending = true; send.disabled = true; retake.disabled = true; cancel.disabled = true; status.textContent = 'Sending…';
       const token = generation;
-      void callbacks.onSubmit({ ...grab, comment: input.value.trim() }).then(() => {
+      const submission = { ...grab, comment: input.value.trim() };
+      void Promise.resolve().then(() => callbacks.onSubmit(submission)).then(() => {
         if (token === generation) close();
       }).catch((error) => {
         if (token === generation) status.textContent = error instanceof Error ? error.message : 'Send failed. Please retry.';

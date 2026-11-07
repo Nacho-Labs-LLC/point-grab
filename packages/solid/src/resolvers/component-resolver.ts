@@ -9,7 +9,7 @@ interface ComponentResult {
   stack: ComponentEntry[];
 }
 
-const COMPONENT_ATTRIBUTE = 'data-point-grab-component';
+const COMPONENT_ATTRIBUTE = "data-point-grab-component";
 
 function getComponentName(element: Element): string | null {
   return element.getAttribute(COMPONENT_ATTRIBUTE);
@@ -25,7 +25,12 @@ export function resolveComponent(element: Element): ComponentResult {
       seen.add(current);
       const name = getComponentName(current);
       if (name) {
-        stack.push({ name, hostElement: current });
+        const previous = stack.at(-1);
+        if (previous?.name === name) {
+          previous.hostElement = current;
+        } else {
+          stack.push({ name, hostElement: current });
+        }
       }
     }
     current = current.parentElement;

@@ -19,8 +19,8 @@ export function initPointGrabSolid(options?: Partial<PointGrabOptions>): PointGr
   instance.setComponentResolver(resolveComponent);
   instance.setSourceResolver(resolveSource);
   instance.setOptions({
-    classFilters: [solidClassFilter],
-    htmlCleaners: solidHtmlCleaners,
+    classFilters: [solidClassFilter, ...(options?.classFilters ?? [])],
+    htmlCleaners: [...solidHtmlCleaners, ...(options?.htmlCleaners ?? [])],
   });
 
   return instance;

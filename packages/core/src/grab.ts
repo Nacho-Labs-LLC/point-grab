@@ -360,9 +360,6 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
 
   // --- Toolbar ---
   const toolbar = createToolbarRenderer({
-    onScreenGrab() {
-      if (store.state.options.enabled) screenGrab.open();
-    },
     onSelectionMode() {
       closeAllPopovers();
       if (store.state.active) {
@@ -452,6 +449,12 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
 
   // --- Actions Menu ---
   const actionsMenu = createActionsMenu({
+    onScreenGrab() {
+      if (!store.state.options.enabled) return;
+      // Restore focus to the visible trigger, not the now-hidden menu item.
+      document.querySelector<HTMLButtonElement>('[data-point-grab-btn="actions"]')?.focus();
+      screenGrab.open();
+    },
     onCopyElement() {
       const htmlCleaners = store.state.options.htmlCleaners;
       if (lastSelectedContext) {

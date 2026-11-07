@@ -9,11 +9,21 @@ it('offers portable screenshot intake without requesting capture or sending on a
   const getDisplayMedia = vi.fn();
   Object.defineProperty(navigator, 'mediaDevices', { configurable: true, value: { getDisplayMedia } });
   api = init({ mcpWebhook: false });
-  api.setElementFromPoint(() => document.querySelector('[data-point-grab-btn="screenGrab"]'));
+  api.setElementFromPoint(() => document.querySelector('[data-point-grab-btn="actions"]'));
   api.activate();
-  document.querySelector<HTMLButtonElement>('[data-point-grab-btn="screenGrab"]')?.click();
+  expect(document.querySelector('[data-point-grab-btn="screenGrab"]')).toBeNull();
+  document.querySelector<HTMLButtonElement>('[data-point-grab-btn="actions"]')?.click();
+  const menu = document.querySelector('[role="menu"]');
+  expect([...menu!.querySelectorAll('[role="menuitem"]')].map((item) => item.textContent)).toEqual([
+    'Copy Element', 'Copy Styles', 'Copy HTML', 'Add Comment', 'Add screenshot', 'Clear History',
+  ]);
+  const screenshot = [...menu!.querySelectorAll<HTMLButtonElement>('[role="menuitem"]')].find((item) => item.textContent === 'Add screenshot')!;
+  screenshot.focus(); screenshot.click();
+  expect(menu!.classList.contains('point-grab-menu-visible')).toBe(false);
   expect(document.querySelector('[role="dialog"]')?.textContent).toContain('Add or paste a screenshot');
   expect(document.querySelector('input[type="file"]')?.getAttribute('accept')).toBe('image/png,image/jpeg,image/webp');
   expect(getDisplayMedia).not.toHaveBeenCalled();
   expect(api.isActive()).toBe(false);
+  [...document.querySelectorAll('button')].find((item) => item.textContent === 'Cancel')!.click();
+  expect(document.activeElement).toBe(document.querySelector('[data-point-grab-btn="actions"]'));
 });

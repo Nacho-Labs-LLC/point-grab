@@ -5,9 +5,9 @@ The portable screenshot flow accepts **user-provided pixels**, independently of 
 ## Use
 
 1. Take a screenshot with your operating system's screenshot/snipping tool (or another authorized source). PointGrab does not open that tool for you.
-2. Open PointGrab's toolbar and click **Add screenshot**.
+2. Open PointGrab's toolbar, choose **Actions** (the existing ellipsis dropdown), then **Add screenshot**. This is a normal dropdown option, not a separate prominent toolbar action; the existing copy/comment/history actions remain in place.
 3. **Choose a screenshot file**, **paste an image while the intake dialog is focused**, or **drag/drop a file into the dialog**. PNG, JPEG and WebP are accepted. Text paste is not intercepted. The file picker can be used without Clipboard API permission or `mediaDevices`.
-4. Drag a rectangle in either direction on the decoded image. The image retains its aspect ratio and fits the viewport. Live sizing reports source-image pixels; regions smaller than 8 × 8 image pixels are ignored. A too-large crop stays in selection so you can drag a smaller region.
+4. Drag a rectangle in either direction on the decoded image. The image retains its aspect ratio and fits the viewport. Live sizing reports source-image pixels; regions smaller than 8 × 8 image pixels are ignored. A too-large crop stays in selection so you can drag a smaller region. If the browser cannot prepare/encode a crop, the selection remains usable: try another region, Retake, or Cancel.
 5. Review the cropped image and its dimensions, then enter a comment. **Retake** discards the current crop and returns to intake; select/paste/drop another screenshot. **Cancel** / Escape discards the unsent image and returns to the normal UI.
 6. **Send image + comment** explicitly sends only the PNG crop, its dimensions/source-pixel rectangle and your comment. The full source image is never transmitted. Send, Retake and Cancel are disabled while a send is awaiting acknowledgement: closing UI cannot undo an in-flight server write. The preview and comment stay available on failure, for retry or Cancel. The preview closes and local history is updated only after acknowledgement.
 

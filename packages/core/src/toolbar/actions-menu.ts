@@ -1,10 +1,11 @@
-import { ICON_COPY, ICON_STYLES, ICON_CODE, ICON_COMMENT, ICON_TRASH } from './toolbar-icons';
+import { ICON_COPY, ICON_STYLES, ICON_CODE, ICON_COMMENT, ICON_TRASH, ICON_GRAB } from './toolbar-icons';
 import { Z_INDEX_POPOVER, TOOLBAR_POPOVER_OFFSET } from '../constants';
 
 const MENU_ID = '__point-grab-actions-menu__';
 const STYLE_ID = '__point-grab-actions-styles__';
 
 export interface ActionsMenuCallbacks {
+  onScreenGrab: () => void;
   onCopyElement: () => void;
   onCopyStyles: () => void;
   onCopyHtml: () => void;
@@ -42,6 +43,7 @@ export function createActionsMenu(callbacks: ActionsMenuCallbacks): ActionsMenu 
     { icon: ICON_STYLES, label: 'Copy Styles', action: callbacks.onCopyStyles },
     { icon: ICON_CODE, label: 'Copy HTML', action: callbacks.onCopyHtml },
     { icon: ICON_COMMENT, label: 'Add Comment', action: callbacks.onComment },
+    { icon: ICON_GRAB, label: 'Add screenshot', action: callbacks.onScreenGrab },
     { separator: true },
     { icon: ICON_TRASH, label: 'Clear History', action: callbacks.onClearHistory },
   ];

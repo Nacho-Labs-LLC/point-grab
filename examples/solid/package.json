@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "lint": "tsc --noEmit",
+    "test:browser": "playwright test --config playwright.config.ts"
   },
   "dependencies": {
     "@point-grab/core": "workspace:*",
