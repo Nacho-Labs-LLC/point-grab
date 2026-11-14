@@ -261,6 +261,7 @@ See [docs/mcp.md](./docs/mcp.md) for full tool schemas and example responses.
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `activationKey` | `string` | `'Meta+C'` (Mac) / `'Ctrl+C'` (Win) | Keyboard shortcut to activate |
+| `freezeKey` | `string` | `'F'` | Single key that toggles Freeze while selecting or while the toolbar is shown |
 | `activationMode` | `'hold' \| 'toggle'` | `'hold'` | Hold key to inspect, or toggle on/off |
 | `keyHoldDuration` | `number` | `0` | Milliseconds to hold before activating (hold mode only) |
 | `maxContextLines` | `number` | `20` | Max lines of HTML in the copied snippet |
@@ -340,7 +341,7 @@ While the inspector is active:
 
 | Key | Action |
 |---|---|
-| `F` | Freeze/unfreeze selection mode (keep inspector active after releasing keys) |
+| `F` (or your `freezeKey`) | Freeze/unfreeze selection mode (keep inspector active after releasing keys) |
 
 Customize the activation shortcut:
 
@@ -348,10 +349,16 @@ Customize the activation shortcut:
 const inspector = init({
   activationKey: 'Ctrl+Shift+X',
   activationMode: 'toggle',
+  freezeKey: 'P',
 });
 ```
 
-Key combo format: modifier names (`Meta`, `Cmd`, `Command`, `Ctrl`, `Control`, `Shift`, `Alt`, `Option`) joined with `+` followed by the key name.
+Key combo format: modifier names (`Meta`, `Cmd`, `Command`, `Ctrl`, `Control`, `Shift`, `Alt`, `Option`) joined with `+`, followed by exactly one key, e.g. `Alt+G`, `Ctrl+Shift+1`, `Cmd+Space` or `Ctrl++`.
+
+- **Modifiers match exactly.** `Ctrl+C` does not fire on Ctrl+Shift+C, so browser shortcuts like DevTools' inspect keep working.
+- **Letters and digits match by physical key**, so `Alt+G` works on macOS (where Option+G types `©`), `Shift+1` works, and non-Latin keyboard layouts work.
+- An invalid combo (no key, or more than one) logs a single console warning and never activates.
+- Every adapter accepts the same options, and `setOptions({ activationKey, freezeKey })` changes them at runtime.
 
 ---
 

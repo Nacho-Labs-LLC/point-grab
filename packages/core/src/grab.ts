@@ -16,7 +16,7 @@ import { createOverlayRenderer } from './overlay/overlay-renderer';
 import { createCrosshair } from './overlay/crosshair';
 import { showToast, disposeToast } from './overlay/toast';
 import { createElementPicker } from './picker/element-picker';
-import { createKeyboardHandler, isMac } from './keyboard/keyboard-handler';
+import { createKeyboardHandler, isMac, pressesKey } from './keyboard/keyboard-handler';
 import { copyElement, buildElementContext } from './clipboard/copy';
 import { createPluginRegistry } from './plugins/plugin-registry';
 import { createMcpWebhookPlugin } from './plugins/mcp-webhook-plugin';
@@ -56,6 +56,7 @@ function toHistoryContext(ctx: ElementContext): HistoryContext {
 function getDefaultOptions(): PointGrabOptions {
   return {
     activationKey: isMac() ? 'Meta+C' : 'Ctrl+C',
+    freezeKey: 'F',
     activationMode: 'hold',
     keyHoldDuration: 0,
     maxContextLines: 20,
@@ -591,7 +592,7 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
       doDeactivate(true);
       return;
     }
-    if (e.key.toLowerCase() !== 'f') return;
+    if (!pressesKey(e, (store.state.options.freezeKey || 'F').trim().toLowerCase())) return;
     const tag = (e.target as Element)?.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA') return;
     if ((e.target as HTMLElement)?.isContentEditable) return;
@@ -640,6 +641,7 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
 
     setOptions(opts: Partial<PointGrabOptions>): void {
       store.state.options = { ...store.state.options, ...opts };
+      updateToolbar(); // e.g. the freeze button's key hint
     },
 
     registerPlugin(plugin: Plugin): void {

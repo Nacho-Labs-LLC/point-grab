@@ -44,8 +44,25 @@ const MODIFIER_MAP: Record<string, keyof Omit<ParsedKey, 'key'>> = {
   option: 'alt',
 };
 
-function parseKeyCombo(combo: string): ParsedKey {
-  const parts = combo.split('+').map((s) => s.trim());
+const KEY_ALIASES: Record<string, string> = { space: ' ', spacebar: ' ', esc: 'escape', del: 'delete', plus: '+' };
+
+/**
+ * Does `e` press `key` (lowercase)? Letters and digits also match by physical key, so
+ * combos stay usable where a modifier changes the produced character (Option+G is "©"
+ * on macOS, Shift+1 is "!") and on non-Latin keyboard layouts.
+ */
+export function pressesKey(e: KeyboardEvent, key: string): boolean {
+  if (!key) return false;
+  if (e.key?.toLowerCase() === key) return true;
+  if (/^[a-z]$/.test(key)) return e.code === `Key${key.toUpperCase()}`;
+  if (/^[0-9]$/.test(key)) return e.code === `Digit${key}`;
+  return false;
+}
+
+/** Parse a combo like "Ctrl+Shift+X". `null` when it names no key or more than one. */
+export function parseKeyCombo(combo: string): ParsedKey | null {
+  // A trailing "++" means the plus key itself ("Ctrl++").
+  const parts = combo.replace(/\+\+$/, '+plus').split('+').map((s) => s.trim()).filter(Boolean);
   const result: ParsedKey = {
     key: '',
     meta: false,
@@ -59,21 +76,32 @@ function parseKeyCombo(combo: string): ParsedKey {
     const modifier = MODIFIER_MAP[lower];
     if (modifier) {
       result[modifier] = true;
+    } else if (result.key) {
+      return null;
     } else {
-      result.key = lower;
+      result.key = KEY_ALIASES[lower] ?? lower;
     }
   }
 
-  return result;
+  return result.key ? result : null;
+}
+
+const warned = new Set<string>();
+function parseOrWarn(combo: string): ParsedKey | null {
+  const parsed = parseKeyCombo(combo);
+  if (!parsed && !warned.has(combo)) {
+    warned.add(combo);
+    console.warn(`[point-grab] activationKey "${combo}" is not a valid shortcut. Use one key plus optional modifiers, e.g. "Ctrl+Shift+X".`);
+  }
+  return parsed;
 }
 
 function matchesCombo(e: KeyboardEvent, parsed: ParsedKey): boolean {
-  if (parsed.meta && !e.metaKey) return false;
-  if (parsed.ctrl && !e.ctrlKey) return false;
-  if (parsed.shift && !e.shiftKey) return false;
-  if (parsed.alt && !e.altKey) return false;
-
-  return e.key.toLowerCase() === parsed.key;
+  // Modifiers must match exactly, so "Ctrl+C" leaves Ctrl+Shift+C (DevTools) alone.
+  // Shift is only enforced for letters and digits: symbols like "?" need it implicitly.
+  if (e.metaKey !== parsed.meta || e.ctrlKey !== parsed.ctrl || e.altKey !== parsed.alt) return false;
+  if (/^[a-z0-9]$/.test(parsed.key) && e.shiftKey !== parsed.shift) return false;
+  return pressesKey(e, parsed.key);
 }
 
 function isInputElement(el: EventTarget | null): boolean {
@@ -91,8 +119,8 @@ export function createKeyboardHandler(deps: KeyboardHandlerDeps): KeyboardHandle
   function handleKeyDown(e: KeyboardEvent): void {
     if (!deps.getEnableInInputs() && isInputElement(e.target)) return;
 
-    const parsed = parseKeyCombo(deps.getActivationKey());
-    if (!matchesCombo(e, parsed)) return;
+    const parsed = parseOrWarn(deps.getActivationKey());
+    if (!parsed || !matchesCombo(e, parsed)) return;
 
     // A real text selection belongs to the browser's normal copy command.
     if (parsed.key === 'c' && (parsed.ctrl || parsed.meta) && window.getSelection()?.toString()) return;
@@ -126,7 +154,7 @@ export function createKeyboardHandler(deps: KeyboardHandlerDeps): KeyboardHandle
     const parsed = parseKeyCombo(deps.getActivationKey());
 
     // For key-up we check if the released key matches the main key
-    if (e.key.toLowerCase() !== parsed.key) return;
+    if (!parsed || !pressesKey(e, parsed.key)) return;
 
     const mode = deps.getActivationMode();
 

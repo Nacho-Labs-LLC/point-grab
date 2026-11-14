@@ -262,6 +262,12 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
       buttons.theme.title = themeLabel;
       buttons.theme.setAttribute('aria-label', themeLabel);
 
+      const freezeLabel = `Freeze page (${(state.options.freezeKey || 'F').toUpperCase()})`;
+      if (buttons.freeze.title !== freezeLabel) {
+        buttons.freeze.title = freezeLabel;
+        buttons.freeze.setAttribute('aria-label', freezeLabel);
+      }
+
       // Freeze button active state
       if (state.frozen) {
         buttons.freeze.classList.add('point-grab-btn-active');

@@ -63,8 +63,14 @@ export type ClassFilter = (className: string) => boolean;
 export type HtmlCleaner = { pattern: RegExp; replacement: string };
 
 export interface PointGrabOptions {
-  /** Keyboard shortcut to activate. Default: "Meta+C" (Mac) / "Ctrl+C" (Win) */
+  /**
+   * Keyboard shortcut to activate: one key plus optional Ctrl/Meta(Cmd)/Alt(Option)/Shift,
+   * e.g. "Ctrl+Shift+X" or "Alt+G". Modifiers must match exactly.
+   * Default: "Meta+C" (Mac) / "Ctrl+C" (Win)
+   */
   activationKey: string;
+  /** Single key that toggles Freeze while selecting or while the toolbar is shown. Default: "F" */
+  freezeKey: string;
   /** Whether activation requires hold or toggle. Default: 'hold' */
   activationMode: 'hold' | 'toggle';
   /** Milliseconds to hold before activating in hold mode. Default: 0 */

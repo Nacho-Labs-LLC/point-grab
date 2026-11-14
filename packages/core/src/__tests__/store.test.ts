@@ -5,6 +5,7 @@ import type { PointGrabOptions } from '../types';
 function makeOptions(overrides: Partial<PointGrabOptions> = {}): PointGrabOptions {
   return {
     activationKey: 'Meta+C',
+    freezeKey: 'F',
     activationMode: 'hold',
     keyHoldDuration: 0,
     maxContextLines: 20,
