@@ -641,12 +641,19 @@ function startWebhookServer(
 ): HttpServer {
   const httpServer = createHttpServer(async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
     if (req.method === 'OPTIONS') {
       res.writeHead(204);
       res.end();
+      return;
+    }
+
+    if (req.method === 'GET' && req.url === '/health') {
+      // Lets browser playgrounds show whether Send has a live, image-capable destination.
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, name: 'point-grab-mcp', imageSupport: true }));
       return;
     }
 
@@ -657,16 +664,20 @@ function startWebhookServer(
     }
 
     const maxBodySize = 4 * 1024 * 1024;
-    let body = '';
+    // Collect raw bytes: decoding per chunk corrupts multi-byte UTF-8 split across chunks.
+    const chunks: Buffer[] = [];
+    let received = 0;
     let overflow = false;
 
     req.on('data', (chunk: Buffer) => {
       if (overflow) return;
-      body += chunk.toString();
-      if (Buffer.byteLength(body) > maxBodySize) {
+      received += chunk.length;
+      if (received > maxBodySize) {
         overflow = true;
-        body = '';
+        chunks.length = 0;
+        return;
       }
+      chunks.push(chunk);
     });
 
     req.on('end', async () => {
@@ -677,7 +688,7 @@ function startWebhookServer(
       }
 
       try {
-        const entry = await processIncomingGrab(JSON.parse(body));
+        const entry = await processIncomingGrab(JSON.parse(Buffer.concat(chunks).toString('utf8')));
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ success: true, id: entry.id, ...(entry.context.screenGrab ? { imageAccepted: true } : {}) }));
