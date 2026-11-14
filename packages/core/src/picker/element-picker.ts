@@ -75,9 +75,20 @@ export function createElementPicker(deps: ElementPickerDeps): ElementPicker {
     deps.onHover(target);
   }
 
+  function isOwnUI(el: Element): boolean {
+    return !!deps.isToolbarElement?.(el) || deps.crosshair.isCrosshairElement(el);
+  }
+
   function handleClick(e: MouseEvent): void {
+    // The event's real target is authoritative: a coordinate lookup can disagree (e.g. while
+    // a popover fades in), and swallowing a click meant for our own UI turns "Add to Review"
+    // into a plain grab.
+    // The freeze layer is excluded: it covers the page, and clicks through it are picks.
+    const hit = e.composedPath()[0];
+    const freezeEl = deps.getFreezeElement?.();
+    if (hit instanceof Element && !freezeEl?.contains(hit) && isOwnUI(hit)) return;
     const target = elementAtPoint(e.clientX, e.clientY);
-    if (target && (deps.isToolbarElement?.(target) || deps.crosshair.isCrosshairElement(target))) return;
+    if (target && isOwnUI(target)) return;
 
     e.preventDefault();
     e.stopPropagation();
