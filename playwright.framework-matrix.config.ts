@@ -5,7 +5,8 @@ const framework = process.env.POINT_GRAB_FRAMEWORK ?? 'vanilla';
 const frameworks = ['vanilla', 'react', 'vue', 'angular', 'svelte', 'web-components', 'solid'];
 if (!frameworks.includes(framework)) throw new Error(`Unknown framework: ${framework}`);
 export default defineConfig({
-  testDir: './e2e', testMatch: 'framework-matrix.spec.mts',
+  // Shared feature contract + the demo's own app/adapter journeys, one framework at a time.
+  testDir: './e2e/framework', testMatch: ['contract.spec.mts', `demos/${framework}.spec.mts`],
   workers: 1, fullyParallel: false, retries: 0, timeout: 45_000,
   expect: { timeout: 10_000 },
   reporter: [['list'], ['json', { outputFile: `test-results/framework-matrix/${framework}.json` }]],

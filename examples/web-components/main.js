@@ -234,6 +234,7 @@ class ForgeMcpStatus extends HTMLElement {
       let online = false;
       try { online = (await fetch('http://localhost:3456/health', { signal: AbortSignal.timeout(1500) })).ok; } catch { /* offline */ }
       this.setAttribute('state', online ? 'online' : 'offline');
+      this.shadowRoot.querySelector('.chip').dataset.state = online ? 'online' : 'offline';
       this.shadowRoot.querySelector('.text').innerHTML = online ? 'MCP server connected' : 'MCP server offline · run <code>npx @point-grab/mcp-server</code> to Send';
     };
     check();

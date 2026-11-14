@@ -165,11 +165,37 @@ function NewPostsBanner({ count, onDismiss }) {
   );
 }
 
+const MAX_POST = 280;
+
+function Composer({ onPublish }) {
+  const [text, setText] = useState('');
+  const remaining = MAX_POST - text.length;
+  function submit(e) {
+    e.preventDefault();
+    if (!text.trim()) return;
+    onPublish(text.trim());
+    setText('');
+  }
+  return (
+    <form className="composer" onSubmit={submit} aria-label="New post">
+      <Avatar initials="ME" color="#818cf8" />
+      <div className="composer-body">
+        <textarea aria-label="What are you building?" placeholder="What are you building?" maxLength={MAX_POST} rows={2} value={text} onChange={e => setText(e.target.value)} />
+        <div className="composer-foot">
+          <span className={`composer-count${remaining < 20 ? ' low' : ''}`} data-testid="composer-count">{remaining}</span>
+          <button type="submit" className="composer-submit" disabled={!text.trim()}>Post</button>
+        </div>
+      </div>
+    </form>
+  );
+}
+
 export default function App() {
   const pointGrab = usePointGrab({ activationMode: 'hold', devOnly: false });
   // Show the toolbar on arrival so Actions → Add screenshot is discoverable.
   useEffect(() => { pointGrab?.showToolbar(); }, [pointGrab]);
 
+  const [posts, setPosts] = useState(POSTS);
   const [newCount, setNewCount] = useState(0);
   const [saved, setSaved] = useState([]);
   const [savedOnly, setSavedOnly] = useState(false);
@@ -192,14 +218,15 @@ export default function App() {
       </header>
 
       <div className="feed-hint">
-        Hold <kbd>Cmd+C</kbd> / <kbd>Ctrl+C</kbd>, hover any element, click to grab its context for your AI
+        Hold <kbd>⌘C</kbd> / <kbd>Ctrl+C</kbd> and click anything to grab it for your AI
       </div>
 
-      <section className="feed-intro"><span className="eyebrow">REACT / COMMUNITY PLAYGROUND</span><h1>Good ideas start<br />with a conversation.</h1><p>A little corner of the internet for people who build. Like, reply, repost, or save something worth coming back to.</p><FreezePreview /></section>
+      <section className="feed-intro"><span className="eyebrow">THREAD / FOR PEOPLE WHO BUILD</span><h1>Good ideas start<br />with a conversation.</h1><p>A little corner of the internet for people who build. Like, reply, repost, or save something worth coming back to.</p><FreezePreview /></section>
       <nav className="feed-tabs" aria-label="Feed view"><button aria-pressed={!savedOnly} onClick={() => setSavedOnly(false)}>For you</button><button aria-pressed={savedOnly} onClick={() => setSavedOnly(true)}>Saved only</button></nav>
       <main className="feed">
+        <Composer onPublish={text => setPosts(list => [{ id: Date.now(), name: 'You', handle: '@you', avatar: 'ME', avatarColor: '#818cf8', time: 'now', text, likes: 0, replies: 0, reposts: 0 }, ...list])} />
         <NewPostsBanner count={newCount} onDismiss={() => setNewCount(0)} />
-        {POSTS.map(post => <div key={post.id} hidden={savedOnly && !saved.includes(post.id)}><Post post={post} saved={saved.includes(post.id)} onSave={() => setSaved(previous => previous.includes(post.id) ? previous.filter(id => id !== post.id) : [...previous, post.id])} /></div>)}
+        {posts.map(post => <div key={post.id} hidden={savedOnly && !saved.includes(post.id)}><Post post={post} saved={saved.includes(post.id)} onSave={() => setSaved(previous => previous.includes(post.id) ? previous.filter(id => id !== post.id) : [...previous, post.id])} /></div>)}
         {savedOnly && saved.length === 0 && <p className="empty-feed">No posts in this view.</p>}
       </main>
       <GrabGuide />

@@ -125,6 +125,8 @@ export function createFreezeOverlay(): FreezeOverlay {
       markedElements.push(current);
       const root = current.getRootNode();
       if (root instanceof ShadowRoot || root instanceof Document) roots.add(root);
+      // `:host(:hover)` rules live in the host's own shadow root, not the tree it sits in.
+      if (current.shadowRoot) roots.add(current.shadowRoot);
       current = composedParent(current);
     }
     return roots;

@@ -23,3 +23,14 @@ it('does not toggle on an unrelated C key release in an input', () => {
   input.dispatchEvent(new KeyboardEvent('keyup', { key: 'c', bubbles: true }));
   expect(activate).not.toHaveBeenCalled();
 });
+
+it('Escape leaves toolbar selection mode', async () => {
+  const { init } = await import('../grab');
+  const api = init({ mcpWebhook: false, devOnly: false });
+  api.showToolbar();
+  document.querySelector<HTMLButtonElement>('[data-point-grab-btn="selection"]')!.click();
+  expect(api.isActive()).toBe(true);
+  document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+  expect(api.isActive()).toBe(false);
+  api.dispose();
+});

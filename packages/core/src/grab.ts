@@ -583,6 +583,14 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
       doDeactivate(true);
       return;
     }
+    // Escape leaves the picker (selection mode or a pending action). Queued comments are
+    // kept; an open comment popover handles its own Escape.
+    if (e.key === 'Escape' && store.state.active && !commentPopover.isVisible()) {
+      e.preventDefault();
+      store.state.toolbar = { ...store.state.toolbar, pendingAction: null };
+      doDeactivate(true);
+      return;
+    }
     if (e.key.toLowerCase() !== 'f') return;
     const tag = (e.target as Element)?.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA') return;
