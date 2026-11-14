@@ -1,3 +1,5 @@
+import { isServedModuleUrl, lookupOriginal, normalizeServedPath } from './source-map';
+
 interface FiberNode {
   tag: number;
   type: unknown;
@@ -80,8 +82,14 @@ function getDebugStackSource(fiber: FiberNode): SourceResult | null {
   for (const line of stack.split('\n')) {
     const source = getStackLocation(line);
     if (!source?.filePath || source.filePath.includes('node_modules')) continue;
+    if (!isServedModuleUrl(source.filePath)) return source;
 
-    return source;
+    // A dev-server URL: positions refer to the transformed module, not the source.
+    const original = lookupOriginal(source.filePath, source.line!, source.column!);
+    if (original) return original;
+    // Map pending: right file, no (wrong) line. No map at all: best effort raw position.
+    const filePath = normalizeServedPath(source.filePath);
+    return original === null ? { ...source, filePath } : { filePath, line: null, column: null };
   }
 
   return null;

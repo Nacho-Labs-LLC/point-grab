@@ -53,6 +53,9 @@ export function buildElementContext(
         }
       }
 
+      // Adapters that report one entry per DOM element (e.g. Svelte) repeat a component
+      // for each of its wrapper elements. Keep only the innermost: where it renders the child.
+      if (componentStack.at(-1)?.name === entry.name) continue;
       componentStack.push({ name: entry.name, filePath, line, column });
     }
   }

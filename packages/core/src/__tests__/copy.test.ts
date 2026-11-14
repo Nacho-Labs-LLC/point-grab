@@ -74,6 +74,23 @@ describe('buildElementContext', () => {
     ]);
   });
 
+  it('collapses adjacent entries for the same component to the innermost one', () => {
+    const el = document.createElement('span');
+    const hosts = [1, 2, 3, 4].map(() => document.createElement('div'));
+    const componentResolver: ComponentResolver = vi.fn().mockReturnValue({
+      name: 'NoteCard',
+      stack: [
+        { name: 'NoteCard', hostElement: hosts[0] }, { name: 'NoteCard', hostElement: hosts[1] },
+        { name: 'App', hostElement: hosts[2] }, { name: 'App', hostElement: hosts[3] },
+      ],
+    });
+    const sourceResolver: SourceResolver = vi.fn((element) => ({ filePath: 'x.svelte', line: hosts.indexOf(element as HTMLDivElement) + 1, column: 0 }));
+    expect(buildElementContext(el, componentResolver, sourceResolver).componentStack).toEqual([
+      { name: 'NoteCard', filePath: 'x.svelte', line: 1, column: 0 },
+      { name: 'App', filePath: 'x.svelte', line: 3, column: 0 },
+    ]);
+  });
+
   it('applies class filters', () => {
     const el = document.createElement('div');
     el.className = 'keep-me remove-me ng-binding';

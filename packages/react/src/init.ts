@@ -24,6 +24,15 @@ export function initPointGrabReact(options?: Partial<PointGrabOptions>): PointGr
   instance = init(options);
   instance.setComponentResolver((el) => resolveComponent(el));
   instance.setSourceResolver((el) => resolveSource(el));
+  // Warm source maps while the user hovers, so the click resolves synchronously.
+  instance.registerPlugin({
+    name: 'react-source-maps',
+    hooks: {
+      onElementHover(el) {
+        for (let node: Element | null = el, depth = 0; node && depth < 25; node = node.parentElement, depth++) resolveSource(node);
+      },
+    },
+  });
   // Keep caller-provided filters/cleaners alongside the adapter defaults.
   instance.setOptions({
     classFilters: [reactClassFilter, ...(options?.classFilters ?? [])],
