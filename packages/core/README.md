@@ -47,7 +47,7 @@ const pointGrab = init({
 
 ## Screen Grab
 
-Choose **Actions → Add screenshot** in the toolbar to choose, paste or drop a screenshot you took with your system screenshot tool. Drag a custom rectangular crop with live sizing, preview it, and explicitly send the image with a comment. No screen-sharing API is required; PointGrab does not invoke native screen snipping or manufacture DOM screenshots. Nothing is sent before **Send** and image clipboard copying is not implemented. Requires an image-aware MCP server or custom image transport. See [screenshot flow](../../docs/screen-grab.md) for the remaining native-capture gap, transport, limits and verification.
+Choose **Actions → Add screenshot** and drag directly on the current live webpage. Release to automatically render that region, review the mandatory preview, add a comment, and explicitly Send. This is DOM rasterization, not OS/compositor pixels; no upload, clipboard intake or sharing session is required. Editable fields are redacted. Frames/video/canvas/shadow DOM/cross-origin images/filters can block capture; fonts, shadows and complex CSS may differ. Nothing is sent before **Send**; image clipboard copying is not implemented. Requires an image-aware MCP server or custom image transport. See [screenshot flow](../../docs/screen-grab.md) for the DOM-rendering boundaries, transport, limits and verification.
 
 ## What gets captured
 

@@ -16,7 +16,14 @@
       <p class="pg-hint">Hold <kbd>Cmd+C</kbd> / <kbd>Ctrl+C</kbd>, hover any element, click to grab its context for your AI</p>
     </header>
 
-    <div class="player">
+    <section class="grab-guide" data-testid="grab-guide">
+      <span class="guide-kicker">VANILLA JS / A LISTENING ROOM</span><h1>Find your next frequency.</h1>
+      <p>A silent, local player playground. No audio is streamed and nothing leaves this tab until you send a capture.</p>
+      <ol><li><strong>Make a mix.</strong> Choose a queue track, like it, seek, or toggle shuffle and repeat. Keyboard controls work too.</li><li><strong>Point at a detail.</strong> Hold Ctrl+C / Cmd+C, hover a title or control, and click to inspect real DOM. Selected text still copies normally.</li><li><strong>Hold the moment.</strong> Hover or focus “About this mix” below, then use Freeze (F) in the picker. Escape resumes. Actions → Add screenshot captures a region of this page; review and comment before Send.</li></ol>
+      <div class="signal-row"><span class="motion-sample" data-testid="motion-sample" aria-hidden="true">♫</span><span class="freeze-help"><button type="button" data-testid="freeze-trigger" aria-describedby="mix-tip">About this mix</button><span role="tooltip" id="mix-tip" data-testid="freeze-popover">Five late-night tracks. Freeze (F) holds this note and the moving signal; Escape brings them back.</span></span></div>
+      <p class="capture-note">Capture is a DOM reconstruction, not browser pixels. Inputs are redacted; shadow DOM, filters, frames, canvas and cross-origin images can block it. Send needs the local MCP server at localhost:3456 and confirms only after acknowledgement.</p>
+    </section>
+    <main class="player" aria-label="Demo music player">
       <div class="now-playing">
         <div class="album-art" id="album-art"></div>
         <div class="track-meta">
@@ -29,7 +36,7 @@
 
       <div class="scrubber">
         <span class="time" id="time-elapsed">1:23</span>
-        <div class="progress-track" id="progress-track">
+        <div class="progress-track" id="progress-track" role="slider" tabindex="0" aria-label="Track position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
           <div class="progress-fill" id="progress-fill"></div>
           <div class="progress-thumb" id="progress-thumb"></div>
         </div>
@@ -56,7 +63,7 @@
           </button>
           <div class="volume-popover hidden" id="volume-popover">
             <span class="volume-pct" id="volume-pct">75%</span>
-            <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="75" />
+            <input type="range" class="volume-slider" id="volume-slider" aria-label="Demo volume" min="0" max="100" value="75" />
             <span class="volume-label">Volume</span>
           </div>
         </div>
@@ -69,7 +76,7 @@
         <div class="queue-header">Queue</div>
         <div class="queue-list" id="queue-list"></div>
       </div>
-    </div>
+    </main>
   </div>
 
   <script type="module" src="/main.js"></script>

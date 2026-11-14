@@ -32,7 +32,7 @@
           <span class="section-kicker">Demo feed</span>
           <h2>Inspectable posts</h2>
         </div>
-        <button type="button">New capture</button>
+        <a href="#capture-guide">Capture walkthrough ↓</a>
       </div>
 
       <div class="feed-list">
@@ -42,22 +42,17 @@
       </div>
     </main>
 
-    <aside class="sidebar-card">
-      <span class="section-kicker">Operator notes</span>
-      <h2>Best results</h2>
+    <aside id="capture-guide" class="sidebar-card" data-testid="grab-guide">
+      <span class="section-kicker">The developer side</span>
+      <h2>From detail to direction.</h2>
       <ol>
-        <li>Run <code>npm run dev</code> or <code>ng serve</code> for Angular debug metadata.</li>
-        <li>Hold the activation keys before hovering your target.</li>
-        <li>Click cards, buttons, or the detail panel to inspect deeper nested nodes.</li>
+        <li><strong>Explore the feed.</strong> Like a post, expand its component detail, or write a reply. Changes stay in this tab.</li>
+        <li><strong>Inspect the real component.</strong> Hold Ctrl+C / Cmd+C, hover a post or action, then click. Selected text still copies normally.</li>
+        <li><strong>Keep a fleeting moment.</strong> Hover or focus the live signal below; use Freeze (F) in the picker. Escape resumes the page.</li>
+        <li><strong>Explain the change.</strong> Add an element comment, or Actions → Add screenshot, drag a current-page region and review before Send.</li>
       </ol>
-
-      <div class="callout">
-        <strong>Why this exists</strong>
-        <p>
-          The repo already had React, Vue, Svelte, Web Components, and Vanilla examples. Angular
-          support deserved the same treatment.
-        </p>
-      </div>
+      <div class="freeze-demo"><span data-testid="motion-sample" class="motion-sample" aria-hidden="true">✦</span><span class="freeze-help"><button type="button" data-testid="freeze-trigger" aria-describedby="signal-tip">Live signal</button><span id="signal-tip" role="tooltip" data-testid="freeze-popover">A small idea in motion. Freeze (F) holds this detail and the signal; Escape resumes.</span></span></div>
+      <p>Capture reconstructs DOM, not browser pixels. Inputs are redacted; filters, shadow DOM, canvas, frames and cross-origin images can block it. This glass-style Angular surface intentionally demonstrates the filter limitation. Send needs the local MCP server at localhost:3456 and confirms only after acknowledgement.</p>
     </aside>
   </section>
 </div>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { usePointGrab } from '@point-grab/react';
 import './App.css';
+import GrabGuide, { FreezePreview } from './GrabGuide';
 
 const POSTS = [
   {
@@ -64,12 +65,14 @@ function Avatar({ initials, color, size = 40 }) {
   );
 }
 
-function Post({ post }) {
+function Post({ post, saved, onSave }) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes);
   const [animating, setAnimating] = useState(false);
   const [replyOpen, setReplyOpen] = useState(false);
   const [replyText, setReplyText] = useState('');
+  const [replies, setReplies] = useState([]);
+  const [reposted, setReposted] = useState(false);
   const replyRef = useRef(null);
 
   function handleLike() {
@@ -97,7 +100,7 @@ function Post({ post }) {
   }, [replyOpen]);
 
   return (
-    <article className="post">
+    <article className="post" data-testid="post">
       <Avatar initials={post.avatar} color={post.avatarColor} />
       <div className="post-body">
         <div className="post-meta">
@@ -108,23 +111,25 @@ function Post({ post }) {
         </div>
         <p className="post-text">{post.text}</p>
         <div className="post-actions">
-          <button className="action-btn reply-btn" onClick={handleReply}>
+          <button aria-label="Reply to post" aria-expanded={replyOpen} className="action-btn reply-btn" onClick={handleReply}>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            <span>{post.replies}</span>
+            <span>{post.replies + replies.length}</span>
           </button>
-          <button className="action-btn repost-btn">
+          <button aria-label="Repost" aria-pressed={reposted} onClick={() => setReposted(!reposted)} className="action-btn repost-btn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-            <span>{post.reposts}</span>
+            <span>{post.reposts + Number(reposted)}</span>
           </button>
           <button
             className={`action-btn like-btn ${liked ? 'liked' : ''} ${animating ? 'pop' : ''}`}
-            onClick={handleLike}
+            aria-label="Like post" aria-pressed={liked} onClick={handleLike}
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill={liked ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             <span>{likeCount}</span>
           </button>
         </div>
 
+        <button className="action-btn" aria-label="Save post" aria-pressed={saved} onClick={onSave}>{saved ? 'Saved' : 'Save'}</button>
+        {replies.map((text, index) => <p className="posted-reply" key={index}><strong>You</strong> · {text}</p>)}
         {replyOpen && (
           <div className="reply-popover" ref={replyRef}>
             <Avatar initials="ME" color="#818cf8" size={32} />
@@ -139,7 +144,7 @@ function Post({ post }) {
               <button
                 className="reply-send"
                 disabled={!replyText.trim()}
-                onClick={() => { setReplyText(''); setReplyOpen(false); }}
+                onClick={() => { setReplies([...replies, replyText.trim()]); setReplyText(''); setReplyOpen(false); }}
               >
                 Reply
               </button>
@@ -164,6 +169,8 @@ export default function App() {
   usePointGrab({ activationMode: 'hold', devOnly: false });
 
   const [newCount, setNewCount] = useState(0);
+  const [saved, setSaved] = useState([]);
+  const [savedOnly, setSavedOnly] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setNewCount(2), 6000);
@@ -186,10 +193,14 @@ export default function App() {
         Hold <kbd>Cmd+C</kbd> / <kbd>Ctrl+C</kbd>, hover any element, click to grab its context for your AI
       </div>
 
+      <section className="feed-intro"><span className="eyebrow">REACT / COMMUNITY PLAYGROUND</span><h1>Good ideas start<br />with a conversation.</h1><p>A little corner of the internet for people who build. Like, reply, repost, or save something worth coming back to.</p><FreezePreview /></section>
+      <nav className="feed-tabs" aria-label="Feed view"><button aria-pressed={!savedOnly} onClick={() => setSavedOnly(false)}>For you</button><button aria-pressed={savedOnly} onClick={() => setSavedOnly(true)}>Saved only</button></nav>
       <main className="feed">
         <NewPostsBanner count={newCount} onDismiss={() => setNewCount(0)} />
-        {POSTS.map(post => <Post key={post.id} post={post} />)}
+        {POSTS.map(post => <div key={post.id} hidden={savedOnly && !saved.includes(post.id)}><Post post={post} saved={saved.includes(post.id)} onSave={() => setSaved(previous => previous.includes(post.id) ? previous.filter(id => id !== post.id) : [...previous, post.id])} /></div>)}
+        {savedOnly && saved.length === 0 && <p className="empty-feed">No posts in this view.</p>}
       </main>
+      <GrabGuide />
     </div>
   );
 }

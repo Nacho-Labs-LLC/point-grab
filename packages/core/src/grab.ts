@@ -138,8 +138,8 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
   const screenGrab = createScreenGrab({
     onBusy(busy) {
       screenGrabBusy = busy;
-      if (busy) { closeAllPopovers(); doDeactivate(true); toolbar.hide(); }
-      else if (store.state.toolbar.visible) toolbar.show();
+      if (busy) { closeAllPopovers(); doDeactivate(true); toolbar.hide(); freezeOverlay.show(); }
+      else { freezeOverlay.hide(); if (store.state.toolbar.visible) toolbar.show(); }
     },
     async onSubmit(grab) {
       const transports = pluginRegistry.getPlugins().filter((plugin) => plugin.hooks?.onScreenGrab);
@@ -570,6 +570,11 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
   // --- Freeze key handler (F key during selection mode) ---
   function handleFreezeKey(e: KeyboardEvent): void {
     if (screenGrabBusy) return;
+    if (e.key === 'Escape' && store.state.frozen) {
+      e.preventDefault();
+      doDeactivate(true);
+      return;
+    }
     if (e.key.toLowerCase() !== 'f') return;
     const tag = (e.target as Element)?.tagName;
     if (tag === 'INPUT' || tag === 'TEXTAREA') return;

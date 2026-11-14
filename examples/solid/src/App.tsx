@@ -72,7 +72,12 @@ function ProductCard(props: {
     <article class="product-card" data-testid="product-card">
       <div class="art-wrap">
         <ProductArtwork product={props.product} />
-        <span class="product-badge">{props.product.badge}</span>
+        <button class="product-badge detail-trigger" type="button" data-testid="demo-detail-trigger" aria-describedby={`detail-${props.product.id}`}>
+          {props.product.badge}
+          <span class="product-detail" id={`detail-${props.product.id}`} role="tooltip" data-testid="demo-detail">
+            {props.product.detail} Hover or focus, then use Freeze (F) to inspect this detail.
+          </span>
+        </button>
         <button
           class="save-button"
           type="button"
@@ -208,7 +213,8 @@ function GrabGuide() {
         <h2 id="guide-heading">Good feedback starts with context.</h2>
         <p>
           This storefront is your canvas. Try the controls, then point at what
-          you want to change.
+          you want to change. Hover or focus a product badge for detail. During
+          selection, press F to freeze motion and hover content; Escape resumes.
         </p>
       </div>
       <ol>
@@ -230,16 +236,17 @@ function GrabGuide() {
         </li>
         <li>
           <span>03</span>
-          <strong>Bring a screenshot</strong>
+          <strong>Capture this page</strong>
           <p>
-            Choose Screenshot in the toolbar menu. Paste, drop, or choose an
-            image, crop a region, add a comment, then Copy or Send.
+            Choose Actions → Add screenshot. Drag a region directly on this page,
+            review the DOM-rendered preview, add a comment, then Send.
           </p>
         </li>
       </ol>
       <p class="capture-note">
-        Screenshot intake accepts your own images; it does not invoke OS
-        snipping or capture your screen. Send requires the local MCP server at
+        Current-page capture is a DOM-rendered approximation, not OS/compositor
+        pixels. Editable fields are redacted; frames, video, canvas, shadow DOM,
+        cross-origin images and filters can block capture. Send requires the local MCP server at
         localhost:3456 and confirms only after acknowledgement.
       </p>
     </section>
@@ -291,7 +298,7 @@ export default function App() {
         <section class="hero">
           <div>
             <div class="eyebrow">
-              <span class="tiny-spark">✳</span> LESS, BUT A LITTLE LOVELIER
+              <span class="tiny-spark" data-testid="demo-motion" aria-hidden="true">✳</span> LESS, BUT A LITTLE LOVELIER
             </div>
             <h1>
               Objects for

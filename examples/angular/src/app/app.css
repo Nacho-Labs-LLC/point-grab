@@ -1,3 +1,12 @@
+.freeze-demo { display:flex; align-items:center; gap:16px; padding:24px 0; }
+.motion-sample { display:inline-block; color:#93c5fd; font-size:30px; animation:signal-drift 2.8s ease-in-out infinite alternate; }
+@keyframes signal-drift { from { transform:translateY(-4px) rotate(-12deg); } to { transform:translateY(4px) rotate(12deg); } }
+.freeze-help { position:relative; }
+.freeze-help button { background:#29375b; color:#e2e8f0; border:1px solid #6574aa; border-radius:10px; padding:10px; cursor:pointer; }
+.freeze-help [role="tooltip"] { position:absolute; bottom:calc(100% + 8px); left:0; width:230px; padding:14px; border:1px solid #6574aa; border-radius:12px; background:#172137; color:#e2e8f0; font-size:13px; line-height:1.5; visibility:hidden; opacity:0; z-index:3; }
+.freeze-help:hover [role="tooltip"], .freeze-help:focus-within [role="tooltip"] { visibility:visible; opacity:1; }
+a { color:#93c5fd; }
+.sidebar-card > p { font-size:13px; line-height:1.7; color:#b8c7df; }
 :host {
   display: block;
   min-height: 100vh;
@@ -166,6 +175,7 @@ kbd {
   }
 }
 
+@media (prefers-reduced-motion: reduce) { .motion-sample { animation:none; } }
 @media (max-width: 720px) {
   .shell {
     padding: 24px 16px 48px;

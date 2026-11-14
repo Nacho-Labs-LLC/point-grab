@@ -89,21 +89,47 @@ async function actions(page: Page) {
 async function openScreenshot(page: Page) {
   await actions(page);
   await page.getByText('Add screenshot', { exact: true }).click();
-  await expect(page.getByRole('dialog', { name: 'Add or paste a screenshot', exact: true })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'Select current page region', exact: true })).toBeVisible();
 }
-async function uploadAndCrop(page: Page, png: Buffer) {
-  await page.getByLabel('Screenshot file').setInputFiles({ name: `${framework}.png`, mimeType: 'image/png', buffer: png });
-  const image = page.getByLabel('Screenshot to crop');
-  await expect(image).toBeVisible();
-  const rect = (await image.boundingBox())!;
-  await page.mouse.move(rect.x + rect.width * .15, rect.y + rect.height * .15);
-  await page.mouse.down();
-  await page.mouse.move(rect.x + rect.width * .35, rect.y + rect.height * .35, { steps: 5 });
-  await page.mouse.up();
+async function captureCurrentPage(page: Page) {
+  await page.mouse.move(150, 150); await page.mouse.down();
+  await page.mouse.move(350, 290, { steps: 5 }); await page.mouse.up();
   await expect(page.getByRole('dialog', { name: 'Review screenshot' })).toBeVisible();
   await expect(page.getByAltText('Selected screenshot region')).toHaveJSProperty('naturalWidth', 200);
   await expect(page.getByAltText('Selected screenshot region')).toHaveJSProperty('naturalHeight', 140);
 }
+
+test(`${framework}: live motion → explicit Freeze preserves transient detail → Escape resumes; screenshot Cancel restores motion`, async ({ page }) => {
+  const motion = page.getByTestId(framework === 'solid' ? 'demo-motion' : 'motion-sample').first();
+  const trigger = page.getByTestId(framework === 'solid' ? 'demo-detail-trigger' : 'freeze-trigger').first();
+  const detail = page.getByTestId(framework === 'solid' ? 'demo-detail' : 'freeze-popover').first();
+  const sample = () => motion.evaluate(el => getComputedStyle(el).transform);
+  await expect(motion).toBeVisible();
+  const moving = await sample(); await page.waitForTimeout(180); expect(await sample()).not.toBe(moving);
+  await trigger.hover(); await expect(detail).toBeVisible();
+  await page.keyboard.down('Control'); await page.keyboard.down('c'); await page.keyboard.press('f');
+  await page.keyboard.up('c'); await page.keyboard.up('Control');
+  await expect(page.locator('#__point-grab-freeze-overlay__')).toBeVisible();
+  await page.mouse.move(10, 10); await expect(detail).toBeVisible();
+  await page.waitForTimeout(80); const frozen = await sample(); await page.waitForTimeout(220); expect(await sample()).toBe(frozen);
+  await page.keyboard.press('Escape'); await expect(page.locator('#__point-grab-freeze-overlay__')).not.toBeVisible();
+  await expect(detail).not.toBeVisible(); await page.waitForTimeout(180); expect(await sample()).not.toBe(frozen);
+  await trigger.focus(); await expect(detail).toBeVisible();
+  await page.keyboard.press('f'); await expect(page.locator('#__point-grab-freeze-overlay__')).toBeVisible();
+  await page.mouse.move(10, 10); await expect(detail).toBeVisible();
+  await page.keyboard.press('Escape'); await expect(page.locator('#__point-grab-freeze-overlay__')).not.toBeVisible();
+  await trigger.blur(); await expect(detail).not.toBeVisible();
+  await openScreenshot(page); await page.waitForTimeout(80); const selection = await sample();
+  await page.waitForTimeout(220); expect(await sample()).toBe(selection);
+  await page.getByRole('button', { name: 'Cancel', exact: true }).click(); await page.waitForTimeout(180); expect(await sample()).not.toBe(selection);
+  await openScreenshot(page); await page.waitForTimeout(80); const escapeSelection = await sample();
+  await page.waitForTimeout(220); expect(await sample()).toBe(escapeSelection);
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog', { name: 'Select current page region', exact: true })).not.toBeVisible();
+  await page.waitForTimeout(180); expect(await sample()).not.toBe(escapeSelection);
+  await page.emulateMedia({ reducedMotion: 'reduce' }); await page.reload();
+  await expect(motion).toBeVisible(); const reduced = await sample(); await page.waitForTimeout(180); expect(await sample()).toBe(reduced);
+});
 
 test(`${framework}: real interactive component → native copy → adapter context → queued comment survives screenshot Cancel`, async ({ page }) => {
   const target = await interact(page);
@@ -119,15 +145,20 @@ test(`${framework}: real interactive component → native copy → adapter conte
   await page.keyboard.down('Control'); await page.keyboard.down('c');
   await target.hover();
   await expect(page.locator('#__point-grab-overlay__')).toBeVisible();
+  const persisted = page.waitForResponse(r => r.url() === `http://127.0.0.1:${(webhook.address() as { port: number }).port}/inspect` && r.request().method() === 'POST');
   await target.click();
+  const copiedResponse = await persisted;
+  expect(copiedResponse.ok()).toBe(true);
+  const copiedAck = await copiedResponse.json();
   await page.keyboard.up('c'); await page.keyboard.up('Control');
   await expect(page.locator('#__point-grab-toast__')).toContainText('Copied to clipboard');
   const snippet = await page.evaluate(() => navigator.clipboard.readText());
   expect(snippet).toContain(text);
   expect(snippet).toMatch(/<[a-z]/);
-  const entry = (await history()).entries[0];
+  const entry = (await history()).entries.find(entry => entry.id === copiedAck.id)!;
+  expect(entry).toBeDefined();
   expect(entry.context.html).toContain(text);
-  const names: Record<string, RegExp> = { react: /Post|App/, vue: /App/, angular: /PostCard/, svelte: /App/, 'web-components': /ForgeCard/, solid: /ProductCard/ };
+  const names: Record<string, RegExp> = { react: /^Post$/, vue: /^App$/, angular: /^PostCardComponent$/, svelte: /^NoteCard$/, 'web-components': /^ForgeCard$/, solid: /^ProductCard$/ };
   if (names[framework]) expect(entry.context.componentName).toMatch(names[framework]);
   if (framework === 'solid') expect(entry.context.filePath).toContain('App.tsx');
   await actions(page);
@@ -136,24 +167,45 @@ test(`${framework}: real interactive component → native copy → adapter conte
   await page.getByRole('button', { name: 'Add to Review', exact: true }).click();
   const before = (await history()).entries.length;
   await openScreenshot(page);
-  await page.getByRole('dialog', { name: 'Add or paste a screenshot', exact: true }).getByRole('button', { name: 'Cancel', exact: true }).click();
+  await page.getByRole('dialog', { name: 'Select current page region', exact: true }).getByRole('button', { name: 'Cancel', exact: true }).click();
   expect((await history()).entries).toHaveLength(before);
   await page.getByRole('button', { name: /Confirm & Copy/ }).click();
   expect(await page.evaluate(() => navigator.clipboard.readText())).toContain(`${framework} queued comment`);
 });
 
-test(`${framework}: dropdown → actual PNG crop/comment → failed send retry → acknowledged persisted MCP image`, async ({ page }) => {
+test(`${framework}: ${['angular', 'web-components'].includes(framework) ? 'unsupported live-page content → visible rejection, no fabricated image' : 'live page drag → DOM preview/comment → failed send retry → persisted MCP image'}`, async ({ page }) => {
   await interact(page);
   await page.evaluate(() => (document.activeElement as HTMLElement)?.blur());
-  // Source is a real screenshot of this framework's rendered demo; no sharing API is required.
+  // Browser screenshot is a TEST-ONLY compositor reference; product captures the live DOM.
   await page.evaluate(() => Object.defineProperty(navigator, 'mediaDevices', { value: undefined, configurable: true }));
   const png = await page.screenshot();
   await page.evaluate(() => navigator.clipboard.writeText('native clipboard unchanged'));
   await page.keyboard.press('Control+c');
   await openScreenshot(page);
-  await page.getByLabel('Screenshot file').setInputFiles({ name: 'invalid.png', mimeType: 'image/png', buffer: Buffer.from('not a PNG') });
-  await expect(page.getByRole('alert')).toContainText('decode');
-  await uploadAndCrop(page, png);
+  if (framework === 'angular' || framework === 'web-components') {
+    const before = (await history()).entries.length;
+    await page.mouse.move(150, 150); await page.mouse.down();
+    await page.mouse.move(350, 290, { steps: 5 }); await page.mouse.up();
+    await expect(page.getByRole('alert')).toContainText(framework === 'angular' ? 'filters' : 'shadow DOM');
+    await expect(page.getByAltText('Selected screenshot region')).toHaveCount(0);
+    await page.getByRole('dialog', { name: 'Select current page region', exact: true }).getByRole('button', { name: 'Cancel', exact: true }).click();
+    expect((await history()).entries).toHaveLength(before);
+    return; // Honest renderer boundary, not an image-success certification for these regions.
+  }
+  const motion = page.getByTestId(framework === 'solid' ? 'demo-motion' : 'motion-sample').first();
+  const sample = () => motion.evaluate(el => getComputedStyle(el).transform);
+  await page.waitForTimeout(80); const frozen = await sample();
+  const assertFrozen = async () => { await page.waitForTimeout(180); expect(await sample()).toBe(frozen); };
+  await captureCurrentPage(page); await assertFrozen();
+  await page.getByRole('button', { name: 'Retake', exact: true }).click();
+  await expect(page.getByRole('dialog', { name: 'Select current page region', exact: true })).toBeVisible();
+  await assertFrozen();
+  await captureCurrentPage(page); await assertFrozen();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog', { name: 'Review screenshot' })).not.toBeVisible();
+  await page.waitForTimeout(180); expect(await sample()).not.toBe(frozen);
+  await openScreenshot(page); await captureCurrentPage(page);
+  const finalFrozen = await sample();
   const preview = await page.getByAltText('Selected screenshot region').getAttribute('src');
   const pixelsMatchSource = await page.getByAltText('Selected screenshot region').evaluate(async (preview: HTMLImageElement, bytes) => {
     const source = new Image();
@@ -161,21 +213,33 @@ test(`${framework}: dropdown → actual PNG crop/comment → failed send retry �
     await source.decode();
     const canvas = document.createElement('canvas'); canvas.width = 200; canvas.height = 140;
     const context = canvas.getContext('2d')!;
-    context.drawImage(source, 150, 105, 200, 140, 0, 0, 200, 140);
+    context.drawImage(source, 150, 150, 200, 140, 0, 0, 200, 140);
     const expected = context.getImageData(0, 0, 200, 140).data;
     context.clearRect(0, 0, 200, 140); context.drawImage(preview, 0, 0);
     const actual = context.getImageData(0, 0, 200, 140).data;
     URL.revokeObjectURL(source.src);
-    return expected.every((byte, index) => byte === actual[index]);
+    let error = 0, close = 0;
+    for (let i = 0; i < actual.length; i += 4) {
+      const delta = Math.max(...[0, 1, 2].map(c => Math.abs(actual[i+c] - expected[i+c])));
+      if (delta <= 20) close++;
+      for (const c of [0, 1, 2]) error += Math.abs(actual[i+c] - expected[i+c]);
+    }
+    return { meanAbsoluteError: error / (200 * 140 * 3), closePixelFraction: close / (200 * 140) };
   }, [...png]);
-  expect(pixelsMatchSource).toBe(true);
-  const comment = `${framework}: change this uploaded region`;
+  console.log(framework, 'DOM-vs-browser pixels', pixelsMatchSource);
+  // DOM reconstruction is not a compositor screenshot: tolerate text antialiasing/CSS differences,
+  // but reject blank/wrong-area captures. Exact color/DPR checks live in page-capture.spec.mts.
+  expect(pixelsMatchSource.meanAbsoluteError).toBeLessThan(25);
+  expect(pixelsMatchSource.closePixelFraction).toBeGreaterThan(.70);
+  await page.screenshot({ path: `test-results/framework-matrix/${framework}-page-preview.png` });
+  const comment = `${framework}: change this current page region`;
   await page.getByRole('textbox', { name: 'Comment', exact: true }).fill(comment);
   const before = (await history()).entries.length;
   await page.route('http://localhost:3456/inspect', route => route.fulfill({ status: 503, headers: { 'Access-Control-Allow-Origin': '*' }, body: '{}' }));
   await page.getByRole('button', { name: 'Send image + comment' }).click();
-  await expect(page.getByRole('status')).toContainText('503');
+  await expect(page.getByRole('dialog', { name: 'Review screenshot' }).getByRole('status')).toContainText('503');
   await expect(page.getByRole('textbox', { name: 'Comment', exact: true })).toHaveValue(comment);
+  await page.waitForTimeout(180); expect(await sample()).toBe(finalFrozen);
   expect((await history()).entries).toHaveLength(before);
   await page.unroute('http://localhost:3456/inspect');
   const responsePromise = page.waitForResponse(r => r.url() === `http://127.0.0.1:${(webhook.address() as { port: number }).port}/inspect` && r.request().method() === 'POST');
@@ -197,4 +261,5 @@ test(`${framework}: dropdown → actual PNG crop/comment → failed send retry �
   expect(result.content).toContainEqual({ type: 'image', mimeType: 'image/png', data: entry.context.screenGrab.data });
   expect(JSON.stringify(result.content)).toContain(comment);
   expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('native clipboard unchanged');
+  await page.waitForTimeout(180); expect(await sample()).not.toBe(finalFrozen);
 });

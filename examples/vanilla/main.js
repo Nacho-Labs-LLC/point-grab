@@ -1,4 +1,5 @@
 import { init } from '@point-grab/core';
+import { parseDuration, nextTrackIndex } from './player-model.js';
 
 init({ activationMode: 'hold', devOnly: false });
 
@@ -13,7 +14,9 @@ const tracks = [
 let currentIdx = 0;
 let playing = true;
 let progress = 37; // start mid-song
-let liked = false;
+const likes = new Set();
+let shuffle = false;
+let repeat = false;
 
 const elAlbumArt   = document.getElementById('album-art');
 const elTitle      = document.getElementById('track-title');
@@ -29,7 +32,7 @@ const elBtnPrev    = document.getElementById('btn-prev');
 const elBtnNext    = document.getElementById('btn-next');
 const elBtnVolume  = document.getElementById('btn-volume');
 const elVolumePop  = document.getElementById('volume-popover');
-const elVolumeSlider = document.getElementById('volume-slider');
+const elVolumeSlider = /** @type {HTMLInputElement} */ (document.getElementById('volume-slider'));
 const elVolumePct  = document.getElementById('volume-pct');
 const elQueueList  = document.getElementById('queue-list');
 const elHeart      = document.getElementById('heart-btn');
@@ -41,6 +44,9 @@ function loadTrack(idx) {
   document.querySelector('.track-album').textContent = t.album;
   elAlbumArt.style.background = t.color;
   elTotal.textContent = t.duration;
+  elHeart.textContent = likes.has(idx) ? '♥' : '♡';
+  elHeart.classList.toggle('liked', likes.has(idx));
+  elHeart.setAttribute('aria-pressed', String(likes.has(idx)));
   progress = 0;
   updateProgress();
   renderQueue();
@@ -48,6 +54,7 @@ function loadTrack(idx) {
 
 function updateProgress() {
   elFill.style.width = `${progress}%`;
+  document.getElementById('progress-track').setAttribute('aria-valuenow', String(Math.round(progress)));
   elThumb.style.left = `${progress}%`;
 
   const totalSecs = parseDuration(tracks[currentIdx].duration);
@@ -57,17 +64,12 @@ function updateProgress() {
   elElapsed.textContent = `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-function parseDuration(str) {
-  const [m, s] = str.split(':').map(Number);
-  return m * 60 + s;
-}
-
 setInterval(() => {
   if (!playing) return;
   progress += 0.25;
   if (progress >= 100) {
     progress = 0;
-    currentIdx = (currentIdx + 1) % tracks.length;
+    currentIdx = repeat ? currentIdx : nextIndex();
     loadTrack(currentIdx);
   }
   updateProgress();
@@ -75,6 +77,8 @@ setInterval(() => {
 
 elBtnPlay.addEventListener('click', () => {
   playing = !playing;
+  elBtnPlay.setAttribute('aria-label', playing ? 'Pause playback' : 'Resume playback');
+  elBtnPlay.setAttribute('aria-pressed', String(playing));
   elIconPause.classList.toggle('hidden', !playing);
   elIconPlay.classList.toggle('hidden', playing);
 });
@@ -85,12 +89,14 @@ elBtnPrev.addEventListener('click', () => {
 });
 
 elBtnNext.addEventListener('click', () => {
-  currentIdx = (currentIdx + 1) % tracks.length;
+  currentIdx = nextIndex();
   loadTrack(currentIdx);
 });
 
 elHeart.addEventListener('click', () => {
-  liked = !liked;
+  const liked = !likes.has(currentIdx);
+  if (liked) likes.add(currentIdx); else likes.delete(currentIdx);
+  elHeart.setAttribute('aria-pressed', String(liked));
   elHeart.textContent = liked ? '♥' : '♡';
   elHeart.classList.toggle('liked', liked);
 });
@@ -98,11 +104,14 @@ elHeart.addEventListener('click', () => {
 elBtnVolume.addEventListener('click', (e) => {
   e.stopPropagation();
   elVolumePop.classList.toggle('hidden');
+  elBtnVolume.setAttribute('aria-expanded', String(!elVolumePop.classList.contains('hidden')));
 });
 
 document.addEventListener('click', () => {
   elVolumePop.classList.add('hidden');
+  elBtnVolume.setAttribute('aria-expanded', 'false');
 });
+elVolumePop.addEventListener('click', e => e.stopPropagation());
 
 elVolumeSlider.addEventListener('input', () => {
   elVolumePct.textContent = `${elVolumeSlider.value}%`;
@@ -111,9 +120,12 @@ elVolumeSlider.addEventListener('input', () => {
 function renderQueue() {
   elQueueList.innerHTML = '';
   tracks.forEach((t, i) => {
-    const item = document.createElement('div');
+    const item = document.createElement('button');
+    item.type = 'button';
+    item.setAttribute('aria-label', `Play ${t.title}`);
+    item.setAttribute('aria-pressed', String(i === currentIdx));
     item.className = `queue-item${i === currentIdx ? ' active' : ''}`;
-    item.dataset.idx = i;
+    item.dataset.idx = String(i);
 
     const numEl = document.createElement('div');
     numEl.className = 'queue-num';
@@ -122,7 +134,7 @@ function renderQueue() {
       dot.className = 'queue-dot';
       numEl.appendChild(dot);
     } else {
-      numEl.textContent = i + 1;
+      numEl.textContent = String(i + 1);
     }
 
     const art = document.createElement('div');
@@ -147,3 +159,30 @@ function renderQueue() {
 }
 
 loadTrack(currentIdx);
+elBtnPlay.setAttribute('aria-label', 'Pause playback');
+elBtnPlay.setAttribute('aria-pressed', 'true');
+elBtnVolume.setAttribute('aria-expanded', 'false');
+elBtnVolume.setAttribute('aria-controls', 'volume-popover');
+function nextIndex() {
+  return nextTrackIndex(currentIdx, tracks.length, shuffle);
+}
+for (const id of ['shuffle', 'repeat']) {
+  const button = document.getElementById(`btn-${id}`);
+  button.setAttribute('aria-pressed', 'false');
+  button.addEventListener('click', () => {
+    if (id === 'shuffle') shuffle = !shuffle; else repeat = !repeat;
+    button.setAttribute('aria-pressed', String(id === 'shuffle' ? shuffle : repeat));
+  });
+}
+const seek = document.getElementById('progress-track');
+seek.addEventListener('keydown', event => {
+  if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+  event.preventDefault();
+  progress = event.key === 'Home' ? 0 : event.key === 'End' ? 100 : Math.min(100, Math.max(0, progress + (event.key === 'ArrowRight' ? 5 : -5)));
+  updateProgress();
+});
+seek.addEventListener('click', event => {
+  const bounds = seek.getBoundingClientRect();
+  progress = Math.min(100, Math.max(0, (event.clientX - bounds.left) / bounds.width * 100));
+  updateProgress();
+});

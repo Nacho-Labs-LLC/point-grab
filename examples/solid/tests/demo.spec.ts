@@ -99,7 +99,7 @@ test("real Solid component context and queued comment preserve component/source 
   expect(snippet).not.toContain("data-point-grab-");
   await page.getByRole("button", { name: "Actions", exact: true }).click();
   await page.getByText("Add Comment", { exact: true }).click();
-  await target.click();
+  await expect(page.getByRole("dialog", { name: "Add comment" })).toBeVisible();
   await page
     .getByRole("dialog", { name: "Add comment" })
     .getByRole("textbox")
@@ -113,7 +113,7 @@ test("real Solid component context and queued comment preserve component/source 
   expect(comment).toContain("ProductCard");
 });
 
-test("Solid demo screenshot intake crops real browser pixels without sharing APIs", async ({
+test("Solid demo captures a DOM-rendered live-page region without upload or sharing", async ({
   page,
 }) => {
   await page.goto("/");
@@ -123,24 +123,12 @@ test("Solid demo screenshot intake crops real browser pixels without sharing API
       configurable: true,
     }),
   );
-  const png = await page.screenshot();
   await page.getByRole("button", { name: "Actions", exact: true }).click();
   await page.getByText("Add screenshot", { exact: true }).click();
-  await page
-    .getByLabel("Screenshot file")
-    .setInputFiles({
-      name: "solid-demo.png",
-      mimeType: "image/png",
-      buffer: png,
-    });
-  const image = page.getByLabel("Screenshot to crop");
-  await expect(image).toBeVisible();
-  const rect = (await image.boundingBox())!;
-  await page.mouse.move(rect.x + rect.width * 0.1, rect.y + rect.height * 0.1);
+  await expect(page.getByRole("dialog", { name: "Select current page region" })).toBeVisible();
+  await page.mouse.move(144, 100);
   await page.mouse.down();
-  await page.mouse.move(rect.x + rect.width * 0.4, rect.y + rect.height * 0.4, {
-    steps: 5,
-  });
+  await page.mouse.move(576, 400, { steps: 5 });
   await page.mouse.up();
   await expect(
     page.getByRole("dialog", { name: "Review screenshot" }),

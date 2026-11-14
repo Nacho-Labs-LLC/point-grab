@@ -31,7 +31,7 @@ This is compile-time source instrumentation, **not** React-style fiber emulation
 
 `examples/solid` is the Form / Field storefront: Solid signals and memos drive a three-item catalog, category/search/saved filters, nested `ProductCard` → `ProductArtwork`, and a `BagPanel` with reactive `For` items, conditional `Show` empty states, quantities, totals, clear, and a native gift-note input. All artwork is local CSS; no image service or font network request is required. It is a local playground, not a checkout or persistent store.
 
-The shared Point Grab toolbar is visible on arrival. Its Actions menu exposes element comments and **Add screenshot**. Portable screenshot intake accepts an existing image by file, paste or drop, then supports crop, preview and comment. It does not launch OS snipping, require `getDisplayMedia`, or manufacture a DOM screenshot. Explicit Send requires the actual MCP webhook at `localhost:3456`; acknowledgement semantics belong to core. The floating toolbar can be dismissed if it overlaps content on a narrow viewport.
+The shared Point Grab toolbar is visible on arrival. Its Actions menu exposes element comments and **Add screenshot**. Current-page capture selects directly over the live page and renders a DOM approximation before mandatory preview/comment/Send. It needs no upload, OS snipping or `getDisplayMedia`. It is not OS/compositor pixels; unsupported shadow/media/cross-origin/filter content is rejected. See [capture boundaries](screen-grab.md). Explicit Send requires the actual MCP webhook at `localhost:3456`; acknowledgement semantics belong to core. The floating toolbar can be dismissed if it overlaps content on a narrow viewport.
 
 ## Focused verification
 

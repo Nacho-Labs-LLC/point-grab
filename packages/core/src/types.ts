@@ -6,7 +6,8 @@ export type PendingAction =
   | { type: 'copy-html' }
   | { type: 'comment' };
 
-/** PNG data is base64 without a data URL prefix; region is in source image pixels. */
+/** PNG data is base64 without a data URL prefix. width/height are PNG pixels;
+ * current-page region is document CSS coordinates/dimensions (including scroll). */
 export interface ScreenGrab {
   mimeType: 'image/png';
   data: string;

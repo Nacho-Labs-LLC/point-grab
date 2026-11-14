@@ -31,7 +31,7 @@ export type DemoPost = {
             <div class="post-role">{{ post().role }}</div>
           </div>
 
-          <button class="ghost-btn" type="button" (click)="expanded.set(!expanded())">
+          <button class="ghost-btn" type="button" [attr.aria-expanded]="expanded()" (click)="expanded.set(!expanded())">
             {{ expanded() ? 'Collapse' : 'Inspectable detail' }}
           </button>
         </div>
@@ -52,16 +52,24 @@ export type DemoPost = {
         }
 
         <div class="post-actions">
-          <button type="button" class="action-btn" (click)="liked.set(!liked())">
+          <button type="button" class="action-btn" aria-label="Like post" [attr.aria-pressed]="liked()" (click)="liked.set(!liked())">
             <span>{{ liked() ? '♥' : '♡' }}</span>
             <span>{{ likeCount() }}</span>
           </button>
-          <button type="button" class="action-btn secondary">
+          <button type="button" class="action-btn secondary" aria-label="Reply to post" [attr.aria-expanded]="replying()" (click)="replying.set(!replying())">
             <span>↩</span>
-            <span>{{ post().replies }}</span>
+            <span>{{ post().replies + replies().length }}</span>
           </button>
-          <button type="button" class="action-btn secondary">Open thread</button>
+          <button type="button" class="action-btn secondary" [attr.aria-expanded]="expanded()" (click)="expanded.set(!expanded())">{{ expanded() ? 'Close thread' : 'Open thread' }}</button>
         </div>
+        @if (replying()) {
+          <form (submit)="$event.preventDefault(); addReply(draft.value); draft.value = ''">
+            <label>Write a reply <input #draft aria-label="Reply text" maxlength="280" required /></label>
+            <button type="submit" class="action-btn">Post reply</button>
+            @if (replyError()) { <p role="alert">Write a reply before posting.</p> }
+          </form>
+        }
+        @for (reply of replies(); track $index) { <p class="posted-reply"><strong>You · </strong>{{ reply }}</p> }
       </div>
     </article>
   `,
@@ -216,6 +224,14 @@ export type DemoPost = {
   `,
 })
 export class PostCardComponent {
+  readonly replying = signal(false);
+  readonly replies = signal<string[]>([]);
+  readonly replyError = signal(false);
+  addReply(text: string) {
+    const value = text.trim();
+    this.replyError.set(!value);
+    if (value) this.replies.update(replies => [...replies, value]);
+  }
   readonly post = input.required<DemoPost>();
   readonly liked = signal(false);
   readonly expanded = signal(false);

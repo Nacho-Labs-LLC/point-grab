@@ -23,8 +23,12 @@ jobs:
       - run: pnpm exec playwright install --with-deps chromium
       - name: Seven real framework demos, one server and worker at a time
         run: pnpm exec node scripts/verify-framework-matrix.mjs
-      - name: Shared screenshot negative and clipboard regressions
-        run: pnpm exec playwright test --config=playwright.screen-grab.config.ts
+      - name: Shared current-page capture negative and clipboard regressions
+        run: pnpm exec playwright test --config=playwright.page-capture.config.ts
+      - name: Shared freeze lifecycle, hover, transition and WAAPI regressions
+        run: pnpm exec playwright test --config=playwright.freeze.config.ts
+      - name: Solid interactive storefront and mobile regressions
+        run: pnpm exec playwright test --config=examples/solid/playwright.config.ts
       - uses: actions/upload-artifact@v4
         if: failure()
         with:

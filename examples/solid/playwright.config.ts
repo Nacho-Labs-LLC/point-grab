@@ -7,7 +7,7 @@ export default defineConfig({
   reporter: "list",
   outputDir: process.env.SOLID_TEST_OUTPUT ?? "../../test-results/solid-demo",
   use: {
-    baseURL: "http://127.0.0.1:5288",
+    baseURL: "http://127.0.0.1:5290",
     headless: true,
     viewport: { width: 1440, height: 1000 },
     permissions: ["clipboard-read", "clipboard-write"],
@@ -19,8 +19,8 @@ export default defineConfig({
   },
   webServer: {
     command:
-      "npx --yes pnpm@9.15.0 exec vite --host 127.0.0.1 --port 5288 --strictPort",
-    url: "http://127.0.0.1:5288",
+      "npx --yes pnpm@9.15.0 exec vite --host 127.0.0.1 --port 5290 --strictPort",
+    url: "http://127.0.0.1:5290",
     reuseExistingServer: false,
   },
 });

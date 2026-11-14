@@ -1,4 +1,18 @@
 :root {
+  --demo-detail-bg: #fffdf8;
+}
+@keyframes field-spark-turn { to { transform: rotate(360deg); } }
+.tiny-spark { display: inline-block; animation: field-spark-turn 12s linear infinite; }
+.detail-trigger { border: 0; font-family: inherit; cursor: help; }
+.product-detail {
+  display: none; position: absolute; top: calc(100% + 8px); left: 0;
+  width: 195px; padding: 12px; border: 1px solid #dedbd2; border-radius: 10px;
+  background: var(--demo-detail-bg); color: #292a25; font-size: 12px;
+  font-weight: 400; line-height: 1.5; text-align: left; z-index: 4;
+}
+.detail-trigger:hover .product-detail, .detail-trigger:focus-within .product-detail { display: block; }
+@media (prefers-reduced-motion: reduce) { .tiny-spark { animation: none; } }
+:root {
   font-family: "DM Sans", sans-serif;
   color: #292a25;
   background: #f8f7f2;

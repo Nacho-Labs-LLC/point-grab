@@ -9,6 +9,22 @@ class ForgeApp extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this.shadowRoot.innerHTML = `
       <style>
+        * { box-sizing:border-box; }
+        .guide { line-height:1.7; border:1px solid #45382b; border-radius:18px; padding:24px; background:#1a1714; }
+        h1 { color:#f0ebe4; font-size:clamp(28px,5vw,38px); line-height:1.1; letter-spacing:-.04em; }
+        .guide ol { padding-left:20px; }
+        .guide li { margin:12px 0; }
+        .guide .forge-hint, .forge-hint, .forge-header-hint, .forge-section-heading { color:#b8a99b !important; }
+        .motion-sample { display:inline-block; color:#f97316; font-size:28px; animation:signal-drift 2.8s ease-in-out infinite alternate; }
+        @keyframes signal-drift { from { transform:translateY(-4px) rotate(-12deg); } to { transform:translateY(4px) rotate(12deg); } }
+        .message-trigger { background:#f97316; color:#0f0d0a; border:0; padding:10px 16px; border-radius:6px; cursor:pointer; }
+        a { color:#fb923c; }
+        button:focus-visible, a:focus-visible { outline:2px solid #fb923c; outline-offset:4px; }
+        .sr-only { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); }
+        #deploy-status { line-height:1.6; font-size:14px; }
+        #build-options { padding:16px 0; }
+        @media (max-width:600px) { .forge-header { height:auto !important; padding:16px !important; gap:12px; flex-wrap:wrap; } .forge-main { padding:24px 16px !important; } .guide { padding:18px; } }
+        @media (prefers-reduced-motion:reduce) { .motion-sample { animation:none; } }
         :host {
           display: block;
           min-height: 100vh;
@@ -107,14 +123,25 @@ class ForgeApp extends HTMLElement {
       </header>
 
       <main class="forge-main">
+        <section id="capture-guide" class="forge-section guide" data-testid="grab-guide">
+          <span class="forge-section-heading">WEB COMPONENTS / THE WORKBENCH</span>
+          <h1>Small parts. Real possibilities.</h1>
+          <p>Compose a component, inspect its boundaries, and share exactly what you mean.</p>
+          <ol><li><strong>Try the parts.</strong> Enter a valid custom-element name below and Deploy a local preview. Settings reveals build options; Clear preview resets it. No service is contacted.</li><li><strong>Inspect the boundary.</strong> Hold Ctrl+C / Cmd+C, hover a card or button and click. Each Forge element has its own open shadow root. Native selected text still copies normally.</li><li><strong>Keep the moment.</strong> Hover or focus Message, then use Freeze (F) in the picker. Escape releases the tooltip.</li><li><strong>Give direction.</strong> Add an element comment. Actions → Add screenshot can select a region, but this native shadow-DOM page truthfully rejects unsupported image capture instead of inventing pixels.</li></ol>
+          <p class="forge-hint">Capture reconstructs DOM, not browser pixels. Shadow DOM, filters, canvas, frames and cross-origin images can block it; inputs are redacted. Send needs the local MCP server at localhost:3456 and confirms only after acknowledgement. All demo state is tab-local.</p>
+          <span class="motion-sample" data-testid="motion-sample" aria-hidden="true">✦</span>
+        </section>
 
         <section class="forge-section">
           <div class="forge-section-heading">Buttons</div>
           <div class="forge-row">
-            <forge-button variant="primary">Deploy</forge-button>
-            <forge-button variant="secondary">Settings</forge-button>
-            <forge-button variant="ghost">Cancel</forge-button>
+            <forge-button variant="primary" data-action="deploy">Deploy</forge-button>
+            <forge-button variant="secondary" data-action="settings">Settings</forge-button>
+            <forge-button variant="ghost" data-action="cancel">Clear preview</forge-button>
           </div>
+          <div id="build-options" hidden><label><input type="checkbox" id="minify" checked> Minify local preview</label></div>
+          <p id="deploy-status" role="status" aria-live="polite"></p>
+
         </section>
 
         <section class="forge-section">
@@ -136,11 +163,12 @@ class ForgeApp extends HTMLElement {
         <section class="forge-section">
           <div class="forge-section-heading">Tooltip</div>
           <div class="forge-tooltip-row">
-            <forge-tooltip text="Send a message" position="top">
-              <forge-button variant="primary">Message</forge-button>
+            <forge-tooltip text="Send a message" position="top" capture-target>
+              <button class="message-trigger" type="button" data-action="message" data-testid="freeze-trigger" aria-describedby="message-description">Message</button>
+              <span id="message-description" class="sr-only">Send a message</span>
             </forge-tooltip>
-            <forge-tooltip text="Opens in new tab" position="top">
-              <forge-button variant="ghost">Docs</forge-button>
+            <forge-tooltip text="Read the capture walkthrough" position="top">
+              <a href="#capture-guide">Capture guide ↑</a>
             </forge-tooltip>
           </div>
           <div class="forge-hint">Hover a button — press F to freeze the tooltip for capture</div>
@@ -152,10 +180,39 @@ class ForgeApp extends HTMLElement {
             All systems operational. Last deploy 4 minutes ago.
             <forge-badge count="2" variant="success" style="margin-top: 0.75rem; display: block;"></forge-badge>
           </forge-card>
+          <forge-card id="local-preview" heading="Local preview" hidden><span id="preview-content"></span></forge-card>
         </section>
 
       </main>
     `;
+  }
+  connectedCallback() {
+    const root = this.shadowRoot;
+    root.addEventListener('click', event => {
+      const target = /** @type {HTMLElement | undefined} */ (event.composedPath().find(node => node instanceof HTMLElement && node.dataset.action));
+      if (!target) return;
+      const status = root.querySelector('#deploy-status');
+      if (target.dataset.action === 'settings') {
+        const options = /** @type {HTMLElement} */ (root.querySelector('#build-options'));
+        options.hidden = !options.hidden;
+        target.shadowRoot.querySelector('button').setAttribute('aria-expanded', String(!options.hidden));
+      } else if (target.dataset.action === 'message') {
+        status.textContent = 'Message draft: describe the component change in Point Grab’s Add Comment action. Nothing sent.';
+      } else if (target.dataset.action === 'cancel') {
+        status.textContent = 'Preview cleared. Nothing was deployed.';
+        root.querySelector('#local-preview').setAttribute('hidden', '');
+      } else {
+        const input = root.querySelector('forge-input').shadowRoot.querySelector('input');
+        const valid = /^[a-z][a-z0-9]*-[a-z0-9-]+$/.test(input.value.trim());
+        input.setAttribute('aria-invalid', String(!valid));
+        if (valid) {
+          root.querySelector('#local-preview').removeAttribute('hidden');
+          root.querySelector('#preview-content').textContent = `<${input.value.trim()}> · Your local component preview is ready to inspect.`;
+        }
+        status.textContent = valid ? `${input.value.trim()} ready in local preview · ${/** @type {HTMLInputElement} */ (root.querySelector('#minify')).checked ? 'minified' : 'readable'} build. No remote deployment.` : 'Use a lowercase custom-element name with a hyphen, for example forge-dialog.';
+        if (!valid) input.focus();
+      }
+    });
   }
 }
 customElements.define('forge-app', ForgeApp);
@@ -282,7 +339,7 @@ class ForgeBadge extends HTMLElement {
   }
 
   _triggerBump() {
-    const chip = this.shadowRoot.querySelector('.badge-chip');
+    const chip = /** @type {HTMLElement} */ (this.shadowRoot.querySelector('.badge-chip'));
     if (!chip) return;
     chip.classList.remove('badge-bump');
     // Force reflow so re-adding the class re-triggers animation
@@ -341,6 +398,7 @@ class ForgeBadge extends HTMLElement {
         .badge-bump {
           animation: badge-bump-anim 0.35s ease;
         }
+        @media (prefers-reduced-motion:reduce) { .badge-bump { animation:none; } }
       </style>
       <div class="badge-chip">
         <span class="badge-count">${count}</span>
@@ -409,8 +467,8 @@ class ForgeInput extends HTMLElement {
           box-shadow: 0 0 0 2px rgba(249,115,22,0.15);
         }
       </style>
-      <label class="input-label">${label}</label>
-      <input class="input-field" placeholder="${placeholder}" value="${value}" />
+      <label class="input-label" for="component-name">${label}</label>
+      <input id="component-name" class="input-field" placeholder="${placeholder}" value="${value}" />
     `;
   }
 }
@@ -427,17 +485,25 @@ class ForgeTooltip extends HTMLElement {
     this.attachShadow({ mode: 'open' });
     this._onMouseover = this._onMouseover.bind(this);
     this._onMouseleave = this._onMouseleave.bind(this);
+    // Escape dismisses transient help, including after a picker releases focus.
+    this._onKeyup = (event) => { if (event.key === 'Escape') this._onMouseleave(); };
   }
 
   connectedCallback() {
     this.render();
     this.addEventListener('mouseover', this._onMouseover);
     this.addEventListener('mouseleave', this._onMouseleave);
+    this.addEventListener('focusin', this._onMouseover);
+    this.addEventListener('focusout', this._onMouseleave);
+    document.addEventListener('keyup', this._onKeyup);
   }
 
   disconnectedCallback() {
     this.removeEventListener('mouseover', this._onMouseover);
     this.removeEventListener('mouseleave', this._onMouseleave);
+    this.removeEventListener('focusin', this._onMouseover);
+    this.removeEventListener('focusout', this._onMouseleave);
+    document.removeEventListener('keyup', this._onKeyup);
   }
 
   attributeChangedCallback() {
@@ -445,7 +511,7 @@ class ForgeTooltip extends HTMLElement {
   }
 
   _onMouseover() {
-    const bubble = this.shadowRoot.querySelector('.tooltip-bubble');
+    const bubble = /** @type {HTMLElement} */ (this.shadowRoot.querySelector('.tooltip-bubble'));
     if (bubble) {
       bubble.style.opacity = '1';
       bubble.style.visibility = 'visible';
@@ -453,7 +519,7 @@ class ForgeTooltip extends HTMLElement {
   }
 
   _onMouseleave() {
-    const bubble = this.shadowRoot.querySelector('.tooltip-bubble');
+    const bubble = /** @type {HTMLElement} */ (this.shadowRoot.querySelector('.tooltip-bubble'));
     if (bubble) {
       bubble.style.opacity = '0';
       bubble.style.visibility = 'hidden';
@@ -509,7 +575,7 @@ class ForgeTooltip extends HTMLElement {
       </style>
       <div class="tooltip-wrapper">
         <slot></slot>
-        <div class="tooltip-bubble">${text}</div>
+        <div class="tooltip-bubble" role="tooltip" ${this.hasAttribute('capture-target') ? 'data-testid="freeze-popover"' : ''}>${text}</div>
       </div>
     `;
   }
@@ -543,6 +609,7 @@ class ForgeCard extends HTMLElement {
         :host {
           display: block;
         }
+        :host([hidden]) { display:none; }
         .card-root {
           background: #1a1714;
           border: 1px solid #2e2924;

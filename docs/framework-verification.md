@@ -1,66 +1,94 @@
 # Cross-framework browser verification
 
+## Latest verified checkpoint — 2026-11-10
+
+Fresh execution in `native-remote-dev`, as `dev`, against the canonical `/workspace/point-grab` working tree on `feat/demo-parity-freeze`. These results supersede the historical 18-pass/3-fail freeze matrix and earlier 14-test matrix.
+
+- **Seven-framework matrix: 21 passed, 0 unexpected, 0 flaky, 0 skipped.** All seven individual JSON reports and the full `summary.json` were parsed and checked together.
+- **Shared freeze lifecycle: 4/4 passed.**
+- **Shared page capture: 19/19 passed.**
+- **Dedicated Solid: 4/4 passed.**
+- Workspace package tests: core **101**, MCP **7**, React adapter **4**, Solid adapter **17** passed. These are unit/VM/integration evidence, not additional browser journeys.
+- Sequential workspace `test`, `lint`, and `build` commands passed. Production builds include all eight packages, all seven demos, and the site. Build warnings remain: Angular's html2canvas CommonJS optimization warning, React's >500 kB chunk warning, and Svelte's default-config notice.
+- `git diff --check` passed. Existing dirty/untracked work remains preserved; nothing was committed or published.
+
+### Browser provisioning in the migrated environment
+
+Node v22.23.4, pnpm 9.15.0, Playwright 1.63.0, and Chrome for Testing **153.0.8010.12** (Playwright revision 1243). The new container initially had no browser or required Chromium shared libraries. The normal Playwright browser install failed resolving `cdn.playwright.dev` (`EAI_AGAIN`). The matching official archive was downloaded from `https://storage.googleapis.com/chrome-for-testing-public/153.0.8010.12/linux64/chrome-linux64.zip` instead, extracted beneath `/home/dev/.cache/point-grab-browser`, and made executable. Playwright's `install-deps chromium` installed the runtime dependencies successfully.
+
+Browser path: `/home/dev/.cache/point-grab-browser/chrome-linux64/chrome`. This is local test infrastructure, not a product dependency. System libraries were installed into the running dev container, not baked into its image; recreating that container may require reprovisioning them. No Hermes restart or container recreation was performed.
+
 ## Reproduce
 
-From the repository root, with dependencies installed:
+For a fresh environment:
 
 ```sh
 pnpm install --frozen-lockfile
 pnpm --filter './packages/**' --workspace-concurrency=1 run build
-pnpm exec playwright install chromium
+pnpm exec playwright install --with-deps chromium
 pnpm exec node scripts/verify-framework-matrix.mjs
-pnpm exec playwright test --config=playwright.screen-grab.config.ts
+pnpm exec playwright test --config=playwright.freeze.config.ts
+pnpm exec playwright test --config=playwright.page-capture.config.ts
+pnpm exec playwright test --config=examples/solid/playwright.config.ts
 ```
 
-To check only selected demos: `pnpm exec node scripts/verify-framework-matrix.mjs vue solid`.
-For an approved preinstalled Chromium, set `AGENT_BROWSER_EXECUTABLE_PATH` to its executable.
-The runner checks required package artifacts before starting, but does not rebuild them: rebuild after source changes.
-
-The matrix is deliberately separate from legacy `playwright.config.ts`, which starts the entire demo/site fleet even when selecting one project. This harness starts exactly one Vite or Angular server at a time on strict `127.0.0.1:5188`, uses one Chromium worker, zero retries, no forced filesystem polling, and caps Angular build workers at one. It runs every requested framework even if an earlier framework fails, writes a machine-readable summary, and exits nonzero if any framework fails. Port 5188 must be free; an existing server is never reused.
-
-Each browser context routes the demo's default `localhost:3456/inspect` transport to a **real ephemeral HTTP webhook listener** backed by the real MCP server and a disposable history file. This changes only test transport addressing, not payloads or successful responses. It prevents another local MCP user or concurrent browser suite from contaminating history. The SDK client retrieves the persisted capture using the real `point_grab_get` MCP tool over linked in-memory SDK transports. This certifies browser→HTTP webhook→file history→MCP image content, not MCP stdio process packaging. The separate core suite still requires exclusive port 3456.
-
-## Per-demo contract
-
-Two journeys run against **each actual demo**, not replacement test components:
-
-1. Interact with framework-rendered UI and assert state changed; native selected-text Ctrl+C; pick an actual rendered element; inspect copied HTML and persisted adapter context; queue an existing element comment; open screenshot through **Actions → Add screenshot**; Cancel without sending or losing the queued comment; Confirm & Copy retains it.
-2. Screenshot the rendered demo in Chromium; upload that actual PNG (with `navigator.mediaDevices` absent); recover from invalid image bytes; drag a 200×140 crop; compare every decoded crop pixel to the corresponding source PNG pixels; add a comment; force one HTTP 503; preserve preview/comment without persistence; retry through the real HTTP listener; verify acknowledgement ID, exact persisted preview bytes, dimensions/comment, and MCP image/text content. Ordinary clipboard content remains unchanged by image send.
-
-| Demo | Actual interaction | Adapter evidence | Local Chromium result |
-| --- | --- | --- | --- |
-| Vanilla/core | Next track changes to Midnight Circuit | DOM HTML/text (no framework component expected) | 2/2 passed |
-| React | Like count changes to 49 | Post component | 2/2 passed |
-| Vue | Select Forest/M, add cart item, close cart | App component | 2/2 passed |
-| Angular | Expand inspectable detail | PostCardComponent | 2/2 passed |
-| Svelte | Create and rename note, sidebar updates | App component | 2/2 passed |
-| Web Components | Hover real shadow-DOM tooltip, visible text | ForgeCard across shadow boundary | 2/2 passed |
-| Solid | Add Arc lamp, bag count changes to 1 | ProductCard and App.tsx source | 2/2 passed |
-
-The Web Components demo's buttons do not implement an application mutation; its real interactive tooltip is the asserted rendered interaction. This is not a claim of a working deploy/settings action. Angular and Web Components do not provide source-file metadata on these targets; component identity and DOM capture are asserted without inventing source fidelity. Solid is a real signal-driven storefront, not the original counter.
-
-## Shared negative-path coverage
-
-`playwright.screen-grab.config.ts` runs 11 additional core browser tests: reverse-drag crop and known pixels; Retake, Cancel and Escape; native ClipboardItem image paste and native text/input copy; browser DataTransfer image drop and invalid decode recovery; HTTP failure/retry; tiny selection and missing transport; legacy HTTP 200 without image acknowledgement; pending-send disabled controls/no double submission; queued comment preservation; built core demo entrypoint. These shared engine cases are not multiplied into seven identical adapter suites. File upload/crop/retry/Cancel and adapter integration do run in every framework.
-
-No native OS snipping, permission-picker automation, OS file-manager drag, or screen-sharing adapter is implemented or certified. Screenshot intake is user file/paste/drop. No deployment is performed.
-
-## Evidence and CI
-
-Verified locally with `/opt/hermes/tools/chromium-1208/chrome-linux64/chrome`:
+The fresh local verification used the existing migrated dependency installation, not a new frozen install. After provisioning the browser, the exact browser commands above ran with:
 
 ```sh
-AGENT_BROWSER_EXECUTABLE_PATH=/opt/hermes/tools/chromium-1208/chrome-linux64/chrome \
-  npx --yes pnpm@9.15.0 exec node scripts/verify-framework-matrix.mjs
-# All seven frameworks passed: 14 browser tests total.
-
-AGENT_BROWSER_EXECUTABLE_PATH=/opt/hermes/tools/chromium-1208/chrome-linux64/chrome \
-  npx --yes pnpm@9.15.0 exec playwright test --config=playwright.screen-grab.config.ts
-# 11 passed.
+export AGENT_BROWSER_EXECUTABLE_PATH=/home/dev/.cache/point-grab-browser/chrome-linux64/chrome
+export PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="$AGENT_BROWSER_EXECUTABLE_PATH"
+export TMPDIR=/home/dev/.cache/point-grab-browser
 ```
 
-`test-results/framework-matrix/summary.json` records every framework exit status and duration; individual JSON reports live beside it. Traces and screenshots are retained on failure under `test-results/framework-matrix/<framework>/`. These generated paths are ignored by Git. Browser page errors fail tests. A green unit suite is not counted as browser evidence.
+Static/unit/production gates ran as:
 
-`.github/workflows/framework-matrix.yml` adds a dedicated PR/push/manual gate using frozen install, sequential package builds, runner-managed Chromium installation, the matrix, and the shared core suite, with failure artifacts. The workflow is written but has not been executed on GitHub in this local verification; hosting/CI runner behavior is not certified by a local pass. Existing legacy CI remains separate.
+```sh
+pnpm -r --workspace-concurrency=1 run test
+pnpm -r --workspace-concurrency=1 run lint
+pnpm -r --workspace-concurrency=1 run build
+```
 
-Initial failures exposed missing adapter build artifacts (now checked up front), stale test assumptions about the original Solid counter and top-level screenshot button, an extra click that dismissed an already-open comment popover, an unscoped Cancel collision with the Web Components demo, and interference from another suite writing to fixed port 3456 (now isolated on ephemeral HTTP ports). These were harness/prerequisite issues, not evidence for weakening the product assertions. No unresolved framework blocker remains in the final run.
+Select individual demos with `pnpm exec node scripts/verify-framework-matrix.mjs vue solid`. Rebuild packages after source changes: the runner checks required build artifacts but does not rebuild them. **Subset runs overwrite `summary.json`; inspect its framework list before claiming a full matrix.**
+
+## Actual-demo contract and current results
+
+The matrix starts one real framework server at a time on strict `127.0.0.1:5188`, with one browser worker, no retries and one Angular build worker. It never uses manual previews. Demo transport is routed to a **real ephemeral HTTP webhook**, disposable file history, and actual SDK MCP retrieval over linked in-memory SDK transports. Success responses and image payloads are not fabricated. Browser page errors fail tests. This verifies browser→HTTP→disk→MCP content, not stdio packaging or external AI-client display.
+
+Each of Vanilla, React, Vue, Angular, Svelte, Web Components, and Solid passed:
+
+1. Real animated demo motion; keyboard F freeze preserving visible hover detail after pointer movement; stable computed transforms; Escape/resume; focus-triggered detail with keyboard freeze; screenshot-selection Cancel **and Escape** restoring motion; reduced motion after reload.
+2. Real framework interaction; native selected-text copy; actual element pick and POST acknowledgement correlated with persisted ID/context; existing queued comment surviving screenshot Cancel and Confirm & Copy. Nearest components are anchored (React `Post`, Vue `App`, Angular `PostCardComponent`, Svelte `NoteCard`, Web Components `ForgeCard`, Solid `ProductCard`). Solid source context identifies `App.tsx`.
+
+Five frameworks—Vanilla, React, Vue, Svelte, Solid—also passed the expanded real-page screenshot journey: with `mediaDevices` absent, drag on the current webpage, genuine DOM-rendered preview, stable real demo motion throughout preview→Retake→selection→preview, Escape/resume, recapture, comment, injected HTTP 503 preserving preview/comment/freeze, retry through the real listener, exact persisted preview bytes/dimensions/comment and MCP image, unchanged clipboard, and resumed motion after successful send.
+
+Angular's selected demo region uses an unsupported filter. Web Components' selected region crosses shadow DOM. Both passed **visible rejection with no preview or image send**. Those two cases are renderer-boundary checks, not screenshot successes, and do not exercise preview/Retake/send on those rejected regions. Angular plain DOM is not intrinsically unsupported. Open-shadow freeze support is separate from rasterizer support. Angular/Web Components do not claim source-file fidelity.
+
+The 21 tests therefore comprise seven motion/freeze journeys, seven normal interaction/adapter/comment journeys, five screenshot-success journeys, and two intentional capture-rejection journeys—not seven universal screenshot successes.
+
+### Measured screenshot comparison
+
+Test-only real browser screenshots provide compositor references; product code never uses Playwright/DevTools screenshots. DOM reconstruction is approximate. Thresholds remain mean RGB absolute error <25/255 and >70% pixels within 20/channel. Latest mean error / close fraction:
+
+- Vanilla: 0.268 / 0.9971
+- React: 8.962 / 0.9089
+- Vue: 6.243 / 0.9343
+- Svelte: 5.639 / 0.9640
+- Solid: 3.844 / 0.9592
+
+These samples do not guarantee fidelity for other regions. Exact geometry/color/DPR are separately asserted by controlled live-page fixtures.
+
+## Shared engine and dedicated Solid checks
+
+The **4 freeze browser tests** exercise built shared core: screenshot selection→stable live DOM/animation→preview→Retake→Escape/resume; nested open-shadow animations and DOM mutation freezing, author-paused/cancelled animations and disposal; an already-running CSS transition and WAAPI paused at their current timeline positions; initial hover preservation and Escape. Historical red-before-fix observations belong to the earlier implementation sessions; this session reran the current implementation and strengthened matrix coverage without changing product behavior.
+
+The **19 page-capture browser tests** cover real red/blue pixels, reverse drag, instruction-overlay exclusion, page/nested/smooth scrolling, DPR2, Escape/pointercancel/tiny drag/Retake, editable-field pixel redaction without modifying live inputs, iframe/video/canvas/cross-origin image/filter/shadow/broken-resource failures, real send/retry, pending acknowledgement control locking, legacy/missing transport rejection, and native text/input copy/comment paste. The legacy `playwright.screen-grab.config.ts` command aliases this suite, not 19 additional tests.
+
+The **4 dedicated Solid browser journeys** cover catalog/filter/saved/bag/quantity/total/Show/For/native inputs, actual Solid source context/comments, live-page preview, and 390px responsive reachability.
+
+## Evidence, CI, and limitations
+
+`test-results/framework-matrix/summary.json` contains exactly all seven frameworks; individual `<framework>.json` reports contain 21 expected and zero unexpected/flaky/skipped tests in the latest run. Review screenshots: `test-results/framework-matrix/<framework>-page-preview.png`; shared review: `test-results/page-capture/review.png`. Generated evidence is local and ignored, not committed test data.
+
+`.github/workflows/framework-matrix.yml` includes frozen installation, sequential package builds, Chromium provisioning, matrix, shared page capture, shared freeze, and dedicated Solid, plus failure evidence upload. **This dirty working-tree CI configuration and its untracked suites are not a published gate yet. Hosted GitHub CI has not been run in this session.**
+
+No claim is made for Firefox/Safari, arbitrary desktop/OS screenshots, native browser sharing permissions, stdio/client display integration, deployment, or Docker image rebuild reproducibility. Freeze does not suspend application JS state/timers, property-only changes, canvas/video, closed roots, or inaccessible cross-origin stylesheets. Current shadow-motion/DOM fixtures do not certify every shadow-hover selector or focus-transfer behavior. Renderer and privacy limits remain in [current-page capture contract](screen-grab.md).

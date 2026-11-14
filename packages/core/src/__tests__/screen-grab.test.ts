@@ -5,7 +5,7 @@ import { init } from '../grab';
 let api: ReturnType<typeof init> | undefined;
 afterEach(() => { api?.dispose(); document.body.innerHTML = ''; vi.restoreAllMocks(); });
 
-it('offers portable screenshot intake without requesting capture or sending on activation', () => {
+it('offers live-page selection without requesting screen sharing or sending on activation', () => {
   const getDisplayMedia = vi.fn();
   Object.defineProperty(navigator, 'mediaDevices', { configurable: true, value: { getDisplayMedia } });
   api = init({ mcpWebhook: false });
@@ -20,8 +20,9 @@ it('offers portable screenshot intake without requesting capture or sending on a
   const screenshot = [...menu!.querySelectorAll<HTMLButtonElement>('[role="menuitem"]')].find((item) => item.textContent === 'Add screenshot')!;
   screenshot.focus(); screenshot.click();
   expect(menu!.classList.contains('point-grab-menu-visible')).toBe(false);
-  expect(document.querySelector('[role="dialog"]')?.textContent).toContain('Add or paste a screenshot');
-  expect(document.querySelector('input[type="file"]')?.getAttribute('accept')).toBe('image/png,image/jpeg,image/webp');
+  expect(document.querySelector('[role="dialog"]')?.getAttribute('aria-label')).toBe('Select current page region');
+  expect(document.querySelector('input[type="file"]')).toBeNull();
+  expect(document.querySelector('[role="dialog"]')?.textContent).toContain('Drag directly on this page');
   expect(getDisplayMedia).not.toHaveBeenCalled();
   expect(api.isActive()).toBe(false);
   [...document.querySelectorAll('button')].find((item) => item.textContent === 'Cancel')!.click();

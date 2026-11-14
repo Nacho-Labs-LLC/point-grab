@@ -4,14 +4,14 @@ import { StatCardComponent } from './stat-card';
 
 const METRICS = [
   {
-    label: 'Selection latency',
-    value: '42ms',
-    hint: 'Hold Ctrl+C / Cmd+C, hover any element, and click to capture context.',
+    label: 'Ideas to inspect',
+    value: '3 posts',
+    hint: 'Expand a detail, like an idea, or write a reply. This is real local state.',
   },
   {
     label: 'Resolved component',
     value: 'Angular',
-    hint: 'This demo exists to prove the adapter path, not just the generic overlay.',
+    hint: 'Standalone PostCard and StatCard components, connected to the local Angular adapter.',
   },
   {
     label: 'Source fidelity',

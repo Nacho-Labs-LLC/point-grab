@@ -31,6 +31,7 @@ export function createFreezeOverlay(): FreezeOverlay {
   let hoverStyleEl: HTMLStyleElement | null = null;
   let animStyleEl: HTMLStyleElement | null = null;
   let markedElements: Element[] = [];
+  let pausedAnimations: Animation[] = [];
 
   function injectStyles(): void {
     if (document.getElementById(FREEZE_STYLE_ID)) return;
@@ -173,12 +174,27 @@ export function createFreezeOverlay(): FreezeOverlay {
   function freezeAnimations(): void {
     if (animStyleEl) return;
 
+    // Pause at the current timeline position, including CSS transitions and WAAPI.
+    // Disabling transitions would jump to their final value instead of freezing.
+    // Document.getAnimations() excludes shadow trees. Visit every open root,
+    // including nested hosts, and deduplicate in case a browser includes it twice.
+    const animations = new Set<Animation>();
+    const collectAnimations = (root: Document | ShadowRoot): void => {
+      for (const animation of root.getAnimations?.() ?? []) animations.add(animation);
+      for (const element of root.querySelectorAll('*')) {
+        if (element.shadowRoot) collectAnimations(element.shadowRoot);
+      }
+    };
+    collectAnimations(document);
+    pausedAnimations = [...animations].filter(animation => animation.playState === 'running');
+    for (const animation of pausedAnimations) animation.pause();
+
     animStyleEl = document.createElement('style');
     animStyleEl.id = ANIM_STYLE_ID;
     animStyleEl.textContent = `
       *, *::before, *::after {
         animation-play-state: paused !important;
-        transition: none !important;
+
       }
     `;
     document.head.appendChild(animStyleEl);
@@ -187,6 +203,10 @@ export function createFreezeOverlay(): FreezeOverlay {
   function unfreezeAnimations(): void {
     animStyleEl?.remove();
     animStyleEl = null;
+    for (const animation of pausedAnimations) {
+      if (animation.playState !== 'idle' && animation.playState !== 'finished') animation.play();
+    }
+    pausedAnimations = [];
   }
 
   // --- DOM mutation freezing ---
@@ -194,8 +214,11 @@ export function createFreezeOverlay(): FreezeOverlay {
   // by observing and undoing mutations while the page is frozen.
 
   let mutationObserver: MutationObserver | null = null;
+  let observedRoots: Node[] = [];
 
   function isPointGrabNode(node: Node): boolean {
+    // html2canvas's temporary rendering iframe is infrastructure, not page state.
+    if (node instanceof Element && node.closest('.html2canvas-container')) return true;
     if (node instanceof HTMLElement) {
       const id = node.id || '';
       if (id.startsWith('__point-grab-')) return true;
@@ -211,12 +234,20 @@ export function createFreezeOverlay(): FreezeOverlay {
 
   function freezeDom(): void {
     if (mutationObserver) return;
+    observedRoots = [document.body];
+    const collectRoots = (root: ParentNode): void => {
+      for (const el of root.querySelectorAll('*')) {
+        if (el.shadowRoot) { observedRoots.push(el.shadowRoot); collectRoots(el.shadowRoot); }
+      }
+    };
+    collectRoots(document.body);
 
     mutationObserver = new MutationObserver((mutations) => {
       // Temporarily disconnect to avoid infinite loop while reverting
       mutationObserver?.disconnect();
 
-      for (const mutation of mutations) {
+      // Undo in reverse order: later oldValues are intermediate, not the snapshot.
+      for (const mutation of mutations.reverse()) {
         if (isPointGrabNode(mutation.target)) continue;
 
         if (mutation.type === 'characterData') {
@@ -243,7 +274,7 @@ export function createFreezeOverlay(): FreezeOverlay {
           for (let i = 0; i < removedLen; i++) {
             const removed = removedNodes[i];
             if (!removed || isPointGrabNode(removed)) continue;
-            if (mutation.nextSibling) {
+            if (mutation.nextSibling?.parentNode === mutation.target) {
               mutation.target.insertBefore(removed, mutation.nextSibling);
             } else {
               mutation.target.appendChild(removed);
@@ -260,23 +291,25 @@ export function createFreezeOverlay(): FreezeOverlay {
   }
 
   function observeBody(): void {
-    mutationObserver?.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeOldValue: true,
-      characterData: true,
-      characterDataOldValue: true,
+    // subtree observation alone does not cross open shadow boundaries.
+    for (const root of observedRoots) mutationObserver?.observe(root, {
+      childList: true, subtree: true, attributes: true, attributeOldValue: true,
+      characterData: true, characterDataOldValue: true,
     });
   }
 
   function unfreezeDom(): void {
     mutationObserver?.disconnect();
     mutationObserver = null;
+    observedRoots = [];
   }
 
   return {
     show(hoveredElement?: Element | null): void {
+      if (visible) return;
+      // Activation can precede the picker's first mousemove. Preserve the real
+      // browser hover chain rather than requiring a previously picked element.
+      hoveredElement ??= Array.from(document.querySelectorAll(':hover')).at(-1);
       // 1. Block mouse/focus events to prevent hover state changes
       blockEvents();
 
@@ -297,6 +330,7 @@ export function createFreezeOverlay(): FreezeOverlay {
     },
 
     hide(): void {
+      unfreezeDom();
       if (overlay) overlay.style.display = 'none';
       visible = false;
       clearHoverMarks();
@@ -319,6 +353,7 @@ export function createFreezeOverlay(): FreezeOverlay {
     },
 
     dispose(): void {
+      unfreezeDom();
       clearHoverMarks();
       removeHoverRules();
       unfreezeAnimations();
