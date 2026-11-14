@@ -1,10 +1,15 @@
 import { defineConfig, devices } from '@playwright/test';
 import path from 'path';
 
-const examplesDir = path.resolve(__dirname, 'examples');
-
+/**
+ * Marketing-site live demo only. Framework demos are verified by the per-framework
+ * contract + demo specs (playwright.framework-matrix.config.ts, one server at a time);
+ * `pnpm run test:e2e` runs every browser suite in sequence.
+ */
 export default defineConfig({
   testDir: './e2e',
+  // A subfolder: Playwright empties outputDir, which would wipe the other suites' reports.
+  outputDir: 'test-results/site',
   timeout: 30_000,
   expect: { timeout: 10_000 },
   fullyParallel: false,
@@ -19,36 +24,6 @@ export default defineConfig({
 
   projects: [
     {
-      name: 'vanilla',
-      use: { ...devices['Desktop Chrome'], baseURL: 'http://localhost:5173' },
-      testMatch: '**/vanilla.spec.ts',
-    },
-    {
-      name: 'react',
-      use: { ...devices['Desktop Chrome'], baseURL: 'http://localhost:5174' },
-      testMatch: '**/react.spec.ts',
-    },
-    {
-      name: 'vue',
-      use: { ...devices['Desktop Chrome'], baseURL: 'http://localhost:5175' },
-      testMatch: '**/vue.spec.ts',
-    },
-    {
-      name: 'svelte',
-      use: { ...devices['Desktop Chrome'], baseURL: 'http://localhost:5176' },
-      testMatch: '**/svelte.spec.ts',
-    },
-    {
-      name: 'web-components',
-      use: { ...devices['Desktop Chrome'], baseURL: 'http://localhost:5177' },
-      testMatch: '**/web-components.spec.ts',
-    },
-    {
-      name: 'angular',
-      use: { ...devices['Desktop Chrome'], baseURL: 'http://127.0.0.1:4200' },
-      testMatch: '**/angular.spec.ts',
-    },
-    {
       name: 'site-livedemo',
       use: { ...devices['Desktop Chrome'], baseURL: 'http://127.0.0.1:4321' },
       testMatch: '**/site-livedemo.spec.ts',
@@ -56,42 +31,6 @@ export default defineConfig({
   ],
 
   webServer: [
-    {
-      command: 'pnpm exec vite --port 5173',
-      cwd: path.join(examplesDir, 'vanilla'),
-      url: 'http://localhost:5173',
-      reuseExistingServer: !process.env.CI,
-    },
-    {
-      command: 'pnpm exec vite --port 5174',
-      cwd: path.join(examplesDir, 'react'),
-      url: 'http://localhost:5174',
-      reuseExistingServer: !process.env.CI,
-    },
-    {
-      command: 'pnpm exec vite --port 5175',
-      cwd: path.join(examplesDir, 'vue'),
-      url: 'http://localhost:5175',
-      reuseExistingServer: !process.env.CI,
-    },
-    {
-      command: 'pnpm exec vite --port 5176',
-      cwd: path.join(examplesDir, 'svelte'),
-      url: 'http://localhost:5176',
-      reuseExistingServer: !process.env.CI,
-    },
-    {
-      command: 'pnpm exec vite --port 5177',
-      cwd: path.join(examplesDir, 'web-components'),
-      url: 'http://localhost:5177',
-      reuseExistingServer: !process.env.CI,
-    },
-    {
-      command: 'pnpm exec ng serve --host 127.0.0.1 --port 4200',
-      cwd: path.join(examplesDir, 'angular'),
-      url: 'http://127.0.0.1:4200',
-      reuseExistingServer: !process.env.CI,
-    },
     {
       command: 'pnpm exec astro build && pnpm exec vite preview --host 127.0.0.1 --port 4321',
       cwd: path.resolve(__dirname, 'site'),

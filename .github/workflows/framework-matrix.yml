@@ -25,6 +25,8 @@ jobs:
         run: pnpm exec node scripts/verify-framework-matrix.mjs
       - name: Shared current-page capture negative and clipboard regressions
         run: pnpm exec playwright test --config=playwright.page-capture.config.ts
+      - name: Screen Grab selection, review and send UI
+        run: pnpm exec playwright test --config=playwright.screen-grab.config.ts
       - name: Shared freeze lifecycle, hover, transition and WAAPI regressions
         run: pnpm exec playwright test --config=playwright.freeze.config.ts
       - name: Solid interactive storefront and mobile regressions
