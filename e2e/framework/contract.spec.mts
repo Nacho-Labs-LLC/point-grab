@@ -145,6 +145,46 @@ test.describe(`${framework} demo`, () => {
     expect(await transformOf(motion)).toBe(still);
   });
 
+  test('keyboard focus reveals a detail and F freezes it; screenshot selection holds motion until Cancel or Escape', async ({ page }) => {
+    const motion = page.getByTestId('motion-sample').first();
+    const trigger = page.getByTestId('freeze-trigger').first();
+    const detail = page.getByTestId('freeze-popover').first();
+    await trigger.focus(); await expect(detail).toBeVisible();
+    await page.keyboard.press('f');
+    await expect(freezeLayer(page)).toBeVisible();
+    await page.mouse.move(5, 5);
+    await expect(detail).toBeVisible();
+    await page.keyboard.press('Escape');
+    await expect(freezeLayer(page)).not.toBeVisible();
+    await trigger.blur(); await expect(detail).not.toBeVisible();
+
+    for (const leave of ['Cancel', 'Escape'] as const) {
+      await openScreenshot(page);
+      await page.waitForTimeout(80);
+      const held = await transformOf(motion); await page.waitForTimeout(220);
+      expect(await transformOf(motion), `motion held during selection (${leave})`).toBe(held);
+      if (leave === 'Cancel') await selectDialog(page).getByRole('button', { name: 'Cancel', exact: true }).click();
+      else await page.keyboard.press('Escape');
+      await expect(selectDialog(page)).not.toBeVisible();
+      await page.waitForTimeout(200);
+      expect(await transformOf(motion), `motion resumed after ${leave}`).not.toBe(held);
+    }
+  });
+
+  test('a queued comment survives a cancelled screenshot and is still in Confirm & Copy', async ({ page, mcp }) => {
+    await chooseAction(page, 'Add Comment');
+    await pick(page, profile.target(page));
+    const dialog = page.getByRole('dialog', { name: 'Add comment' });
+    await dialog.getByRole('textbox').fill(`${framework}: queued before a screenshot`);
+    await dialog.getByRole('button', { name: 'Add to Review' }).click();
+    const before = (await mcp.history()).entries.length;
+    await openScreenshot(page);
+    await selectDialog(page).getByRole('button', { name: 'Cancel', exact: true }).click();
+    expect((await mcp.history()).entries).toHaveLength(before);
+    await page.getByRole('button', { name: /^Confirm & Copy/ }).click();
+    expect(await clipboard(page)).toContain(`Comment: ${framework}: queued before a screenshot`);
+  });
+
   test('Freeze → Add screenshot keeps the frozen hover detail and captures it', async ({ page }) => {
     const trigger = page.getByTestId('freeze-trigger').first();
     const detail = page.getByTestId('freeze-popover').first();

@@ -173,3 +173,10 @@ export const transformOf = (target: Locator) => target.evaluate((el) => getCompu
 
 /** The first non-empty line of an element's rendered text. */
 export const firstLine = async (target: Locator) => (await target.innerText()).split('\n').map((l) => l.trim()).find(Boolean) ?? '';
+
+/** Hold-to-grab `target` and return what landed on the clipboard. */
+export async function grab(page: Page, target: Locator) {
+  await holdGrab(page, target);
+  await expect(toast(page)).toContainText('Copied to clipboard');
+  return clipboard(page);
+}

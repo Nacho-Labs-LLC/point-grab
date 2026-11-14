@@ -104,12 +104,18 @@ test('Point-grab UI excluded and editable values redacted without changing actua
 });
 for (const [name,html] of [
   ['iframe','<iframe src="https://example.com"></iframe>'], ['video','<video></video>'],
-  ['WebGL canvas','<canvas id="gl"></canvas>'],
   ['cross-origin image','<img src="https://example.com/picture.png">'], ['broken image','<img src="/broken.png">'],
 ] as const) test(`unsupported ${name} fails visibly, no partial preview`,async({page})=>{
   await page.evaluate(({html})=>{const holder=document.createElement('div');holder.innerHTML=html;const el=holder.firstElementChild as HTMLElement;el.style.cssText+=';position:absolute;left:160px;top:160px;width:100px;height:50px';document.body.append(el);if(el.id==='gl')(el as HTMLCanvasElement).getContext('webgl');},{html});
   await open(page);await drag(page);await expect(page.getByRole('alert')).toContainText('Cannot capture');
   await expect(page.getByAltText('Selected screenshot region')).toHaveCount(0);await page.getByRole('button',{name:'Cancel',exact:true}).click();
+});
+test('a WebGL canvas is captured with a visible "appears blank" warning, not silently',async({page})=>{
+  await page.evaluate(()=>{const c=document.createElement('canvas');c.width=100;c.height=50;c.style.cssText='position:absolute;left:160px;top:160px;width:100px;height:50px';document.body.append(c);c.getContext('webgl');});
+  await open(page);await drag(page);
+  await expect(page.getByAltText('Selected screenshot region')).toBeVisible();
+  await expect(page.getByRole('dialog',{name:'Review screenshot'})).toContainText('A WebGL or empty canvas in this region appears blank.');
+  await page.getByRole('button',{name:'Cancel',exact:true}).click();
 });
 test('open shadow DOM (nested + slotted) renders real pixels and redacts inputs inside shadow roots',async({page})=>{
   await page.evaluate(()=>{

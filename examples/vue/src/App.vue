@@ -18,6 +18,8 @@ const selectedColor = ref(null);
 const selectedSize  = ref(null);
 const monogram      = ref('');
 const cartCount     = computed(() => cartItems.value.length);
+// Sum the line prices: a monogram adds $8 to that item.
+const cartTotal     = computed(() => cartItems.value.reduce((sum, item) => sum + Number(item.price.slice(1)), 0));
 const cartOpen      = ref(false);
 const cartItems     = ref([]);
 const cartBumping   = ref(false);
@@ -201,7 +203,7 @@ function starFill(index) {
     <div v-if="cartItems.length > 0" class="cart-footer">
       <div class="cart-total">
         <span>Total</span>
-        <span data-testid="cart-total" aria-live="polite">${{ (cartItems.length * 68).toFixed(2) }}</span>
+        <span data-testid="cart-total" aria-live="polite">${{ cartTotal.toFixed(2) }}</span>
       </div>
       <button class="checkout-btn" @click="checkoutMessage = 'Demo bag reviewed. No payment or order was submitted.'">Review demo bag</button>
       <p role="status">{{ checkoutMessage }}</p>

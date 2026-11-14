@@ -90,7 +90,8 @@ customElements.define('forge-sparkline', ForgeSparkline);
 
 // --- <forge-service-card service="id"> ---
 class ForgeServiceCard extends HTMLElement {
-  static observedAttributes = ['status', 'version', 'busy', 'locked'];
+  // Every attribute render() reads, so a rollback's cleared `previous` disables Roll back.
+  static observedAttributes = ['status', 'version', 'region', 'latency', 'latency-now', 'previous', 'busy', 'locked'];
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
