@@ -1,6 +1,28 @@
 # Cross-framework browser verification
 
-## Latest verified checkpoint — 2026-11-10
+## Latest verified checkpoint — 2026-11-14
+
+`pnpm run test:e2e` (the CI and npm-publish gate, `scripts/test-e2e.mjs`) runs every browser suite in sequence. All passed, 170 tests:
+
+| Suite | Config | Result |
+|---|---|---|
+| Site live demo | `playwright.config.ts` | 1/1 |
+| Seven-framework matrix (contract + demo specs) | `playwright.framework-matrix.config.ts` via `scripts/verify-framework-matrix.mjs` | 121/121 |
+| Page capture | `playwright.page-capture.config.ts` | 20/20 |
+| Screen Grab UI | `playwright.screen-grab.config.ts` | 20/20 |
+| Freeze lifecycle | `playwright.freeze.config.ts` | 4/4 |
+| Solid storefront | `examples/solid/playwright.config.ts` | 4/4 |
+
+The matrix runs two spec files against each real demo, one server and one worker at a time:
+
+- **`e2e/framework/contract.spec.mts`**: 15 feature journeys shared by all seven demos. They cover arrival (toolbar, guide, MCP status online/offline), hold-to-grab with adapter context persisted to MCP and history re-copy/clear, selection mode with Escape, Copy HTML/Styles, comment batches, a queued comment surviving a cancelled screenshot, Freeze (hover and keyboard focus, reduced motion), Freeze → screenshot, the screenshot send/retry/MCP-image round trip, input redaction, native copy, toolbar controls and phone width. Per-demo selectors and expected adapter metadata live in `e2e/framework/profiles.mts`.
+- **`e2e/framework/demos/<framework>.spec.mts`**: 2–3 tests that drive each playground's own workflow end to end and check that a grab captures *live* state with the right adapter context (React `Post`, Vue `CartItem`, Svelte `App`, Angular `TaskDrawerComponent`, Solid `BagPanel`, Web Components ancestry three shadow roots deep).
+
+Unit tests: 148 across all eight packages. The legacy `e2e/<framework>.spec.ts` files and `e2e/framework-matrix.spec.mts` were retired; the suites above supersede them. Every suite writes to its own `test-results/<suite>` folder, so a later suite never wipes an earlier one's reports. `node scripts/summarize-matrix.mjs` prints a compact matrix summary.
+
+Everything below is historical.
+
+## Verified checkpoint — 2026-11-10
 
 Fresh execution in `native-remote-dev`, as `dev`, against the canonical `/workspace/point-grab` working tree on `feat/demo-parity-freeze`. These results supersede the historical 18-pass/3-fail freeze matrix and earlier 14-test matrix.
 
