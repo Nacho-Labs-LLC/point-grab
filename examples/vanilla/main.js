@@ -1,7 +1,22 @@
 import { init } from '@point-grab/core';
 import { parseDuration, nextTrackIndex } from './player-model.js';
 
-init({ activationMode: 'hold', devOnly: false });
+const pointGrab = init({ activationMode: 'hold', devOnly: false });
+pointGrab.showToolbar(); // Show the toolbar on arrival so Actions → Add screenshot is discoverable.
+
+// Is Send's destination (the local MCP server) reachable?
+async function checkMcp() {
+  try { return (await fetch('http://localhost:3456/health', { signal: AbortSignal.timeout(1500) })).ok; } catch { return false; }
+}
+const mcpStatus = document.querySelector('[data-testid="mcp-status"]');
+async function updateMcpStatus() {
+  const online = await checkMcp();
+  mcpStatus.dataset.state = online ? 'online' : 'offline';
+  mcpStatus.innerHTML = online ? 'MCP server connected' : 'MCP server offline · run <code>npx @point-grab/mcp-server</code> to Send';
+}
+updateMcpStatus();
+setInterval(updateMcpStatus, 10000);
+window.addEventListener('focus', updateMcpStatus);
 
 const tracks = [
   { title: 'Neon Dreams',   artist: 'Synthwave Collective', album: 'Chrome Horizon', duration: '3:47', color: 'linear-gradient(135deg,#4f46e5,#7c3aed,#db2777)' },
@@ -117,9 +132,17 @@ elVolumeSlider.addEventListener('input', () => {
   elVolumePct.textContent = `${elVolumeSlider.value}%`;
 });
 
+const elQueueFilter = document.getElementById('queue-filter');
+const elQueueEmpty = document.getElementById('queue-empty');
+elQueueFilter.addEventListener('input', () => renderQueue());
+
 function renderQueue() {
   elQueueList.innerHTML = '';
+  const query = elQueueFilter.value.trim().toLowerCase();
+  let shown = 0;
   tracks.forEach((t, i) => {
+    if (query && !`${t.title} ${t.artist}`.toLowerCase().includes(query)) return;
+    shown++;
     const item = document.createElement('button');
     item.type = 'button';
     item.setAttribute('aria-label', `Play ${t.title}`);
@@ -156,6 +179,7 @@ function renderQueue() {
     });
     elQueueList.appendChild(item);
   });
+  elQueueEmpty.classList.toggle('hidden', shown > 0);
 }
 
 loadTrack(currentIdx);

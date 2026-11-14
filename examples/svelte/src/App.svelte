@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { pointGrab } from '@point-grab/svelte';
+  import { pointGrab, getPointGrabApi } from '@point-grab/svelte';
   import './app.css';
   import NoteCard from './NoteCard.svelte';
   import FormatToolbar from './FormatToolbar.svelte';
@@ -78,6 +78,9 @@
   }
 
   onMount(() => {
+    // Show the toolbar on arrival so Actions → Add screenshot is discoverable.
+    // The action initializes point-grab before mount effects run.
+    getPointGrabApi()?.showToolbar();
     return () => {
       if (saveTimer) clearTimeout(saveTimer);
     };
@@ -127,7 +130,7 @@
         </div>
 
         <div class="editor-body">
-          <div class="writing-flow"><span class="motion-pen" data-testid="motion-sample" aria-hidden="true">✎</span><span class="flow-help"><button data-testid="freeze-trigger" aria-describedby="flow-tip">Writing flow ↗</button><span id="flow-tip" role="tooltip" data-testid="freeze-popover">A little motion for a quiet workspace. Hover or focus here and use Point Grab Freeze (F) to inspect this moment. Markdown controls wrap your selected text.</span></span></div>
+          <div class="writing-flow"><span class="motion-pen" data-testid="motion-sample" aria-hidden="true">✎</span><span class="flow-help"><button data-testid="freeze-trigger" aria-describedby="flow-tip">Writing flow ↗</button><span id="flow-tip" role="tooltip" data-testid="freeze-popover">A quiet workspace: select text and use Format to wrap it in Markdown. Notes stay in this tab.</span></span></div>
           <input
             class="editor-title"
             aria-label="Note title"

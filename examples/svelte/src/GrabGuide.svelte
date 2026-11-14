@@ -1,5 +1,25 @@
-<section class="grab-guide" data-testid="grab-guide">
-  <span class="eyebrow">SVELTE / THE DEVELOPER SIDE</span><h2>From a passing thought<br />to precise feedback.</h2>
-  <ol><li><strong>01 · Find your flow</strong><p>Create a note, edit its title and body, search the list, or select text and apply Markdown formatting. Changes live in this tab only.</p></li><li><strong>02 · Inspect the layers</strong><p>Activate Point Grab from its toolbar or hold Cmd+C / Ctrl+C. Pick a note card, tag or formatting button to inspect native Svelte components. Input selection and copy remain native.</p></li><li><strong>03 · Catch a quiet moment</strong><p>Hover or focus Writing flow and use Freeze (F) in the picker. The moving pen and this tip are CSS freeze targets. Comment on an element, or Actions → Add screenshot to drag a region, review, and Send.</p></li></ol>
-  <p class="capture-note">Current-page capture is a DOM-rendered approximation, not browser pixels. Editable fields are redacted; frames, video, canvas, shadow DOM, cross-origin images and filters can block capture. Sending requires the local MCP server at localhost:3456 and confirms only after acknowledgement. No account, backend, or persistent storage in this playground.</p>
+<script>
+  import { onMount } from 'svelte';
+
+  // Is Send's destination (the local MCP server) reachable?
+  let mcp = $state('checking');
+  async function check() {
+    try { mcp = (await fetch('http://localhost:3456/health', { signal: AbortSignal.timeout(1500) })).ok ? 'online' : 'offline'; } catch { mcp = 'offline'; }
+  }
+  onMount(() => {
+    check();
+    const timer = setInterval(check, 10000);
+    window.addEventListener('focus', check);
+    return () => { clearInterval(timer); window.removeEventListener('focus', check); };
+  });
+</script>
+
+<section class="playground-guide" data-testid="playground-guide" aria-labelledby="guide-title">
+  <div class="guide-head">
+    <div><span class="eyebrow">Svelte playground</span><h2 id="guide-title">Try Point Grab on your notes</h2></div>
+    <span class="mcp-status" data-testid="mcp-status" role="status" data-state={mcp}>
+      {#if mcp === 'online'}MCP server connected{:else if mcp === 'offline'}MCP server offline · run <code>npx @point-grab/mcp-server</code> to Send{:else}Checking MCP server…{/if}
+    </span>
+  </div>
+  <ol><li><strong>Grab</strong> Hold <kbd>⌘C</kbd> / <kbd>Ctrl+C</kbd>, hover a note card or a formatting button and click. Your clipboard gets its HTML plus the Svelte component and source file.</li><li><strong>Comment</strong> Toolbar <kbd>⋯</kbd> → Add Comment, click an element, write a note. Queue a few, then Confirm &amp; Copy.</li><li><strong>Freeze</strong> Hover <em>Writing flow</em>, hold <kbd>⌘C</kbd> / <kbd>Ctrl+C</kbd> and press <kbd>F</kbd>. Hover states and motion hold still. <kbd>Esc</kbd> resumes.</li><li><strong>Screenshot</strong> <kbd>⋯</kbd> → Add screenshot, drag over the editor, add a note and Send it to your AI.</li><li><strong>History</strong> The clock button lists every grab. Click one to copy it again.</li></ol>
 </section>

@@ -1,4 +1,4 @@
-import { createMemo, createSignal, For, Show } from "solid-js";
+import { createMemo, createSignal, For, onCleanup, onMount, Show } from "solid-js";
 import type { Accessor } from "solid-js";
 import "./styles.css";
 
@@ -72,10 +72,10 @@ function ProductCard(props: {
     <article class="product-card" data-testid="product-card">
       <div class="art-wrap">
         <ProductArtwork product={props.product} />
-        <button class="product-badge detail-trigger" type="button" data-testid="demo-detail-trigger" aria-describedby={`detail-${props.product.id}`}>
+        <button class="product-badge detail-trigger" type="button" data-testid="freeze-trigger" aria-describedby={`detail-${props.product.id}`}>
           {props.product.badge}
-          <span class="product-detail" id={`detail-${props.product.id}`} role="tooltip" data-testid="demo-detail">
-            {props.product.detail} Hover or focus, then use Freeze (F) to inspect this detail.
+          <span class="product-detail" id={`detail-${props.product.id}`} role="tooltip" data-testid="freeze-popover">
+            {props.product.detail}
           </span>
         </button>
         <button
@@ -205,50 +205,49 @@ function BagPanel(props: {
   );
 }
 
+/** Is Send's destination (the local MCP server) reachable? */
+function McpStatus() {
+  const [state, setState] = createSignal<"checking" | "online" | "offline">("checking");
+  const check = async () => {
+    try {
+      const res = await fetch("http://localhost:3456/health", { signal: AbortSignal.timeout(1500) });
+      setState(res.ok ? "online" : "offline");
+    } catch {
+      setState("offline");
+    }
+  };
+  onMount(() => {
+    void check();
+    const timer = setInterval(check, 10000);
+    window.addEventListener("focus", check);
+    onCleanup(() => { clearInterval(timer); window.removeEventListener("focus", check); });
+  });
+  return (
+    <span class="mcp-status" data-testid="mcp-status" role="status" data-state={state()}>
+      <Show when={state() !== "checking"} fallback="Checking MCP server…">
+        <Show when={state() === "online"} fallback={<>MCP server offline · run <code>npx @point-grab/mcp-server</code> to Send</>}>
+          MCP server connected
+        </Show>
+      </Show>
+    </span>
+  );
+}
+
 function GrabGuide() {
   return (
-    <section class="grab-guide" aria-labelledby="guide-heading">
+    <section class="grab-guide" data-testid="playground-guide" aria-labelledby="guide-heading">
       <div>
-        <span class="eyebrow">THE DEVELOPER SIDE</span>
-        <h2 id="guide-heading">Good feedback starts with context.</h2>
-        <p>
-          This storefront is your canvas. Try the controls, then point at what
-          you want to change. Hover or focus a product badge for detail. During
-          selection, press F to freeze motion and hover content; Escape resumes.
-        </p>
+        <span class="eyebrow">SOLID PLAYGROUND</span>
+        <h2 id="guide-heading">Try Point Grab on this storefront.</h2>
+        <McpStatus />
       </div>
       <ol>
-        <li>
-          <span>01</span>
-          <strong>Pick an element</strong>
-          <p>
-            Use the Point Grab toolbar to pick a card, price, or bag item. Grab
-            its Solid component and source location.
-          </p>
-        </li>
-        <li>
-          <span>02</span>
-          <strong>Add your thinking</strong>
-          <p>
-            Choose Comment for element feedback. Native text selection and input
-            copy still work normally.
-          </p>
-        </li>
-        <li>
-          <span>03</span>
-          <strong>Capture this page</strong>
-          <p>
-            Choose Actions → Add screenshot. Drag a region directly on this page,
-            review the DOM-rendered preview, add a comment, then Send.
-          </p>
-        </li>
+        <li><span>01</span><strong>Grab</strong><p>Hold <kbd>⌘C</kbd> / <kbd>Ctrl+C</kbd>, hover a product card or a bag item and click. Your clipboard gets its HTML plus the Solid component and source file.</p></li>
+        <li><span>02</span><strong>Comment</strong><p>Toolbar <kbd>⋯</kbd> → Add Comment, click an element, write a note. Queue a few, then Confirm &amp; Copy.</p></li>
+        <li><span>03</span><strong>Freeze</strong><p>Hover a product badge like <em>Bestseller</em>, hold <kbd>⌘C</kbd> / <kbd>Ctrl+C</kbd> and press <kbd>F</kbd>. The detail and the spark hold still. <kbd>Esc</kbd> resumes.</p></li>
+        <li><span>04</span><strong>Screenshot</strong><p><kbd>⋯</kbd> → Add screenshot, drag over the collection, add a note and Send it to your AI.</p></li>
+        <li><span>05</span><strong>History</strong><p>The clock button lists every grab. Click one to copy it again.</p></li>
       </ol>
-      <p class="capture-note">
-        Current-page capture is a DOM-rendered approximation, not OS/compositor
-        pixels. Editable fields are redacted; frames, video, canvas, shadow DOM,
-        cross-origin images and filters can block capture. Send requires the local MCP server at
-        localhost:3456 and confirms only after acknowledgement.
-      </p>
     </section>
   );
 }
@@ -298,7 +297,7 @@ export default function App() {
         <section class="hero">
           <div>
             <div class="eyebrow">
-              <span class="tiny-spark" data-testid="demo-motion" aria-hidden="true">✳</span> LESS, BUT A LITTLE LOVELIER
+              <span class="tiny-spark" data-testid="motion-sample" aria-hidden="true">✳</span> LESS, BUT A LITTLE LOVELIER
             </div>
             <h1>
               Objects for

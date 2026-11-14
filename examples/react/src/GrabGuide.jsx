@@ -1,6 +1,38 @@
+import { useEffect, useState } from 'react';
+
 export function FreezePreview() {
-  return <div className="freeze-demo"><span className="motion-sample" data-testid="motion-sample" aria-hidden="true">✦</span><span>One good idea, in motion.</span><span className="freeze-help"><button data-testid="freeze-trigger" aria-describedby="freeze-tip">Why the sparkle?</button><span role="tooltip" id="freeze-tip" data-testid="freeze-popover">Hover or focus here, then use Point Grab Freeze (F). The sparkle and this hover state are a real CSS freeze target. Escape exits the picker.</span></span></div>;
+  return <div className="freeze-demo"><span className="motion-sample" data-testid="motion-sample" aria-hidden="true">✦</span><span>One good idea, in motion.</span><span className="freeze-help"><button data-testid="freeze-trigger" aria-describedby="freeze-tip">Why the sparkle?</button><span role="tooltip" id="freeze-tip" data-testid="freeze-popover">Every post here started as a half-formed idea. The sparkle is for the ones that made it.</span></span></div>;
 }
+
+/** Is Send's destination (the local MCP server) reachable? */
+function useMcpStatus() {
+  const [state, setState] = useState('checking');
+  useEffect(() => {
+    const check = async () => {
+      try { setState((await fetch('http://localhost:3456/health', { signal: AbortSignal.timeout(1500) })).ok ? 'online' : 'offline'); } catch { setState('offline'); }
+    };
+    check();
+    const timer = setInterval(check, 10000);
+    window.addEventListener('focus', check);
+    return () => { clearInterval(timer); window.removeEventListener('focus', check); };
+  }, []);
+  return state;
+}
+
+export function McpStatus() {
+  const state = useMcpStatus();
+  return (
+    <span className="mcp-status" data-testid="mcp-status" role="status" data-state={state}>
+      {state === 'online' ? 'MCP server connected' : state === 'offline' ? <>MCP server offline · run <code>npx @point-grab/mcp-server</code> to Send</> : 'Checking MCP server…'}
+    </span>
+  );
+}
+
 export default function GrabGuide() {
-  return <section className="grab-guide" data-testid="grab-guide"><span className="eyebrow">THE DEVELOPER SIDE</span><h2>A better conversation with your AI.</h2><ol><li><strong>1 · Make it yours</strong><p>Like a post, write a reply, or save a thought. These are React components with real local state, not a screenshot.</p></li><li><strong>2 · Point at the detail</strong><p>Activate Point Grab with the toolbar or hold Cmd+C / Ctrl+C. Pick a name, avatar, or action to inspect its component and source. Native text selection still copies normally.</p></li><li><strong>3 · Freeze, then explain</strong><p>Hover the sparkle help and use Freeze (F) in the picker. Add an element comment, or Actions → Add screenshot to drag a region on this page, review, and Send.</p></li></ol><p className="capture-note">Page capture is a DOM-rendered approximation, not browser pixels. Inputs are redacted; frames, video, canvas, shadow DOM, cross-origin images and filters can block capture. Sending requires the local MCP server at localhost:3456 and is confirmed only after acknowledgement. Demo replies stay in memory; no account or network required.</p></section>;
+  return (
+    <section className="playground-guide" data-testid="playground-guide" aria-labelledby="guide-title">
+      <div className="guide-head"><div><span className="eyebrow">React playground</span><h2 id="guide-title">Try Point Grab on this thread</h2></div><McpStatus /></div>
+      <ol><li><strong>Grab</strong> Hold <kbd>⌘C</kbd> / <kbd>Ctrl+C</kbd>, hover a post's author or its Like button and click. Your clipboard gets its HTML plus the React component and source file.</li><li><strong>Comment</strong> Toolbar <kbd>⋯</kbd> → Add Comment, click an element, write a note. Queue a few, then Confirm &amp; Copy.</li><li><strong>Freeze</strong> Hover <em>Why the sparkle?</em>, hold <kbd>⌘C</kbd> / <kbd>Ctrl+C</kbd> and press <kbd>F</kbd>. Hover states and motion hold still. <kbd>Esc</kbd> resumes.</li><li><strong>Screenshot</strong> <kbd>⋯</kbd> → Add screenshot, drag over a post, add a note and Send it to your AI.</li><li><strong>History</strong> The clock button lists every grab. Click one to copy it again.</li></ol>
+    </section>
+  );
 }

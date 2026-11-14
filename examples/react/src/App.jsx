@@ -166,7 +166,9 @@ function NewPostsBanner({ count, onDismiss }) {
 }
 
 export default function App() {
-  usePointGrab({ activationMode: 'hold', devOnly: false });
+  const pointGrab = usePointGrab({ activationMode: 'hold', devOnly: false });
+  // Show the toolbar on arrival so Actions → Add screenshot is discoverable.
+  useEffect(() => { pointGrab?.showToolbar(); }, [pointGrab]);
 
   const [newCount, setNewCount] = useState(0);
   const [saved, setSaved] = useState([]);

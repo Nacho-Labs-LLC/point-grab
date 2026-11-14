@@ -1,58 +1,67 @@
 <div class="shell">
-  <header class="hero">
-    <div class="hero-copy">
-      <span class="eyebrow">Angular example</span>
-      <h1>point-grab for Angular</h1>
-      <p>
-        A real Angular demo surface for inspecting nested cards, metrics, and action controls. Hold
-        <kbd>Ctrl+C</kbd> / <kbd>Cmd+C</kbd>, hover an element, and click to capture it.
-      </p>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">◆</span>
+      <div>
+        <strong>Relay</strong>
+        <span class="sprint">Sprint 14 · Checkout revamp</span>
+      </div>
     </div>
-
-    <div class="hero-panel">
-      <div class="panel-label">What this proves</div>
-      <ul>
-        <li>Angular app initialized from <code>main.ts</code> with <code>initPointGrabAngular()</code></li>
-        <li>Nested standalone components for better component ancestry capture</li>
-        <li>Enough UI density to be worth inspecting</li>
-      </ul>
+    <div class="presence">
+      <button type="button" class="presence-btn" data-testid="freeze-trigger" aria-describedby="presence-pop">
+        <span class="live" data-testid="motion-sample" aria-hidden="true"></span>
+        <span class="avatars">
+          @for (p of people; track p.name) { <span class="avatar" [style.background]="p.color">{{ p.initials }}</span> }
+        </span>
+        3 online
+      </button>
+      <div class="presence-pop" id="presence-pop" role="tooltip" data-testid="freeze-popover">
+        <strong>Viewing this sprint</strong>
+        @for (p of people; track p.name) { <span class="who"><span class="avatar" [style.background]="p.color">{{ p.initials }}</span>{{ p.name }}</span> }
+      </div>
     </div>
   </header>
 
-  <section class="metrics-grid">
-    @for (metric of metrics; track metric.label) {
-      <app-stat-card [label]="metric.label" [value]="metric.value" [hint]="metric.hint" />
+  <section class="hero">
+    <div>
+      <h1>Checkout revamp</h1>
+      <p>Ship a faster, friendlier checkout before the holiday freeze.</p>
+    </div>
+    <div class="stats" data-testid="sprint-stats">
+      <div><span class="stat-value">{{ stats().total }}</span><span class="stat-label">tasks</span></div>
+      <div><span class="stat-value">{{ stats().doing }}</span><span class="stat-label">in progress</span></div>
+      <div><span class="stat-value" data-testid="done-count">{{ stats().done }}</span><span class="stat-label">done</span></div>
+      <div class="sprint-progress" aria-label="Sprint progress">
+        <span class="stat-label">{{ stats().percent }}% complete</span>
+        <span class="bar"><span [style.width.%]="stats().percent"></span></span>
+      </div>
+    </div>
+  </section>
+
+  <div class="toolbar-row">
+    <input class="search" type="search" placeholder="Search tasks or labels" aria-label="Search tasks" [value]="query()" (input)="query.set($any($event.target).value)" />
+    <div class="chips" role="group" aria-label="Filter by priority">
+      @for (p of ['all', 'high', 'medium', 'low']; track p) {
+        <button type="button" class="chip" [attr.aria-pressed]="priority() === p" (click)="priority.set($any(p))">{{ p === 'all' ? 'All' : p }}</button>
+      }
+    </div>
+    <button type="button" class="new-btn" (click)="creating.set(true)">+ New task</button>
+  </div>
+
+  <main class="workspace" [class.with-drawer]="selected()">
+    <div class="board">
+      @for (s of statuses; track s.id) {
+        <app-board-column [status]="s.id" [title]="s.title" [tasks]="column(s.id)" [selectedId]="selectedId()" [filtered]="filtering()" (open)="selectedId.set($event)" (move)="move($event)" />
+      }
+    </div>
+    @if (selected(); as task) {
+      <app-task-drawer [task]="task" (close)="selectedId.set(null)" (rename)="rename($event)" (setStatus)="setStatus($event)" (toggle)="toggle($event)" />
     }
-  </section>
+  </main>
 
-  <section class="content-grid">
-    <main class="feed-column">
-      <div class="section-header">
-        <div>
-          <span class="section-kicker">Demo feed</span>
-          <h2>Inspectable posts</h2>
-        </div>
-        <a href="#capture-guide">Capture walkthrough ↓</a>
-      </div>
+  <app-playground-guide />
 
-      <div class="feed-list">
-        @for (post of posts; track post.id) {
-          <app-post-card [post]="post" />
-        }
-      </div>
-    </main>
-
-    <aside id="capture-guide" class="sidebar-card" data-testid="grab-guide">
-      <span class="section-kicker">The developer side</span>
-      <h2>From detail to direction.</h2>
-      <ol>
-        <li><strong>Explore the feed.</strong> Like a post, expand its component detail, or write a reply. Changes stay in this tab.</li>
-        <li><strong>Inspect the real component.</strong> Hold Ctrl+C / Cmd+C, hover a post or action, then click. Selected text still copies normally.</li>
-        <li><strong>Keep a fleeting moment.</strong> Hover or focus the live signal below; use Freeze (F) in the picker. Escape resumes the page.</li>
-        <li><strong>Explain the change.</strong> Add an element comment, or Actions → Add screenshot, drag a current-page region and review before Send.</li>
-      </ol>
-      <div class="freeze-demo"><span data-testid="motion-sample" class="motion-sample" aria-hidden="true">✦</span><span class="freeze-help"><button type="button" data-testid="freeze-trigger" aria-describedby="signal-tip">Live signal</button><span id="signal-tip" role="tooltip" data-testid="freeze-popover">A small idea in motion. Freeze (F) holds this detail and the signal; Escape resumes.</span></span></div>
-      <p>Capture reconstructs DOM, not browser pixels. Inputs are redacted; filters, shadow DOM, canvas, frames and cross-origin images can block it. This glass-style Angular surface intentionally demonstrates the filter limitation. Send needs the local MCP server at localhost:3456 and confirms only after acknowledgement.</p>
-    </aside>
-  </section>
+  @if (creating()) {
+    <app-new-task-dialog (create)="create($event)" (cancel)="creating.set(false)" />
+  }
 </div>

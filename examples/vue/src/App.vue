@@ -2,6 +2,8 @@
 import { ref, computed, nextTick } from 'vue';
 import ProductArtwork from './ProductArtwork.vue';
 import CartItem from './CartItem.vue';
+import ColorPicker from './ColorPicker.vue';
+import SizePicker from './SizePicker.vue';
 import GrabGuide from './GrabGuide.vue';
 
 const colors = [
@@ -14,6 +16,7 @@ const sizes = ['S', 'M', 'L', 'XL'];
 
 const selectedColor = ref(null);
 const selectedSize  = ref(null);
+const monogram      = ref('');
 const cartCount     = computed(() => cartItems.value.length);
 const cartOpen      = ref(false);
 const cartItems     = ref([]);
@@ -28,14 +31,6 @@ let cartOpener = null;
 const productImageBg = computed(() =>
   selectedColor.value ? selectedColor.value.value : '#1e2130'
 );
-
-function selectColor(color) {
-  selectedColor.value = color;
-}
-
-function selectSize(size) {
-  selectedSize.value = size;
-}
 
 function addToCart() {
   if (!selectedColor.value || !selectedSize.value) {
@@ -53,7 +48,8 @@ function addToCart() {
     color: selectedColor.value.name,
     swatch: selectedColor.value.value,
     size: selectedSize.value,
-    price: '$68.00',
+    monogram: monogram.value,
+    price: monogram.value ? '$76.00' : '$68.00',
   });
 
 
@@ -117,7 +113,7 @@ function starFill(index) {
     </nav>
 
     <div class="product-layout">
-      <ProductArtwork :color="productImageBg" :name="selectedColor?.name" />
+      <ProductArtwork :color="productImageBg" :name="selectedColor?.name" :monogram="monogram" />
 
       <div class="product-info">
         <span class="eyebrow">THE EVERYDAY UNIFORM / COLLECTION 01</span>
@@ -150,41 +146,15 @@ function starFill(index) {
           Heavyweight 400gsm French terry. Slightly oversized. Pre-shrunk.
         </p>
 
-        <div class="option-group">
-          <div class="option-label">
-            Color
-            <span v-if="selectedColor" class="option-value">{{ selectedColor.name }}</span>
-          </div>
-          <div class="color-swatches">
-            <button
-              v-for="color in colors"
-              :key="color.value"
-              :class="['color-swatch', { 'swatch-active': selectedColor?.value === color.value }]"
-              :style="{ background: color.value }"
-              :aria-label="color.name"
-              :aria-pressed="selectedColor?.value === color.value"
-              @click="selectColor(color)"
-            />
-          </div>
-        </div>
+        <ColorPicker v-model="selectedColor" :colors="colors" />
+        <SizePicker v-model="selectedSize" :sizes="sizes" />
 
-        <div class="option-group">
-          <div class="option-label">
-            Size
-            <span v-if="selectedSize" class="option-value">{{ selectedSize }}</span>
-          </div>
-          <div class="size-options">
-            <button
-              v-for="size in sizes"
-              :key="size"
-              :class="['size-btn', { 'size-active': selectedSize === size }]"
-              :aria-pressed="selectedSize === size"
-              @click="selectSize(size)"
-            >{{ size }}</button>
-          </div>
-        </div>
+        <label class="monogram">
+          <span class="option-label">Monogram <span class="option-value">optional</span></span>
+          <input v-model="monogram" maxlength="3" placeholder="ABC" aria-label="Monogram" autocomplete="off" @input="monogram = monogram.toUpperCase().replace(/[^A-Z]/g, '')" />
+        </label>
 
-        <span class="fit-help"><button data-testid="freeze-trigger" aria-describedby="fit-tip">A note on fit ↗</button><span id="fit-tip" role="tooltip" data-testid="freeze-popover">Relaxed through the body. Choose your usual size for a roomy fit, or size down for a closer silhouette. Freeze this tip with Point Grab (F).</span></span>
+        <span class="fit-help"><button data-testid="freeze-trigger" aria-describedby="fit-tip">A note on fit ↗</button><span id="fit-tip" role="tooltip" data-testid="freeze-popover">Relaxed through the body. Choose your usual size for a roomy fit, or size down for a closer silhouette.</span></span>
         <p v-if="error" role="alert" class="validation-error">{{ error }}</p>
         <button
           :class="['add-to-cart-btn', { shake: btnShaking }]"
@@ -441,6 +411,9 @@ body {
 
 /* ── Options ── */
 .option-group { display: flex; flex-direction: column; gap: 0.6rem; }
+.monogram { display: flex; flex-direction: column; gap: 0.6rem; max-width: 220px; }
+.monogram input { padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text-heading, #fff); font: inherit; letter-spacing: .3em; text-transform: uppercase; }
+.monogram input:focus { outline: 2px solid #818cf8; outline-offset: 1px; }
 
 .option-label {
   font-size: 0.75rem;
@@ -714,6 +687,22 @@ body {
   from { transform: translateX(100%); }
   to   { transform: translateX(0); }
 }
+
+.playground-guide { color: var(--text); max-width: 1100px; margin: 48px auto; padding: 24px 28px; border-radius: 18px; border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.03); }
+.playground-guide .guide-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.playground-guide .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; opacity: .75; }
+.playground-guide h2 { margin: 6px 0 0; font-size: 22px; letter-spacing: -.02em; }
+.playground-guide ol { list-style: none; margin: 20px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; counter-reset: step; }
+.playground-guide li { counter-increment: step; font-size: 13.5px; line-height: 1.6; opacity: .88; }
+.playground-guide li strong { display: block; margin-bottom: 4px; font-size: 14px; opacity: 1; }
+.playground-guide li strong::before { content: counter(step) " · "; opacity: .6; }
+.playground-guide kbd { font: 11.5px ui-monospace, SFMono-Regular, Menlo, monospace; padding: 1px 5px; border-radius: 4px; border: 1px solid rgba(127,127,127,.4); }
+.mcp-status { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; font-size: 13px; border: 1px solid rgba(127,127,127,.3); }
+.mcp-status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
+.mcp-status[data-state="online"]::before { background: #34d399; }
+.mcp-status[data-state="offline"]::before { background: #f87171; }
+.mcp-status code { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; }
+@media (max-width: 640px) { .playground-guide { margin: 32px 16px; padding: 20px; } }
 </style>
 
 <style>
@@ -728,14 +717,8 @@ body {
 .fit-help [role=tooltip] { display: none; position: absolute; top: 100%; left: 0; width: 255px; z-index: 110; background: #282f46; border: 1px solid #67769a; border-radius: 10px; padding: 16px; font-size: 13px; }
 .fit-help:hover [role=tooltip], .fit-help:focus-within [role=tooltip] { display: block; }
 .validation-error { color: #ffb5b5; margin-bottom: 12px; font-size: 13px; }
-.grab-guide { margin-top: 64px; border-top: 1px solid var(--border); padding-top: 36px; }
-.grab-guide h2 { margin: 12px 0 28px; font-size: 28px; color: var(--text-heading); letter-spacing: -.03em; }
-.grab-guide ol { display: grid; grid-template-columns: repeat(3,1fr); gap: 26px; list-style: none; }
-.grab-guide strong { color: #d0d7ff; font-size: 14px; }
-.grab-guide p { font-size: 13px; line-height: 1.8; margin-top: 10px; }
-.capture-note { color: var(--text-muted); border-top: 1px solid var(--border); padding-top: 22px; margin-top: 28px !important; }
 button:focus-visible { outline: 2px solid #aab9ff; outline-offset: 4px; }
 .add-to-cart-btn:hover { filter: none; background: #6275df; }
-@media (max-width: 650px) { .product-layout { grid-template-columns: 1fr; gap: 24px; } .product-image { min-height: 300px; } .grab-guide ol { grid-template-columns: 1fr; } .page-main { padding-inline: 20px; } .cart-drawer { width: min(100%, 380px); } }
+@media (max-width: 650px) { .product-layout { grid-template-columns: 1fr; gap: 24px; } .product-image { min-height: 300px; } .page-main { padding-inline: 20px; } .cart-drawer { width: min(100%, 380px); } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
 </style>
