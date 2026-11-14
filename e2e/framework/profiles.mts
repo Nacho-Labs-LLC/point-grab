@@ -15,6 +15,8 @@ export interface Profile {
   target(page: Page): Locator;
   /** A different element, for multi-element comment batches. */
   second(page: Page): Locator;
+  /** Plain text to select and copy natively, when `target` has no text of its own. */
+  copyText?(page: Page): Locator;
   /** Adapter metadata expected for `target`. */
   grab: { component: RegExp | null; snippet: RegExp[] };
   /** A visible text field, opening UI if needed. Typing into it must not reflow the page. */
@@ -36,7 +38,8 @@ export const profiles: Record<Framework, Profile> = {
       return page.locator('#track-title');
     },
     target: (page) => page.locator('#track-title'),
-    second: (page) => page.locator('.queue-item').nth(2),
+    // The title, not the whole row: a pick lands on the title and the row's first line is its number.
+    second: (page) => page.locator('.queue-item .queue-title').nth(2),
     grab: { component: null, snippet: [/selector: div#track-title/] },
     input: async (page) => page.getByLabel('Filter queue'),
     shot: (page) => page.locator('.now-playing'),
@@ -69,6 +72,7 @@ export const profiles: Record<Framework, Profile> = {
     },
     target: (page) => page.locator('.color-swatch').first(),
     second: (page) => page.locator('.size-btn').first(),
+    copyText: (page) => page.locator('.product-name'), // the swatch target is textless
     grab: { component: /^ColorPicker$/, snippet: [/^in ColorPicker at .*src\/ColorPicker\.vue$/m, /^in App at .*src\/App\.vue$/m] },
     input: async (page) => page.getByLabel('Monogram'),
     inputValues: ['XQZ', 'ABC'], // monogram: up to three letters

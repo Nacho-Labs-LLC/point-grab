@@ -7,7 +7,7 @@
 import {
   test, expect, framework, profile, openApp, toolbar, toolbarButton, overlay, freezeLayer, toast,
   selectDialog, reviewDialog, preview, chooseAction, holdGrab, pick, clipboard, setClipboard,
-  nextInspect, openScreenshot, regionOf, dragRegion, comparePreviewTo, transformOf, firstLine,
+  nextInspect, openScreenshot, regionOf, dragRegion, comparePreviewTo, transformOf, firstLine, settleScroll,
 } from './fixtures.mts';
 
 const FRAMEWORK_ATTRS = /data-v-[a-f0-9]|_ngcontent|_nghost|ng-reflect|data-point-grab-|class="[^"]*svelte-[a-z0-9]{4,}|data-reactroot/;
@@ -223,6 +223,9 @@ test.describe(`${framework} demo`, () => {
     const input = await profile.input(page);
     await input.fill(secret);
     await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
+    // Filling can scroll the field into view; measure only once the page is still.
+    await input.scrollIntoViewIfNeeded();
+    await settleScroll(page);
     const raw = (await input.boundingBox())!;
     const box = { x: Math.max(0, Math.round(raw.x) - 6), y: Math.max(0, Math.round(raw.y) - 6), width: Math.min(300, Math.round(raw.width) + 12), height: Math.round(raw.height) + 12 };
     const capture = async () => {
@@ -241,8 +244,9 @@ test.describe(`${framework} demo`, () => {
   });
 
   test('native copy is untouched: selected text and text-field copy keep working', async ({ page }) => {
-    const target = profile.target(page);
+    const target = profile.copyText?.(page) ?? profile.target(page);
     const text = (await target.innerText()).trim();
+    expect(text).not.toBe('');
     await target.evaluate((el) => {
       const range = document.createRange(); range.selectNodeContents(el);
       const selection = getSelection()!; selection.removeAllRanges(); selection.addRange(range);
