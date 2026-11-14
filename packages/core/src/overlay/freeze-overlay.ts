@@ -186,15 +186,21 @@ export function createFreezeOverlay(): FreezeOverlay {
       }
     };
     collectAnimations(document);
-    pausedAnimations = [...animations].filter(animation => animation.playState === 'running');
+    // Never pause Point Grab's own UI: closing the menu/toolbar starts a fade-out
+    // transition immediately before freezing, which would otherwise stay on screen.
+    pausedAnimations = [...animations].filter(animation => {
+      const target = (animation.effect as KeyframeEffect | null)?.target;
+      return animation.playState === 'running' && !(target && isPointGrabNode(target));
+    });
     for (const animation of pausedAnimations) animation.pause();
 
     animStyleEl = document.createElement('style');
     animStyleEl.id = ANIM_STYLE_ID;
     animStyleEl.textContent = `
-      *, *::before, *::after {
+      :not([id^="__point-grab-"], [id^="__point-grab-"] *),
+      :not([id^="__point-grab-"], [id^="__point-grab-"] *)::before,
+      :not([id^="__point-grab-"], [id^="__point-grab-"] *)::after {
         animation-play-state: paused !important;
-
       }
     `;
     document.head.appendChild(animStyleEl);
@@ -227,7 +233,8 @@ export function createFreezeOverlay(): FreezeOverlay {
     let current: Node | null = node;
     while (current) {
       if (current instanceof HTMLElement && (current.id || '').startsWith('__point-grab-')) return true;
-      current = current.parentNode;
+      // Cross open shadow boundaries so UI rendered inside a host is recognized.
+      current = current.parentNode ?? (current instanceof ShadowRoot ? current.host : null);
     }
     return false;
   }

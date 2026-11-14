@@ -103,13 +103,40 @@ test('Point-grab UI excluded and editable values redacted without changing actua
   await page.getByRole('button',{name:'Cancel',exact:true}).click();await expect(page.getByLabel('Sensitive input')).toHaveValue('SECRET');
 });
 for (const [name,html] of [
-  ['iframe','<iframe src="https://example.com"></iframe>'], ['video','<video></video>'],['canvas','<canvas></canvas>'],
-  ['cross-origin image','<img src="https://example.com/picture.png">'],['filter','<div style="filter:blur(2px)">Blur</div>'],
-  ['shadow DOM','<div id="shadow"></div>'], ['broken image','<img src="/broken.png">'],
+  ['iframe','<iframe src="https://example.com"></iframe>'], ['video','<video></video>'],
+  ['WebGL canvas','<canvas id="gl"></canvas>'],
+  ['cross-origin image','<img src="https://example.com/picture.png">'], ['broken image','<img src="/broken.png">'],
 ] as const) test(`unsupported ${name} fails visibly, no partial preview`,async({page})=>{
-  await page.evaluate(({html,name})=>{const holder=document.createElement('div');holder.innerHTML=html;const el=holder.firstElementChild as HTMLElement;el.style.cssText+=';position:absolute;left:160px;top:160px;width:100px;height:50px';document.body.append(el);if(name==='shadow DOM')el.attachShadow({mode:'open'}).innerHTML='<span>Shadow</span>';},{html,name});
+  await page.evaluate(({html})=>{const holder=document.createElement('div');holder.innerHTML=html;const el=holder.firstElementChild as HTMLElement;el.style.cssText+=';position:absolute;left:160px;top:160px;width:100px;height:50px';document.body.append(el);if(el.id==='gl')(el as HTMLCanvasElement).getContext('webgl');},{html});
   await open(page);await drag(page);await expect(page.getByRole('alert')).toContainText('Cannot capture');
   await expect(page.getByAltText('Selected screenshot region')).toHaveCount(0);await page.getByRole('button',{name:'Cancel',exact:true}).click();
+});
+test('open shadow DOM (nested + slotted) renders real pixels and redacts inputs inside shadow roots',async({page})=>{
+  await page.evaluate(()=>{
+    const host=document.createElement('div');host.id='shadow-host';host.style.cssText='position:absolute;left:150px;top:150px;width:200px;height:80px';
+    host.innerHTML='<span slot="label" style="color:rgb(0,0,255)">Slotted</span>';document.body.append(host);
+    const root=host.attachShadow({mode:'open'});
+    root.innerHTML='<style>.fill{width:200px;height:80px;background:rgb(0,160,0);position:relative}</style><div class="fill"><slot name="label"></slot><div id="inner"></div></div>';
+    const nested=root.querySelector('#inner')!.attachShadow({mode:'open'});
+    nested.innerHTML='<input aria-label="Shadow secret" value="SHADOW-SECRET" style="position:absolute;left:60px;top:30px;width:80px;height:20px;background:rgb(255,255,0);border:0">';
+  });
+  await open(page);await drag(page,150,150,200,80);
+  const image=page.getByAltText('Selected screenshot region');await expect(image).toBeVisible();
+  const sample=await image.evaluate(async(img:HTMLImageElement)=>{await img.decode();const c=document.createElement('canvas');c.width=img.naturalWidth;c.height=img.naturalHeight;const x=c.getContext('2d')!;x.drawImage(img,0,0);
+    const at=(px:number,py:number)=>[...x.getImageData(px,py,1,1).data];return {corner:at(190,70),input:at(100,40)};});
+  expect(sample.corner).toEqual([0,160,0,255]); // shadow-root styles rendered, not refused
+  expect(sample.input).toEqual([0,160,0,255]);  // nested shadow input hidden in the capture
+  await page.getByRole('button',{name:'Cancel',exact:true}).click();
+  expect(await page.evaluate(()=>(document.querySelector('#shadow-host')!.shadowRoot!.querySelector('#inner')!.shadowRoot!.querySelector('input') as HTMLInputElement).value)).toBe('SHADOW-SECRET');
+});
+test('2D canvas pixels are captured',async({page})=>{
+  await page.evaluate(()=>{const c=document.createElement('canvas');c.width=200;c.height=80;c.style.cssText='position:absolute;left:150px;top:150px';const x=c.getContext('2d')!;x.fillStyle='rgb(0,200,200)';x.fillRect(0,0,200,80);document.body.append(c);});
+  await open(page);await drag(page,150,150,200,80);expect((await pixels(page)).center).toEqual([0,200,200,255]);
+});
+test('CSS filters are captured with a visible approximation note, not refused',async({page})=>{
+  await page.evaluate(()=>{const d=document.createElement('div');d.style.cssText='position:absolute;left:150px;top:150px;width:200px;height:80px;background:rgb(255,0,0);backdrop-filter:blur(8px);filter:saturate(1)';document.body.append(d);});
+  await open(page);await drag(page);await pixels(page);
+  await expect(page.getByRole('dialog',{name:'Review screenshot'})).toContainText('shown without the filter');
 });
 test('failed send keeps preview/comment; retry persists only after acknowledgement',async({page})=>{
   const before=(await history()).entries.length;await open(page);await drag(page);await pixels(page);

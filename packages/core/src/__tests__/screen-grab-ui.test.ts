@@ -10,7 +10,7 @@ const button = (label: string) => [...document.querySelectorAll('button')].find(
 function setup(onSubmit = vi.fn().mockResolvedValue(undefined)) {
   const canvas = document.createElement('canvas'); canvas.width = 40; canvas.height = 40;
   vi.spyOn(HTMLCanvasElement.prototype, 'toDataURL').mockReturnValue('data:image/png;base64,cG5n');
-  vi.mocked(capturePageRegion).mockResolvedValue(canvas);
+  vi.mocked(capturePageRegion).mockResolvedValue({ canvas, notes: [] });
   ui = createScreenGrab({ onSubmit, onBusy: vi.fn() }); ui.open();
   const drag = async () => {
     const overlay = document.querySelector<HTMLDivElement>('[role="dialog"]')!; overlay.setPointerCapture = vi.fn();
@@ -45,7 +45,7 @@ it('keeps selection usable after encoding failure', async () => {
   await drag(); expect(document.querySelector('[aria-label="Review screenshot"]')).not.toBeNull();
 });
 it('cancels a pending rasterization without resurrecting preview', async () => {
-  const { drag, canvas, onSubmit } = setup(); let resolve!: (canvas: HTMLCanvasElement) => void;
-  vi.mocked(capturePageRegion).mockReturnValue(new Promise(r => { resolve = r; })); await drag(); button('Cancel').click(); resolve(canvas); await flush();
+  const { drag, canvas, onSubmit } = setup(); let resolve!: (capture: { canvas: HTMLCanvasElement; notes: string[] }) => void;
+  vi.mocked(capturePageRegion).mockReturnValue(new Promise(r => { resolve = r; })); await drag(); button('Cancel').click(); resolve({ canvas, notes: [] }); await flush();
   expect(ui!.isOpen()).toBe(false); expect(document.querySelector('[role="dialog"]')).toBeNull(); expect(onSubmit).not.toHaveBeenCalled();
 });
