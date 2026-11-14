@@ -107,7 +107,9 @@ export function createScreenGrab(callbacks: {
     const reset = () => { start = null; selection.hidden = true; };
     const onMove = () => {
       reset();
-      if (capturing) generation++; // Discard a rasterization made stale by any nested/page scroll.
+      // Discard a rasterization made stale by any nested/page scroll, and unlock
+      // selection now rather than when the stale render eventually settles.
+      if (capturing) { generation++; capturing = false; }
       setStatus('Page moved. Start a new selection, or Cancel.');
     };
     window.addEventListener('scroll', onMove, true); window.addEventListener('resize', onMove);
@@ -140,7 +142,7 @@ export function createScreenGrab(callbacks: {
       }).catch((error) => {
         if (token !== generation) return;
         setStatus(error instanceof Error ? error.message : 'Cannot capture this region. Cancel or try another region.', true);
-      }).finally(() => { capturing = false; });
+      }).finally(() => { if (token === generation) capturing = false; });
     };
   }
 
@@ -163,11 +165,17 @@ export function createScreenGrab(callbacks: {
     const spacer = document.createElement('span'); spacer.className = 'pg-sg-spacer'; actions.append(spacer);
     const send = button(actions, 'Send image + comment', () => {
       if (sending) return;
-      sending = true; send.disabled = true; retake.disabled = true; cancel.disabled = true; status.style.color = '#94a3b8'; status.textContent = 'Sending…';
+      sending = true; send.disabled = true; retake.disabled = true; cancel.disabled = true; input.readOnly = true;
+      status.style.color = '#94a3b8'; status.textContent = 'Sending…';
       const token = generation, submission = { ...grab, comment: input.value.trim() };
       void Promise.resolve().then(() => callbacks.onSubmit(submission)).then(() => { if (token === generation) close(); }).catch((error) => {
         if (token === generation) { status.style.color = ''; status.textContent = error instanceof Error ? error.message : 'Send failed. Please retry.'; }
-      }).finally(() => { sending = false; send.disabled = false; retake.disabled = false; cancel.disabled = false; });
+      }).finally(() => {
+        sending = false; send.disabled = false; retake.disabled = false; cancel.disabled = false; input.readOnly = false;
+        // Disabling the focused Send button moved focus to <body>, outside the dialog's
+        // Escape/Tab handling. Bring it back so a failed send stays keyboard-operable.
+        if (root?.isConnected && !root.contains(document.activeElement)) send.focus({ preventScroll: true });
+      });
     }, true);
     send.title = 'Ctrl/Cmd + Enter';
     input.addEventListener('keydown', (event) => { if (event.key === 'Enter' && (event.ctrlKey || event.metaKey)) { event.preventDefault(); send.click(); } });

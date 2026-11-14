@@ -20,6 +20,14 @@ initPointGrabAngular({ activationMode: 'hold', devOnly: false });
 bootstrapApplication(App, appConfig).catch((err) => console.error(err));
 ```
 
+### Screenshot renderer warning
+
+**Add screenshot** lazy-loads `html2canvas` the first time a region is captured, so it is a separate lazy chunk rather than part of your initial bundle. The Angular CLI flags it as a CommonJS dependency; silence the warning in `angular.json`:
+
+```json
+"build": { "options": { "allowedCommonJsDependencies": ["html2canvas"] } }
+```
+
 ## What it adds
 
 - resolves component ancestry via `window.ng` debug APIs

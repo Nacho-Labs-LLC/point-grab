@@ -5,7 +5,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { once } from 'node:events';
-import { createPointGrabMcpServer, createFileHistoryStore } from '../server.js';
+import { createPointGrabMcpServer, createFileHistoryStore, isAllowedOrigin } from '../server.js';
 
 const png = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=';
 const grab = { mimeType: 'image/png', data: png, width: 1, height: 1, region: { x: 12, y: 20, width: 8, height: 8 }, comment: 'Fix this layout' };
@@ -77,4 +77,26 @@ it('answers a CORS health probe and decodes multi-byte UTF-8 split across reques
   expect(status).toBe(200);
   const persisted = await createFileHistoryStore(historyPath).readHistory();
   expect(persisted.entries[0].context.screenGrab?.comment).toBe(comment);
+});
+
+it('only accepts captures from local development origins', async () => {
+  for (const origin of [undefined, 'http://localhost:5173', 'http://127.0.0.1:4200', 'http://[::1]:3000', 'https://app.localhost', 'http://myapp.test', 'http://192.168.1.20:5173', 'http://10.0.0.4', 'http://172.20.1.1:8080']) {
+    expect(isAllowedOrigin(origin, '')).toBe(true);
+  }
+  for (const origin of ['https://evil.example', 'http://172.32.0.1', 'http://8.8.8.8', 'null', 'https://localhost.evil.com']) {
+    expect(isAllowedOrigin(origin, '')).toBe(false);
+  }
+  expect(isAllowedOrigin('https://dev.mycompany.com', 'https://dev.mycompany.com, https://other')).toBe(true);
+
+  const directory = await mkdtemp(join(tmpdir(), 'point-grab-origin-'));
+  const app = createPointGrabMcpServer({ historyPath: join(directory, 'history.json') });
+  await app.historyStore.ensureHistoryFile();
+  const http = app.startWebhookServer(0);
+  cleanup = async () => { await new Promise<void>((resolve) => http.close(() => resolve())); await rm(directory, { recursive: true, force: true }); };
+  await once(http, 'listening');
+  const address = http.address() as { address: string; port: number };
+  expect(address.address).toBe('127.0.0.1');
+  const response = await fetch(`http://127.0.0.1:${address.port}/inspect`, { method: 'POST', headers: { 'Content-Type': 'application/json', Origin: 'https://evil.example' }, body: JSON.stringify({ html: '<p>injected</p>' }) });
+  expect(response.status).toBe(403);
+  expect((await app.historyStore.readHistory()).entries).toHaveLength(0);
 });

@@ -73,6 +73,17 @@ describe("pointGrabSolid", () => {
     ).toBeNull();
   });
 
+  it("still instruments a project whose own checkout lives under a node_modules path", () => {
+    const plugin = pointGrabSolid();
+    plugin.configResolved?.({ root: "/home/me/node_modules/sandbox/app" });
+    expect(
+      plugin.transform("const Card = () => <p />;", "/home/me/node_modules/sandbox/app/src/Card.tsx"),
+    ).toContain('data-point-grab-source="src/Card.tsx:1:20"');
+    expect(
+      plugin.transform("const Card = () => <p />;", "/home/me/node_modules/sandbox/app/node_modules/ui/Card.tsx"),
+    ).toBeNull();
+  });
+
   it("runs only in Vite dev mode so metadata is not shipped to production", () => {
     expect(pointGrabSolid().apply).toBe("serve");
   });

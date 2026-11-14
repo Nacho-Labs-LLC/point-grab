@@ -28,10 +28,11 @@ export interface FreezeOverlay {
 export function createFreezeOverlay(): FreezeOverlay {
   let overlay: HTMLDivElement | null = null;
   let visible = false;
-  let hoverStyleEl: HTMLStyleElement | null = null;
+  let hoverStyleEls: HTMLStyleElement[] = [];
   let animStyleEl: HTMLStyleElement | null = null;
   let markedElements: Element[] = [];
   let pausedAnimations: Animation[] = [];
+  let shadowAnimStyleEls: HTMLStyleElement[] = [];
 
   function injectStyles(): void {
     if (document.getElementById(FREEZE_STYLE_ID)) return;
@@ -95,14 +96,38 @@ export function createFreezeOverlay(): FreezeOverlay {
 
   // --- Hover preservation via CSS rule cloning ---
 
-  /** Mark the hovered element and all ancestors with [data-point-grab-hover]. */
-  function markHoverChain(element: Element): void {
+  /** Parent element, stepping out of an open shadow root to its host. */
+  function composedParent(element: Element): Element | null {
+    if (element.parentElement) return element.parentElement;
+    const root = element.getRootNode();
+    return root instanceof ShadowRoot ? root.host : null;
+  }
+
+  /** The innermost hovered element, descending into open shadow roots. */
+  function deepestHovered(): Element | null {
+    let root: Document | ShadowRoot = document;
+    let hovered: Element | null = null;
+    for (;;) {
+      const next: Element | undefined = Array.from(root.querySelectorAll(':hover')).at(-1);
+      if (!next) return hovered;
+      hovered = next;
+      if (!next.shadowRoot) return hovered;
+      root = next.shadowRoot;
+    }
+  }
+
+  /** Mark the hovered element and all ancestors (across shadow roots) with [data-point-grab-hover]. */
+  function markHoverChain(element: Element): Set<Document | ShadowRoot> {
+    const roots = new Set<Document | ShadowRoot>();
     let current: Element | null = element;
     while (current && current !== document.documentElement) {
       current.setAttribute(HOVER_ATTR, '');
       markedElements.push(current);
-      current = current.parentElement;
+      const root = current.getRootNode();
+      if (root instanceof ShadowRoot || root instanceof Document) roots.add(root);
+      current = composedParent(current);
     }
+    return roots;
   }
 
   function clearHoverMarks(): void {
@@ -113,35 +138,32 @@ export function createFreezeOverlay(): FreezeOverlay {
   }
 
   /**
-   * Walk all stylesheets and clone :hover rules as [data-point-grab-hover] rules.
+   * Clone :hover rules as [data-point-grab-hover] rules in every tree scope on the
+   * hover chain (the document and each open shadow root), including adopted sheets.
    * This preserves hover-dependent visibility of child elements
-   * (e.g. `.trigger:hover .tooltip { display: block }`) which
-   * computed-style snapshotting alone cannot handle.
+   * (e.g. `.trigger:hover .tooltip { display: block }`, `:host(:hover) .panel`)
+   * which computed-style snapshotting alone cannot handle.
    */
-  function injectHoverRules(): void {
-    if (hoverStyleEl) return;
-
-    const cloned: string[] = [];
-    const sheets = document.styleSheets;
-    const len = sheets.length;
-    for (let i = 0; i < len; i++) {
-      const sheet = sheets[i];
-      if (!sheet) continue;
-      let rules: CSSRuleList;
-      try {
-        rules = sheet.cssRules;
-      } catch {
-        continue; // cross-origin stylesheet
+  function injectHoverRules(roots: Iterable<Document | ShadowRoot>): void {
+    if (hoverStyleEls.length) return;
+    for (const root of roots) {
+      const cloned: string[] = [];
+      for (const sheet of [...Array.from(root.styleSheets), ...(root.adoptedStyleSheets ?? [])]) {
+        let rules: CSSRuleList;
+        try {
+          rules = sheet.cssRules;
+        } catch {
+          continue; // cross-origin stylesheet
+        }
+        collectHoverRules(rules, cloned);
       }
-      collectHoverRules(rules, cloned);
+      if (cloned.length === 0) continue;
+      const style = document.createElement('style');
+      style.id = HOVER_STYLE_ID;
+      style.textContent = cloned.join('\n');
+      (root instanceof Document ? root.head : root).appendChild(style);
+      hoverStyleEls.push(style);
     }
-
-    if (cloned.length === 0) return;
-
-    hoverStyleEl = document.createElement('style');
-    hoverStyleEl.id = HOVER_STYLE_ID;
-    hoverStyleEl.textContent = cloned.join('\n');
-    document.head.appendChild(hoverStyleEl);
   }
 
   function collectHoverRules(rules: CSSRuleList, out: string[]): void {
@@ -154,19 +176,23 @@ export function createFreezeOverlay(): FreezeOverlay {
           const newSelector = rule.selectorText.replace(/:hover/g, `[${HOVER_ATTR}]`);
           out.push(`${newSelector} { ${rule.style.cssText} }`);
         }
-      } else if (rule instanceof CSSMediaRule) {
+      } else if ('cssRules' in rule && (rule as CSSGroupingRule).cssRules) {
+        // @media, @supports, @container, @layer (e.g. Tailwind v4 `hover:` utilities live in
+        // `@layer utilities { @media (hover: hover) { ... } }`). Re-emit with the same prelude
+        // so conditions and cascade layer order are preserved.
         const inner: string[] = [];
-        collectHoverRules(rule.cssRules, inner);
+        collectHoverRules((rule as CSSGroupingRule).cssRules, inner);
         if (inner.length > 0) {
-          out.push(`@media ${rule.conditionText} { ${inner.join('\n')} }`);
+          const prelude = rule.cssText.slice(0, rule.cssText.indexOf('{')).trim();
+          out.push(`${prelude} { ${inner.join('\n')} }`);
         }
       }
     }
   }
 
   function removeHoverRules(): void {
-    hoverStyleEl?.remove();
-    hoverStyleEl = null;
+    for (const style of hoverStyleEls) style.remove();
+    hoverStyleEls = [];
   }
 
   // --- Animation freezing ---
@@ -179,10 +205,14 @@ export function createFreezeOverlay(): FreezeOverlay {
     // Document.getAnimations() excludes shadow trees. Visit every open root,
     // including nested hosts, and deduplicate in case a browser includes it twice.
     const animations = new Set<Animation>();
+    const shadowRoots: ShadowRoot[] = [];
     const collectAnimations = (root: Document | ShadowRoot): void => {
       for (const animation of root.getAnimations?.() ?? []) animations.add(animation);
       for (const element of root.querySelectorAll('*')) {
-        if (element.shadowRoot) collectAnimations(element.shadowRoot);
+        if (element.shadowRoot && !isPointGrabNode(element)) {
+          shadowRoots.push(element.shadowRoot);
+          collectAnimations(element.shadowRoot);
+        }
       }
     };
     collectAnimations(document);
@@ -204,11 +234,20 @@ export function createFreezeOverlay(): FreezeOverlay {
       }
     `;
     document.head.appendChild(animStyleEl);
+    // Document styles don't reach into shadow trees: pause animations that start
+    // inside open shadow roots while frozen, too.
+    for (const root of shadowRoots) {
+      const style = animStyleEl.cloneNode(true) as HTMLStyleElement;
+      root.appendChild(style);
+      shadowAnimStyleEls.push(style);
+    }
   }
 
   function unfreezeAnimations(): void {
     animStyleEl?.remove();
     animStyleEl = null;
+    for (const style of shadowAnimStyleEls) style.remove();
+    shadowAnimStyleEls = [];
     for (const animation of pausedAnimations) {
       if (animation.playState !== 'idle' && animation.playState !== 'finished') animation.play();
     }
@@ -316,15 +355,12 @@ export function createFreezeOverlay(): FreezeOverlay {
       if (visible) return;
       // Activation can precede the picker's first mousemove. Preserve the real
       // browser hover chain rather than requiring a previously picked element.
-      hoveredElement ??= Array.from(document.querySelectorAll(':hover')).at(-1);
+      hoveredElement ??= deepestHovered();
       // 1. Block mouse/focus events to prevent hover state changes
       blockEvents();
 
       // 2. Preserve hover state via CSS rule cloning BEFORE overlay steals hover
-      if (hoveredElement) {
-        markHoverChain(hoveredElement);
-        injectHoverRules();
-      }
+      if (hoveredElement) injectHoverRules(markHoverChain(hoveredElement));
 
       // 3. Freeze CSS animations and DOM mutations
       freezeAnimations();
@@ -337,13 +373,13 @@ export function createFreezeOverlay(): FreezeOverlay {
     },
 
     hide(): void {
+      // Disconnect the mutation observer first so it doesn't revert our own cleanup.
       unfreezeDom();
       if (overlay) overlay.style.display = 'none';
       visible = false;
       clearHoverMarks();
       removeHoverRules();
       unfreezeAnimations();
-      unfreezeDom();
       unblockEvents();
     },
 
@@ -364,7 +400,6 @@ export function createFreezeOverlay(): FreezeOverlay {
       clearHoverMarks();
       removeHoverRules();
       unfreezeAnimations();
-      unfreezeDom();
       unblockEvents();
       overlay?.remove();
       document.getElementById(FREEZE_STYLE_ID)?.remove();

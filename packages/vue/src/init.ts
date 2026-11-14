@@ -24,9 +24,10 @@ export function initPointGrabVue(options?: Partial<PointGrabOptions>): PointGrab
   instance = init(options);
   instance.setComponentResolver((el) => resolveComponent(el));
   instance.setSourceResolver((el) => resolveSource(el));
+  // Keep caller-provided filters/cleaners alongside the adapter defaults.
   instance.setOptions({
-    classFilters: [vueClassFilter],
-    htmlCleaners: vueHtmlCleaners,
+    classFilters: [vueClassFilter, ...(options?.classFilters ?? [])],
+    htmlCleaners: [...vueHtmlCleaners, ...(options?.htmlCleaners ?? [])],
   });
 
   return instance;

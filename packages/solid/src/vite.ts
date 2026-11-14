@@ -78,7 +78,9 @@ export default function pointGrabSolid(
     },
     transform(code, id) {
       const filename = id.replace(/\?.*$/, "");
-      if (!/\.[cm]?[jt]sx$/i.test(filename) || /node_modules/.test(filename))
+      // Test dependencies against the project-relative path, so a checkout that itself
+      // lives under a node_modules directory is still instrumented.
+      if (!/\.[cm]?[jt]sx$/i.test(filename) || /(^|[\\/])node_modules[\\/]/.test(relative(root, filename)))
         return null;
 
       const result = transformSync(code, {

@@ -1,9 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import type { PointGrabAPI, PointGrabOptions } from '@point-grab/core';
 import { initPointGrabReact, disposePointGrab } from './init';
 
 /**
  * React hook that initializes point-grab on mount and disposes on unmount.
+ * Returns `null` during the first render, then the API instance once mounted.
  *
  * @example
  * ```tsx
@@ -14,17 +15,18 @@ import { initPointGrabReact, disposePointGrab } from './init';
  * ```
  */
 export function usePointGrab(options?: Partial<PointGrabOptions>): PointGrabAPI | null {
-  const apiRef = useRef<PointGrabAPI | null>(null);
+  // State (not a ref) so the component re-renders with the instance once mounted.
+  const [api, setApi] = useState<PointGrabAPI | null>(null);
 
   useEffect(() => {
-    apiRef.current = initPointGrabReact(options);
+    setApi(initPointGrabReact(options));
 
     return () => {
       disposePointGrab();
-      apiRef.current = null;
+      setApi(null);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- options should be stable
   }, []);
 
-  return apiRef.current;
+  return api;
 }

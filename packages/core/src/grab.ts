@@ -35,7 +35,9 @@ const MAX_HISTORY = 50;
 
 function toHistoryContext(ctx: ElementContext): HistoryContext {
   return {
-    ...(ctx.screenGrab ? { screenGrab: ctx.screenGrab } : {}),
+    // Keep screenshot metadata only: the PNG already lives in the transport's
+    // history, and 50 full crops could pin ~140 MB of base64 in page memory.
+    ...(ctx.screenGrab ? { screenGrab: { mimeType: ctx.screenGrab.mimeType, width: ctx.screenGrab.width, height: ctx.screenGrab.height, region: ctx.screenGrab.region, comment: ctx.screenGrab.comment } } : {}),
     html: ctx.html,
     componentName: ctx.componentName,
     filePath: ctx.filePath,
@@ -138,7 +140,13 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
   const screenGrab = createScreenGrab({
     onBusy(busy) {
       screenGrabBusy = busy;
-      if (busy) { closeAllPopovers(); doDeactivate(true); toolbar.hide(); freezeOverlay.show(); }
+      if (busy) {
+        // Freeze → Add screenshot is the way to capture a hover-only state: keep the
+        // user's freeze (and its hover chain) rather than re-freezing on the toolbar.
+        const keepFreeze = freezeOverlay.isVisible();
+        closeAllPopovers(); doDeactivate(true, keepFreeze); toolbar.hide();
+        if (!keepFreeze) freezeOverlay.show();
+      }
       else { freezeOverlay.hide(); if (store.state.toolbar.visible) toolbar.show(); }
     },
     async onSubmit(grab) {
@@ -313,7 +321,7 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
     updateToolbar();
   }
 
-  function doDeactivate(force = false): void {
+  function doDeactivate(force = false, keepFreeze = false): void {
     if (!store.state.active) return;
 
     // In hold mode, don't deactivate if the page is frozen — the user
@@ -322,7 +330,7 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
 
     store.state.active = false;
     store.state.frozen = false;
-    freezeOverlay.hide();
+    if (!keepFreeze) freezeOverlay.hide();
 
     if (commentModeActive && annotations.length === 0) {
       commentModeActive = false;

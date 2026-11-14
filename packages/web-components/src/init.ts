@@ -25,9 +25,10 @@ export function initPointGrabWebComponents(options?: Partial<PointGrabOptions>):
   instance.setComponentResolver((el) => resolveComponent(el));
   instance.setSourceResolver((el) => resolveSource(el));
   instance.setElementFromPoint(deepElementFromPoint);
+  // Keep caller-provided filters/cleaners alongside the adapter defaults.
   instance.setOptions({
-    classFilters: [wcClassFilter],
-    htmlCleaners: wcHtmlCleaners,
+    classFilters: [wcClassFilter, ...(options?.classFilters ?? [])],
+    htmlCleaners: [...wcHtmlCleaners, ...(options?.htmlCleaners ?? [])],
   });
 
   return instance;

@@ -635,14 +635,35 @@ function isSupportedResourceUri(uri: string): boolean {
   );
 }
 
+/**
+ * Captures flow straight into an AI agent's context, so only accept them from pages a
+ * developer is plausibly running locally. Requests without an Origin (curl, CLIs) are
+ * allowed; extra origins can be added with POINT_GRAB_ALLOWED_ORIGINS (comma separated).
+ */
+export function isAllowedOrigin(origin: string | undefined, extra = process.env.POINT_GRAB_ALLOWED_ORIGINS ?? ''): boolean {
+  if (!origin) return true;
+  if (extra.split(',').map((o) => o.trim()).filter(Boolean).includes(origin)) return true;
+  let host: string;
+  try { host = new URL(origin).hostname.replace(/^\[|\]$/g, ''); } catch { return false; }
+  if (host === 'localhost' || host === '::1' || /\.(localhost|local|test|internal)$/.test(host)) return true;
+  const ip = host.split('.').map(Number);
+  if (ip.length !== 4 || ip.some((n) => !Number.isInteger(n) || n < 0 || n > 255)) return false;
+  return ip[0] === 127 || ip[0] === 10 || (ip[0] === 192 && ip[1] === 168) || (ip[0] === 172 && ip[1] >= 16 && ip[1] <= 31);
+}
+
 function startWebhookServer(
   port: number,
   processIncomingGrab: (data: unknown) => Promise<GrabEntry>
 ): HttpServer {
   const httpServer = createHttpServer(async (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    const origin = req.headers.origin;
+    const allowed = isAllowedOrigin(origin);
+    res.setHeader('Access-Control-Allow-Origin', allowed && origin ? origin : '*');
+    res.setHeader('Vary', 'Origin');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    // Chrome Private Network Access preflight for pages served from a LAN address.
+    if (req.headers['access-control-request-private-network']) res.setHeader('Access-Control-Allow-Private-Network', 'true');
 
     if (req.method === 'OPTIONS') {
       res.writeHead(204);
@@ -660,6 +681,13 @@ function startWebhookServer(
     if (req.method !== 'POST' || (req.url !== '/inspect' && req.url !== '/grab')) {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Not found' }));
+      return;
+    }
+
+    if (!allowed) {
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: `Origin ${origin} is not allowed. Add it to POINT_GRAB_ALLOWED_ORIGINS to accept captures from it.` }));
+      console.error(`[point-grab] Rejected capture from origin ${origin} (set POINT_GRAB_ALLOWED_ORIGINS to allow it).`);
       return;
     }
 
@@ -719,8 +747,10 @@ function startWebhookServer(
     console.error('[point-grab] Webhook server error:', error);
   });
 
-  httpServer.listen(port, () => {
-    console.error(`[point-grab] Webhook listener on http://localhost:${port}/inspect`);
+  // Loopback only by default: the webhook writes into the agent's context.
+  const host = process.env.POINT_GRAB_HOST ?? '127.0.0.1';
+  httpServer.listen(port, host, () => {
+    console.error(`[point-grab] Webhook listener on http://${host}:${port}/inspect`);
   });
 
   return httpServer;

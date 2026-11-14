@@ -38,6 +38,12 @@ export function generateSnippet(context: ElementContext, maxContextLines: number
 
   // Component location
   if (context.componentStack.length > 0) {
+    // The stack reports where each component renders its host element; when the
+    // picked element has its own, more precise source location, lead with it.
+    const top = context.componentStack[0];
+    if (context.filePath && (context.filePath !== top.filePath || context.line !== top.line || context.column !== top.column)) {
+      parts.push(formatLocation(null, context.filePath, context.line, context.column));
+    }
     for (const entry of context.componentStack) {
       parts.push(formatLocation(entry.name, entry.filePath, entry.line, entry.column));
     }

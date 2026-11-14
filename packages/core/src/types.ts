@@ -23,8 +23,11 @@ export interface Annotation {
 }
 
 /** Serializable subset of ElementContext — no live DOM reference. */
+/** Screenshot metadata kept in local history (the PNG itself is not retained). */
+export type ScreenGrabSummary = Omit<ScreenGrab, 'data'>;
+
 export interface HistoryContext {
-  screenGrab?: ScreenGrab;
+  screenGrab?: ScreenGrabSummary;
   html: string;
   componentName: string | null;
   filePath: string | null;

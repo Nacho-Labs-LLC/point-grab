@@ -24,9 +24,10 @@ export function initPointGrabReact(options?: Partial<PointGrabOptions>): PointGr
   instance = init(options);
   instance.setComponentResolver((el) => resolveComponent(el));
   instance.setSourceResolver((el) => resolveSource(el));
+  // Keep caller-provided filters/cleaners alongside the adapter defaults.
   instance.setOptions({
-    classFilters: [reactClassFilter],
-    htmlCleaners: reactHtmlCleaners,
+    classFilters: [reactClassFilter, ...(options?.classFilters ?? [])],
+    htmlCleaners: [...reactHtmlCleaners, ...(options?.htmlCleaners ?? [])],
   });
 
   return instance;

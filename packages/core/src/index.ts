@@ -16,6 +16,7 @@ export type {
   PendingAction,
   Annotation,
   ScreenGrab,
+  ScreenGrabSummary,
   ComponentResolver,
   SourceResolver,
   ClassFilter,
