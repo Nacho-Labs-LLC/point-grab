@@ -126,8 +126,8 @@ test.describe(`${framework} demo`, () => {
     expect(await transformOf(motion)).not.toBe(moving);
 
     await trigger.hover(); await expect(detail).toBeVisible();
-    await page.keyboard.down('Control'); await page.keyboard.down('c'); await page.keyboard.press('f');
-    await page.keyboard.up('c'); await page.keyboard.up('Control');
+    await page.keyboard.down('Control'); await page.keyboard.down('b'); await page.keyboard.press('f');
+    await page.keyboard.up('b'); await page.keyboard.up('Control');
     await expect(freezeLayer(page)).toBeVisible();
     await page.mouse.move(5, 5);
     await expect(detail).toBeVisible();
@@ -190,8 +190,8 @@ test.describe(`${framework} demo`, () => {
     const detail = page.getByTestId('freeze-popover').first();
     await trigger.scrollIntoViewIfNeeded();
     await trigger.hover(); await expect(detail).toBeVisible();
-    await page.keyboard.down('Control'); await page.keyboard.down('c'); await page.keyboard.press('f');
-    await page.keyboard.up('c'); await page.keyboard.up('Control');
+    await page.keyboard.down('Control'); await page.keyboard.down('b'); await page.keyboard.press('f');
+    await page.keyboard.up('b'); await page.keyboard.up('Control');
     await openScreenshot(page);
     await expect(detail).toBeVisible();
     const box = await regionOf(page, detail);
@@ -312,10 +312,10 @@ test.describe(`${framework} demo`, () => {
     expect(labels[3]).toBe(labels[0]);
 
     await toolbarButton(page, 'enable').click();
-    await page.keyboard.down('Control'); await page.keyboard.down('c');
+    await page.keyboard.down('Control'); await page.keyboard.down('b');
     await profile.target(page).hover(); await page.waitForTimeout(300);
     await expect(overlay(page)).not.toBeVisible();
-    await page.keyboard.up('c'); await page.keyboard.up('Control');
+    await page.keyboard.up('b'); await page.keyboard.up('Control');
     await toolbarButton(page, 'enable').click();
 
     await toolbarButton(page, 'dismiss').click();

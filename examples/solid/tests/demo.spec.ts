@@ -85,10 +85,10 @@ test("real Solid component context and queued comment preserve component/source 
   await expect(page.locator("#__point-grab-overlay__")).not.toBeVisible();
   await page.evaluate(() => getSelection()?.removeAllRanges());
   await page.keyboard.down("Control");
-  await page.keyboard.down("c");
+  await page.keyboard.down("b");
   await target.hover();
   await target.click();
-  await page.keyboard.up("c");
+  await page.keyboard.up("b");
   await page.keyboard.up("Control");
   await expect(page.locator("#__point-grab-toast__")).toContainText(
     "Copied to clipboard",

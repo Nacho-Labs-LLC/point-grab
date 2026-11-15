@@ -66,7 +66,7 @@ export interface PointGrabOptions {
   /**
    * Keyboard shortcut to activate: one key plus optional Ctrl/Meta(Cmd)/Alt(Option)/Shift,
    * e.g. "Ctrl+Shift+X" or "Alt+G". Modifiers must match exactly.
-   * Default: "Meta+C" (Mac) / "Ctrl+C" (Win)
+   * Default: "Ctrl+B" (all platforms)
    */
   activationKey: string;
   /** Single key that toggles Freeze while selecting or while the toolbar is shown. Default: "F" */

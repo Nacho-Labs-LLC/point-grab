@@ -39,7 +39,7 @@ test('grabs resolve the Post component for a newly composed post and for transie
   await page.getByRole('button', { name: 'Reply to post' }).nth(1).click();
   const reply = page.locator('.reply-popover');
   await expect(reply).toBeVisible();
-  // Hold-to-grab leaves Ctrl+C to the browser while a text field has focus (native copy).
+  // Hold-to-grab is ignored while a text field has focus, so typing shortcuts keep working.
   await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
   const snippet = await grab(page, reply.locator('.reply-input'));
   expect(snippet).toMatch(/^in Post at src\/App\.jsx:\d+:\d+$/m);

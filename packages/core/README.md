@@ -19,7 +19,7 @@ const pointGrab = init();
 ```
 
 Default flow:
-- hold `Cmd+C` on macOS or `Ctrl+C` on Windows/Linux
+- hold `Ctrl+B`
 - hover an element
 - click to capture it
 

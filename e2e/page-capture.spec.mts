@@ -30,7 +30,7 @@ test.beforeEach(async ({page}) => {
 });
 test.afterEach(async ({page})=>expect((page as any).__errors).toEqual([]));
 async function open(page: Page) {
-  await page.keyboard.press('Control+c'); await page.getByRole('button',{name:'Actions',exact:true}).click();
+  await page.keyboard.press('Control+b'); await page.getByRole('button',{name:'Actions',exact:true}).click();
   await page.getByText('Add screenshot',{exact:true}).click();
   await expect(page.getByRole('dialog',{name:'Select current page region',exact:true})).toBeVisible();
 }

@@ -16,7 +16,7 @@ import { createOverlayRenderer } from './overlay/overlay-renderer';
 import { createCrosshair } from './overlay/crosshair';
 import { showToast, disposeToast } from './overlay/toast';
 import { createElementPicker } from './picker/element-picker';
-import { createKeyboardHandler, isMac, pressesKey } from './keyboard/keyboard-handler';
+import { createKeyboardHandler, pressesKey } from './keyboard/keyboard-handler';
 import { copyElement, buildElementContext } from './clipboard/copy';
 import { createPluginRegistry } from './plugins/plugin-registry';
 import { createMcpWebhookPlugin } from './plugins/mcp-webhook-plugin';
@@ -55,7 +55,8 @@ function toHistoryContext(ctx: ElementContext): HistoryContext {
 
 function getDefaultOptions(): PointGrabOptions {
   return {
-    activationKey: isMac() ? 'Meta+C' : 'Ctrl+C',
+    // Ctrl+B on every platform: free in browsers, and not Cmd+B (bold) on macOS.
+    activationKey: 'Ctrl+B',
     freezeKey: 'F',
     activationMode: 'hold',
     keyHoldDuration: 0,

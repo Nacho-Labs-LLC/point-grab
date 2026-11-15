@@ -34,7 +34,7 @@ test('notes: search, create, edit with live word count, and format', async ({ pa
 
 test('a grab of the live word count reflects the edit and resolves App.svelte', async ({ page }) => {
   await page.getByLabel('Note body').fill('four short words here');
-  // Hold-to-grab leaves Ctrl+C to the browser while a text field has focus (native copy).
+  // Hold-to-grab is ignored while a text field has focus, so typing shortcuts keep working.
   await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
   const snippet = await grab(page, page.locator('.word-count'));
   expect(snippet).toContain('4 words');

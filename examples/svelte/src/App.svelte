@@ -94,7 +94,7 @@
       <span class="inkwell-beta">beta</span>
     </div>
     <div class="pg-hint">
-      Hold <kbd>Cmd+C</kbd> / <kbd>Ctrl+C</kbd>, hover any element, click to grab its context
+      Hold <kbd>Ctrl+B</kbd>, hover any element, click to grab its context
     </div>
   </header>
 

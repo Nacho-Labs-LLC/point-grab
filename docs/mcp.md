@@ -255,7 +255,7 @@ Or in your MCP config:
  Browser                     MCP Server                    AI Agent
  -------                     ----------                    --------
 
- 1. User holds Cmd+C,
+ 1. User holds Ctrl+B,
     hovers, clicks element
          |
  2. point-grab copies snippet
@@ -343,7 +343,7 @@ If the configured port is already in use, the MCP server logs a warning but cont
 
 1. Start your web app in development mode
 2. The MCP server starts automatically with your AI agent (Claude Code, Cursor, etc.)
-3. Hold `Cmd+C` (Mac) / `Ctrl+C` (Win) in your browser
+3. Hold `Ctrl+B` in your browser
 4. Hover over the element you want to modify
 5. Click to capture -- it's copied to clipboard and sent to the MCP server
 6. Switch to your AI agent and ask it to modify the captured element

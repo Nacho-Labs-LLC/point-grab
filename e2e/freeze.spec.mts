@@ -18,7 +18,7 @@ test('screenshot selection freezes live animation and DOM, then cancel resumes',
   await page.goto(url);
   const sample = () => page.locator('#moving').evaluate(el => getComputedStyle(el).transform);
   const first = await sample(); await page.waitForTimeout(160); expect(await sample()).not.toBe(first);
-  await page.keyboard.press('Control+c');
+  await page.keyboard.press('Control+b');
   await page.getByRole('button', { name: 'Actions', exact: true }).click();
   await page.getByText('Add screenshot', { exact: true }).click();
   await page.waitForTimeout(80); const frozen = await sample(), ticks = await page.locator('#ticks').innerText();
@@ -55,12 +55,12 @@ test('nested open-shadow CSS animations and DOM freeze, preserve author pauses a
     expect(await page.evaluate(() => (window as any).author.playState)).toBe('paused');
     return frozen;
   };
-  await page.keyboard.press('Control+c'); await page.keyboard.press('f');
+  await page.keyboard.press('Control+b'); await page.keyboard.press('f');
   const frozen = await assertFrozen();
   await page.evaluate(() => (window as any).cancelled.cancel());
   await page.keyboard.press('Escape'); await page.waitForTimeout(180); expect(await sample()).not.toEqual(frozen);
   expect(await page.evaluate(() => [(window as any).author.playState, (window as any).cancelled.playState])).toEqual(['paused', 'idle']);
-  await page.keyboard.press('Control+c');
+  await page.keyboard.press('Control+b');
   await page.getByRole('button', { name: 'Actions', exact: true }).click();
   await page.getByText('Add screenshot', { exact: true }).click();
   const captureFrozen = await assertFrozen();
@@ -83,7 +83,7 @@ test('running transition and WAAPI stay at their current position, preserve auth
     Object.assign(window, { waapi, paused });
   });
   await page.waitForTimeout(180);
-  await page.keyboard.press('Control+c'); await page.keyboard.press('f');
+  await page.keyboard.press('Control+b'); await page.keyboard.press('f');
   await page.waitForTimeout(80);
   const sample = () => page.evaluate(() => ({ transform: getComputedStyle(document.querySelector('#moving')!).transform, time: (window as any).waapi.currentTime }));
   const frozen = await sample(); await page.waitForTimeout(220); expect(await sample()).toEqual(frozen);
@@ -93,8 +93,8 @@ test('running transition and WAAPI stay at their current position, preserve auth
 
 test('explicit Freeze preserves hover detail, CSS motion, and resumes on Escape', async ({ page }) => {
   await page.goto(url); await page.locator('#trigger').hover(); await expect(page.locator('.hint')).toBeVisible();
-  await page.keyboard.down('Control'); await page.keyboard.down('c'); await page.keyboard.press('f');
-  await page.keyboard.up('c'); await page.keyboard.up('Control');
+  await page.keyboard.down('Control'); await page.keyboard.down('b'); await page.keyboard.press('f');
+  await page.keyboard.up('b'); await page.keyboard.up('Control');
   await page.mouse.move(800, 500); await expect(page.locator('.hint')).toBeVisible();
   const sample = () => page.locator('#moving').evaluate(el => getComputedStyle(el).transform);
   await page.waitForTimeout(80); const frozen = await sample(); await page.waitForTimeout(160); expect(await sample()).toBe(frozen);

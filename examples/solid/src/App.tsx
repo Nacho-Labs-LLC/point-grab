@@ -242,9 +242,9 @@ function GrabGuide() {
         <McpStatus />
       </div>
       <ol>
-        <li><span>01</span><strong>Grab</strong><p>Hold <kbd>⌘C</kbd> / <kbd>Ctrl+C</kbd>, hover a product card or a bag item and click. Your clipboard gets its HTML plus the Solid component and source file.</p></li>
+        <li><span>01</span><strong>Grab</strong><p>Hold <kbd>Ctrl+B</kbd>, hover a product card or a bag item and click. Your clipboard gets its HTML plus the Solid component and source file.</p></li>
         <li><span>02</span><strong>Comment</strong><p>Toolbar <kbd>⋯</kbd> → Add Comment, click an element, write a note. Queue a few, then Confirm &amp; Copy.</p></li>
-        <li><span>03</span><strong>Freeze</strong><p>Hover a product badge like <em>Bestseller</em>, hold <kbd>⌘C</kbd> / <kbd>Ctrl+C</kbd> and press <kbd>F</kbd>. The detail and the spark hold still. <kbd>Esc</kbd> resumes.</p></li>
+        <li><span>03</span><strong>Freeze</strong><p>Hover a product badge like <em>Bestseller</em>, hold <kbd>Ctrl+B</kbd> and press <kbd>F</kbd>. The detail and the spark hold still. <kbd>Esc</kbd> resumes.</p></li>
         <li><span>04</span><strong>Screenshot</strong><p><kbd>⋯</kbd> → Add screenshot, drag over the collection, add a note and Send it to your AI.</p></li>
         <li><span>05</span><strong>History</strong><p>The clock button lists every grab. Click one to copy it again.</p></li>
       </ol>

@@ -14,9 +14,9 @@ import { McpStatusComponent } from './mcp-status';
         <app-mcp-status />
       </div>
       <ol>
-        <li><strong>Grab</strong> Hold <kbd>⌘C</kbd> / <kbd>Ctrl+C</kbd>, hover a task card and click. Your clipboard gets its HTML plus the Angular component and its ancestors.</li>
+        <li><strong>Grab</strong> Hold <kbd>Ctrl+B</kbd>, hover a task card and click. Your clipboard gets its HTML plus the Angular component and its ancestors.</li>
         <li><strong>Comment</strong> Toolbar <kbd>⋯</kbd> → Add Comment, click an element, write a note. Queue a few, then Confirm &amp; Copy.</li>
-        <li><strong>Freeze</strong> Hover <em>3 online</em> in the header, hold <kbd>⌘C</kbd> / <kbd>Ctrl+C</kbd> and press <kbd>F</kbd>. The popover and live pulse hold still. <kbd>Esc</kbd> resumes.</li>
+        <li><strong>Freeze</strong> Hover <em>3 online</em> in the header, hold <kbd>Ctrl+B</kbd> and press <kbd>F</kbd>. The popover and live pulse hold still. <kbd>Esc</kbd> resumes.</li>
         <li><strong>Screenshot</strong> <kbd>⋯</kbd> → Add screenshot, drag over part of the board, add a note and Send it to your AI.</li>
         <li><strong>History</strong> The clock button lists every grab. Click one to copy it again.</li>
       </ol>

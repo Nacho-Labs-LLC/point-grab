@@ -71,3 +71,19 @@ it('a custom freezeKey toggles Freeze and relabels the toolbar button', async ()
   expect(button.getAttribute('aria-label')).toBe('Freeze page (G)');
   api.dispose();
 });
+
+it('the default shortcut is Ctrl+B on every platform; Ctrl+C and Cmd+B stay with the browser', async () => {
+  const { init } = await import('../grab');
+  const api = init({ mcpWebhook: false, devOnly: false });
+  const copy = new KeyboardEvent('keydown', { key: 'c', code: 'KeyC', ctrlKey: true, bubbles: true, cancelable: true });
+  document.dispatchEvent(copy);
+  const bold = new KeyboardEvent('keydown', { key: 'b', code: 'KeyB', metaKey: true, bubbles: true, cancelable: true });
+  document.dispatchEvent(bold);
+  expect(api.isActive()).toBe(false);
+  expect(copy.defaultPrevented || bold.defaultPrevented).toBe(false);
+  document.dispatchEvent(new KeyboardEvent('keydown', { key: 'b', code: 'KeyB', ctrlKey: true, bubbles: true, cancelable: true }));
+  expect(api.isActive()).toBe(true);
+  document.dispatchEvent(new KeyboardEvent('keyup', { key: 'b', code: 'KeyB', bubbles: true }));
+  expect(api.isActive()).toBe(false);
+  api.dispose();
+});

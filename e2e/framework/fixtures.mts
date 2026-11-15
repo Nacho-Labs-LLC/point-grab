@@ -79,14 +79,14 @@ export async function chooseAction(page: Page, label: string) {
   await page.getByRole('menuitem', { name: label, exact: true }).click();
 }
 
-/** Hold Ctrl+C, hover, click: the primary grab gesture. */
+/** Hold Ctrl+B, hover, click: the primary grab gesture. */
 export async function holdGrab(page: Page, target: Locator) {
   await target.scrollIntoViewIfNeeded();
-  await page.keyboard.down('Control'); await page.keyboard.down('c');
+  await page.keyboard.down('Control'); await page.keyboard.down('b');
   await target.hover();
   await expect(overlay(page)).toBeVisible();
   await target.click();
-  await page.keyboard.up('c'); await page.keyboard.up('Control');
+  await page.keyboard.up('b'); await page.keyboard.up('Control');
 }
 
 /** Hover + click while the picker is already active (toolbar selection mode or a pending action). */

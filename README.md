@@ -21,7 +21,7 @@ Point at any element in a running web app. Get its full context -- cleaned HTML,
 </script>
 ```
 
-That's it. Hold `Cmd+C` (Mac) or `Ctrl+C` (Windows/Linux), hover over any element, and click. The context is on your clipboard.
+That's it. Hold `Ctrl+B`, hover over any element, and click. The context is on your clipboard.
 
 The IIFE bundle exposes a global `PointGrab`; it does not auto-initialize or create `window.__POINT_GRAB__`.
 
@@ -35,7 +35,7 @@ npm install @point-grab/core
 import { init } from '@point-grab/core';
 
 const inspector = init();
-// Hold Cmd+C (Mac) / Ctrl+C (Win), hover, click
+// Hold Ctrl+B, hover, click
 ```
 
 ---
@@ -260,7 +260,7 @@ See [docs/mcp.md](./docs/mcp.md) for full tool schemas and example responses.
 
 | Option | Type | Default | Description |
 |---|---|---|---|
-| `activationKey` | `string` | `'Meta+C'` (Mac) / `'Ctrl+C'` (Win) | Keyboard shortcut to activate |
+| `activationKey` | `string` | `'Ctrl+B'` | Keyboard shortcut to activate |
 | `freezeKey` | `string` | `'F'` | Single key that toggles Freeze while selecting or while the toolbar is shown |
 | `activationMode` | `'hold' \| 'toggle'` | `'hold'` | Hold key to inspect, or toggle on/off |
 | `keyHoldDuration` | `number` | `0` | Milliseconds to hold before activating (hold mode only) |
@@ -333,7 +333,7 @@ See [docs/plugins.md](./docs/plugins.md) for the full hook reference and plugin 
 
 ## Keyboard Shortcuts
 
-Default activation: hold `Cmd+C` (Mac) or `Ctrl+C` (Windows/Linux).
+Default activation: hold `Ctrl+B`.
 
 In hold mode, the inspector activates while the key combination is held down and deactivates on release. In toggle mode, the shortcut toggles the inspector on and off.
 
@@ -355,7 +355,7 @@ const inspector = init({
 
 Key combo format: modifier names (`Meta`, `Cmd`, `Command`, `Ctrl`, `Control`, `Shift`, `Alt`, `Option`) joined with `+`, followed by exactly one key, e.g. `Alt+G`, `Ctrl+Shift+1`, `Cmd+Space` or `Ctrl++`.
 
-- **Modifiers match exactly.** `Ctrl+C` does not fire on Ctrl+Shift+C, so browser shortcuts like DevTools' inspect keep working.
+- **Modifiers match exactly.** `Ctrl+B` does not fire on Ctrl+Shift+B, so browser shortcuts like the bookmarks bar keep working.
 - **Letters and digits match by physical key**, so `Alt+G` works on macOS (where Option+G types `©`), `Shift+1` works, and non-Latin keyboard layouts work.
 - An invalid combo (no key, or more than one) logs a single console warning and never activates.
 - Every adapter accepts the same options, and `setOptions({ activationKey, freezeKey })` changes them at runtime.

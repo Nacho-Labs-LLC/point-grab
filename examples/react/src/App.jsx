@@ -218,7 +218,7 @@ export default function App() {
       </header>
 
       <div className="feed-hint">
-        Hold <kbd>⌘C</kbd> / <kbd>Ctrl+C</kbd> and click anything to grab it for your AI
+        Hold <kbd>Ctrl+B</kbd> and click anything to grab it for your AI
       </div>
 
       <section className="feed-intro"><span className="eyebrow">THREAD / FOR PEOPLE WHO BUILD</span><h1>Good ideas start<br />with a conversation.</h1><p>A little corner of the internet for people who build. Like, reply, repost, or save something worth coming back to.</p><FreezePreview /></section>

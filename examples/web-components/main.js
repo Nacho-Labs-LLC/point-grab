@@ -315,9 +315,9 @@ class ForgeApp extends HTMLElement {
             <forge-mcp-status></forge-mcp-status>
           </div>
           <ol>
-            <li><strong>Grab</strong> Hold <kbd>⌘C</kbd> / <kbd>Ctrl+C</kbd>, hover a service card or its Deploy button and click. You get the element's HTML and its custom-element ancestry through every shadow root.</li>
+            <li><strong>Grab</strong> Hold <kbd>Ctrl+B</kbd>, hover a service card or its Deploy button and click. You get the element's HTML and its custom-element ancestry through every shadow root.</li>
             <li><strong>Comment</strong> Toolbar <kbd>⋯</kbd> → Add Comment, click an element, write a note. Queue a few, then Confirm &amp; Copy.</li>
-            <li><strong>Freeze</strong> Hover <em>Release notes</em>, hold <kbd>⌘C</kbd> / <kbd>Ctrl+C</kbd> and press <kbd>F</kbd>. The popover and the spark hold still. <kbd>Esc</kbd> resumes.</li>
+            <li><strong>Freeze</strong> Hover <em>Release notes</em>, hold <kbd>Ctrl+B</kbd> and press <kbd>F</kbd>. The popover and the spark hold still. <kbd>Esc</kbd> resumes.</li>
             <li><strong>Screenshot</strong> <kbd>⋯</kbd> → Add screenshot and drag over a card mid-deploy. Shadow DOM and canvas sparklines are captured; inputs are redacted.</li>
             <li><strong>History</strong> The clock button lists every grab. Click one to copy it again.</li>
           </ol>

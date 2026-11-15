@@ -97,7 +97,7 @@ function parseOrWarn(combo: string): ParsedKey | null {
 }
 
 function matchesCombo(e: KeyboardEvent, parsed: ParsedKey): boolean {
-  // Modifiers must match exactly, so "Ctrl+C" leaves Ctrl+Shift+C (DevTools) alone.
+  // Modifiers must match exactly, so "Ctrl+B" leaves Ctrl+Shift+B (bookmarks bar) alone.
   // Shift is only enforced for letters and digits: symbols like "?" need it implicitly.
   if (e.metaKey !== parsed.meta || e.ctrlKey !== parsed.ctrl || e.altKey !== parsed.alt) return false;
   if (/^[a-z0-9]$/.test(parsed.key) && e.shiftKey !== parsed.shift) return false;
