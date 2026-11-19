@@ -1,11 +1,11 @@
-# Point Grab release readiness — unreleased
+# Point Grab release readiness — v0.2.0 draft
 
-**Publication hold:** Nate requires reviewable screenshots/videos of the real functionality before considering release. See [visual review](visual-review.md). Do not tag, push or publish based on automated green results alone; obtain explicit approval after visual review.
+**Publication hold:** Nate approved pushing the reviewed work and preparing **v0.2.0 as a draft release only**. Public release/npm publication still requires separate final approval. See [visual review](visual-review.md) for the recorded functionality and [draft release notes](releases/v0.2.0.md) for migration and remaining gates.
 
 ## Candidate and version decision
 
 - Candidate baseline: **`22a639d`** on `naterchrdsn/recover-inflight-work-release`, consolidated in `/workspace/point-grab`. Subsequent release-preparation edits require fresh verification; this is not a tag or published version.
-- All eight package manifests currently declare **`0.1.6`**. **Release version/bump policy is undecided**; do not infer a new version from these notes. Decide the coordinated package/dependency version changes before tagging or publishing.
+- All eight package manifests now declare **`0.2.0`**, coordinated for the breaking default shortcut. Internal `workspace:*` references are retained in source and rewritten to the selected package version by pnpm packing; do not publish package directories with unresolved workspace references. The MCP handshake version is aligned as well.
 - This document records local verification and pending release gates. Local results are not hosted CI, deployment or registry results. No publication is authorized by these notes.
 
 ## Unreleased changes
@@ -17,17 +17,21 @@
 
 ## Evidence boundary
 
+The v0.2.0 draft candidate passed frozen installation, root unit/lint/build gates and packing/clean installation for all eight packages. Retained candidate tarballs are under `/workspace/point-grab-release-evidence/v0.2.0-draft-tarballs/`; every packed manifest is v0.2.0, with internal workspace references rewritten to v0.2.0. A separate clean installation of the MCP tarball completed a real stdio SDK handshake reporting v0.2.0 and listing its tools. This handshake is not capture persistence/image-display certification. Gate log: `v0.2.0-draft-gates.log`. The 315-browser-test implementation run predates this metadata-only version bump; no new full browser recording or hosted CI pass is claimed.
+
 The historical **170 executions included 20 duplicates**: `playwright.screen-grab.config.ts` aliases the page-capture suite. That total is not 170 independent tests and is not a current candidate pass. Older demo-rejection descriptions and historical unit/browser totals must not substitute for newly collected reports. `docs/framework-verification.md` retains historical assertions; interpret them as historical, not release certification.
 
 ## Gates pending before release
 
-- [ ] Decide release version and migration wording for the breaking shortcut; align all package versions and internal dependency ranges.
+- [x] Decide release version and migration wording for the breaking shortcut: v0.2.0 across all eight packages, with Ctrl+B migration documented.
 - [x] Run fresh frozen-install, unit, type/lint and build gates on the current candidate. Rerun affected gates after any subsequent code/version changes.
 - [x] Finish the corrected expanded recording after the phone label/toolbar stacking fix: **`full-r4` passes 314/314 tests, 11 suites, 178/178 required checklist rows, zero failures/skips/unrun/retries**. Earlier insufficient, visually defective or flaky runs remain separate. Final gallery/search/video playback, artifact integrity and representative phone frames are verified. See [expanded scope and review evidence](visual-review.md). Human visual acceptance remains pending.
 - [ ] Verify packaged tarballs/entry points, declarations, bundled lazy renderer/global bundle, dependency resolution, MIT notices and clean-consumer installation. Exercise the installed MCP stdio path and an external client image display; source-tree tests alone do not certify them.
 - [ ] Verify loopback binding, origin rejection/explicit allowlisting, custom host/port transport setup and privacy limitations against the final artifact.
 - [ ] Review final diff and repository cleanliness; confirm packaging and CI wiring. Record actual hosted CI results if run—local results are not hosted CI evidence.
-- [ ] Obtain explicit approval for commit/tag/push/publication after gates pass. Preparation does not authorize publishing.
+- [x] Obtain approval for commit/push and draft release preparation.
+- [ ] Assess/remediate the current workspace production-dependency audit findings before publication: 1 critical, 11 high, 20 moderate and 5 low. This workspace scope includes demos/site and is not a reachability finding for every published package. The default-branch GitHub alert banner is a different inventory. Audit evidence: `/workspace/point-grab-release-evidence/release-runtime-audit.json`.
+- [ ] Obtain separate final approval for public GitHub release/npm publication after outstanding gates pass. Draft preparation does not authorize publishing.
 
 ## Local verification — November 17, 2026
 

@@ -1,6 +1,6 @@
 {
   "name": "@point-grab/solid",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "SolidJS adapter and Vite transform for point-grab",
   "author": {
     "name": "Nate Richardson",
