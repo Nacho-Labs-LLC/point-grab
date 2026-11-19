@@ -44,6 +44,8 @@ const inspector = init();
 
 The core engine works on any page out of the box. Framework adapters add rich metadata: component names, source file paths with line numbers, and component ancestor chains.
 
+The seven runnable demos live only in [`examples/`](examples/README.md), the canonical sources for StackBlitz. That guide covers browser features, editable configuration/extension use cases, and the separate real MCP/image-transport requirements. No duplicate demo tree is maintained; hosted links will be added only after the actual StackBlitz projects are verified.
+
 ### Vanilla JS
 
 ```typescript
@@ -157,6 +159,10 @@ Or pass options:
 ```
 
 The Svelte adapter reads `__svelte_meta` (Svelte 5) and `__svelte_component` (Svelte 4) for component names and `__svelte_meta.loc` for source locations. It strips `s-*` and `svelte-*` CSS classes and `svelte-*` attributes.
+
+### Solid
+
+Use `initPointGrabSolid()` from `@point-grab/solid` and register the `@point-grab/solid/vite` transform **before** `vite-plugin-solid`. The transform supplies development JSX file/line/column and lexical component context; it does not emulate a complete logical owner graph. See [Solid setup and metadata boundaries](docs/solid-support.md) and the canonical [Solid demo](examples/solid).
 
 ### Web Components
 
@@ -554,6 +560,7 @@ interface PluginHooks {
 | [`@point-grab/react`](./packages/react) | React adapter -- fiber tree, `_debugSource`, `usePointGrab()` hook |
 | [`@point-grab/vue`](./packages/vue) | Vue adapter -- component tree, `__file`, `PointGrabPlugin` for `app.use()` |
 | [`@point-grab/svelte`](./packages/svelte) | Svelte adapter -- `__svelte_meta`, `use:pointGrab` action |
+| [`@point-grab/solid`](./packages/solid) | Solid adapter -- development JSX instrumentation, `initPointGrabSolid()` and Vite transform |
 | [`@point-grab/web-components`](./packages/web-components) | Web Components adapter -- Shadow DOM traversal, custom element detection |
 | [`@point-grab/mcp-server`](./packages/mcp-server) | MCP server -- stdio transport for AI agents + HTTP webhook for browser |
 

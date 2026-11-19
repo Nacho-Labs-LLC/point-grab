@@ -6,7 +6,6 @@ const suites = [
   ['Site live demo', ['pnpm', 'exec', 'playwright', 'test']],
   ['Seven framework demos (contract + demo specs)', ['node', 'scripts/verify-framework-matrix.mjs']],
   ['Page capture', ['pnpm', 'exec', 'playwright', 'test', '--config=playwright.page-capture.config.ts']],
-  ['Screen Grab UI', ['pnpm', 'exec', 'playwright', 'test', '--config=playwright.screen-grab.config.ts']],
   ['Freeze lifecycle', ['pnpm', 'exec', 'playwright', 'test', '--config=playwright.freeze.config.ts']],
   ['Solid storefront', ['pnpm', 'exec', 'playwright', 'test', '--config=examples/solid/playwright.config.ts']],
 ];

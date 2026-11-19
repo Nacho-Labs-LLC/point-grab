@@ -1,0 +1,141 @@
+/** Supplement the original feed journey; all changes go through real demo controls. */
+import { test, expect, openApp, grab } from '../fixtures.mts';
+import { checkpoint } from '../../checkpoint';
+
+test.beforeEach(async ({ page, errors }) => { void errors; await openApp(page); });
+
+test('feed: timed banner, reposts, real replies and retained state across views', async ({ page }) => {
+  test.setTimeout(90_000);
+  const posts = page.getByTestId('post');
+  const mia = posts.filter({ has: page.locator('.post-name', { hasText: 'Mia Chen' }) });
+  const dev = posts.filter({ has: page.locator('.post-name', { hasText: 'Dev Patel' }) });
+  const forYou = page.getByRole('button', { name: 'For you', exact: true });
+  const savedOnly = page.getByRole('button', { name: 'Saved only', exact: true });
+  const banner = page.getByRole('button', { name: '↑ 2 new posts', exact: true });
+
+  await expect(posts.filter({ visible: true })).toHaveCount(4);
+  await expect(forYou).toHaveAttribute('aria-pressed', 'true');
+  await expect(banner).toHaveCount(0);
+  await checkpoint(page, 'feed-before-timed-new-post-banner');
+  // The real six-second app timer runs untouched (no fake clock or injected state).
+  await expect(banner).toBeVisible({ timeout: 10_000 });
+  await expect(posts.filter({ visible: true })).toHaveCount(4);
+  await banner.scrollIntoViewIfNeeded();
+  await checkpoint(page, 'feed-timed-two-new-posts-banner');
+  const bannerGrab = await grab(page, banner);
+  expect(bannerGrab).toContain('2 new posts');
+  expect(bannerGrab).toMatch(/^in NewPostsBanner at src\/App\.jsx:\d+:\d+$/m);
+  await test.info().attach('feed-timed-banner-grab', { body: bannerGrab, contentType: 'text/plain' });
+  await expect(banner).toBeVisible(); // Grabbing must not run the dismissal handler.
+  await banner.click();
+  await expect(banner).toHaveCount(0);
+  // This is a dismiss-only hint: the demo does not fetch or insert two new posts.
+  await expect(posts.filter({ visible: true })).toHaveCount(4);
+  await checkpoint(page, 'feed-banner-dismissed-no-fabricated-posts');
+
+  const repost = mia.getByRole('button', { name: 'Repost', exact: true });
+  await expect(repost).toHaveAttribute('aria-pressed', 'false');
+  await expect(repost).toHaveText('7');
+  await repost.click();
+  await expect(repost).toHaveAttribute('aria-pressed', 'true');
+  await expect(repost).toHaveText('8');
+  await checkpoint(page, 'feed-reposted-count-incremented');
+  await repost.click();
+  await expect(repost).toHaveAttribute('aria-pressed', 'false');
+  await expect(repost).toHaveText('7');
+  await checkpoint(page, 'feed-repost-undone-count-restored');
+  await repost.click();
+  await expect(repost).toHaveAttribute('aria-pressed', 'true');
+  await expect(repost).toHaveText('8');
+
+  const reply = mia.getByRole('button', { name: 'Reply to post', exact: true });
+  const popover = mia.locator('.reply-popover');
+  const input = mia.getByPlaceholder('Reply to Mia Chen…', { exact: true });
+  const send = popover.getByRole('button', { name: 'Reply', exact: true });
+  await expect(reply).toHaveText('12');
+  await reply.click();
+  await expect(reply).toHaveAttribute('aria-expanded', 'true');
+  await expect(popover).toBeVisible();
+  await expect(input).toBeFocused();
+  await expect(input).toHaveValue('');
+  await expect(send).toBeDisabled();
+  await checkpoint(page, 'feed-empty-reply-disabled');
+  await input.fill('   ');
+  await expect(send).toBeDisabled();
+  await checkpoint(page, 'feed-whitespace-reply-still-disabled');
+  const message = 'This reply was sent through the real feed controls.';
+  await input.fill(`  ${message}  `);
+  await expect(send).toBeEnabled();
+  await checkpoint(page, 'feed-real-reply-ready-to-send');
+  await send.click();
+  await expect(popover).toHaveCount(0);
+  await expect(reply).toHaveAttribute('aria-expanded', 'false');
+  await expect(reply).toHaveText('13');
+  await expect(mia.locator('.posted-reply')).toHaveText(`You · ${message}`);
+  await checkpoint(page, 'feed-reply-sent-visible-text-and-count');
+  const replyGrab = await grab(page, mia.locator('.posted-reply'));
+  expect(replyGrab).toContain(message);
+  expect(replyGrab).toMatch(/^in Post at src\/App\.jsx:\d+:\d+$/m);
+  await test.info().attach('feed-posted-reply-grab', { body: replyGrab, contentType: 'text/plain' });
+
+  await reply.click();
+  await expect(popover).toBeVisible();
+  await expect(input).toHaveValue('');
+  await expect(send).toBeDisabled();
+  await input.fill('Unsent draft survives an outside dismissal');
+  await expect(send).toBeEnabled();
+  await checkpoint(page, 'feed-second-reply-unsent-draft');
+  // A real outside mousedown/click closes this popover; Escape is not implemented.
+  await mia.locator('.post-name').click();
+  await expect(popover).toHaveCount(0);
+  await expect(reply).toHaveAttribute('aria-expanded', 'false');
+  await expect(reply).toHaveText('13');
+  await expect(mia.locator('.posted-reply')).toHaveCount(1);
+  await checkpoint(page, 'feed-reply-outside-dismissed-without-send');
+  await reply.click();
+  await expect(input).toHaveValue('Unsent draft survives an outside dismissal');
+  await expect(send).toBeEnabled();
+  await checkpoint(page, 'feed-reply-draft-retained-on-reopen');
+  await mia.locator('.post-name').click();
+  await expect(popover).toHaveCount(0);
+
+  const like = mia.getByRole('button', { name: 'Like post', exact: true });
+  const save = mia.getByRole('button', { name: 'Save post', exact: true });
+  await like.click();
+  await expect(like).toHaveAttribute('aria-pressed', 'true');
+  await expect(like).toHaveText('49');
+  await save.click();
+  await expect(save).toHaveAttribute('aria-pressed', 'true');
+  await expect(save).toHaveText('Saved');
+  await checkpoint(page, 'feed-state-ready-for-view-switch');
+  await savedOnly.click();
+  await expect(savedOnly).toHaveAttribute('aria-pressed', 'true');
+  await expect(forYou).toHaveAttribute('aria-pressed', 'false');
+  await expect(posts.filter({ visible: true })).toHaveCount(1);
+  await expect(mia).toBeVisible();
+  await expect(dev).toBeHidden();
+  await expect(mia.locator('.posted-reply')).toHaveText(`You · ${message}`);
+  await expect(repost).toHaveText('8');
+  await checkpoint(page, 'feed-saved-view-retains-reply-and-repost');
+  await forYou.click();
+  await expect(forYou).toHaveAttribute('aria-pressed', 'true');
+  await expect(savedOnly).toHaveAttribute('aria-pressed', 'false');
+  await expect(posts.filter({ visible: true })).toHaveCount(4);
+  await expect(dev).toBeVisible();
+  await expect(save).toHaveAttribute('aria-pressed', 'true');
+  await expect(like).toHaveAttribute('aria-pressed', 'true');
+  await expect(like).toHaveText('49');
+  await expect(repost).toHaveAttribute('aria-pressed', 'true');
+  await expect(repost).toHaveText('8');
+  await expect(reply).toHaveText('13');
+  await expect(mia.locator('.posted-reply')).toHaveText(`You · ${message}`);
+  await expect(banner).toHaveCount(0);
+  await mia.scrollIntoViewIfNeeded();
+  await checkpoint(page, 'feed-for-you-restored-all-posts-and-retained-state');
+  await reply.click();
+  await expect(input).toHaveValue('Unsent draft survives an outside dismissal');
+  await checkpoint(page, 'feed-reply-draft-retained-across-feed-views');
+  await mia.locator('.post-name').click();
+  await expect(popover).toHaveCount(0);
+  test.info().annotations.push({ type: 'coverage', description: 'demo-complete' });
+});

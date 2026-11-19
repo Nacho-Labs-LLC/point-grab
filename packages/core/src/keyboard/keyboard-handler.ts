@@ -117,7 +117,7 @@ export function createKeyboardHandler(deps: KeyboardHandlerDeps): KeyboardHandle
   let toggleArmed = false;
 
   function handleKeyDown(e: KeyboardEvent): void {
-    if (!deps.getEnableInInputs() && isInputElement(e.target)) return;
+    if (!deps.getEnableInInputs() && isInputElement(e.composedPath()[0] ?? e.target)) return;
 
     const parsed = parseOrWarn(deps.getActivationKey());
     if (!parsed || !matchesCombo(e, parsed)) return;

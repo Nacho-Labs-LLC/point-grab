@@ -1,5 +1,6 @@
 /** Vue playground: a product page with validated options, a monogram and a cart drawer. */
 import { test, expect, openApp, grab } from '../fixtures.mts';
+import { checkpoint } from '../../checkpoint';
 
 test.beforeEach(async ({ page, errors }) => { void errors; await openApp(page); });
 
@@ -7,6 +8,7 @@ test('product: validation, monogram, cart lines and totals', async ({ page }) =>
   const add = page.getByRole('button', { name: 'Add to Cart', exact: true });
   await add.click();
   await expect(page.getByRole('alert')).toHaveText('Choose a color and size before adding to your cart.');
+  await checkpoint(page, 'product-missing-options-validation');
 
   await page.getByRole('button', { name: 'Cream', exact: true }).click();
   await page.getByRole('button', { name: 'L', exact: true }).click();
@@ -14,6 +16,7 @@ test('product: validation, monogram, cart lines and totals', async ({ page }) =>
   await monogram.pressSequentially('ab1');
   await expect(monogram).toHaveValue('AB');
   await expect(page.getByTestId('artwork-monogram')).toHaveText('AB');
+  await checkpoint(page, 'product-options-and-sanitized-monogram');
   await add.click();
 
   const cart = page.getByRole('dialog', { name: 'Your Cart' });
@@ -22,16 +25,19 @@ test('product: validation, monogram, cart lines and totals', async ({ page }) =>
   await expect(cart.locator('.cart-item-meta')).toHaveText('Cream · L · AB');
   await expect(cart.locator('.cart-item-price')).toHaveText('$76.00');
   await expect(cart.getByTestId('cart-total')).toHaveText('$76.00');
+  await checkpoint(page, 'cart-personalized-item-and-total');
   await page.getByRole('button', { name: 'Close cart' }).click();
 
   await monogram.fill('');
   await add.click();
   await expect(cart.getByTestId('cart-item')).toHaveCount(2);
   await expect(cart.getByTestId('cart-total')).toHaveText('$144.00');
+  await checkpoint(page, 'cart-two-lines-distinct-options');
   await cart.getByRole('button', { name: 'Remove Novo Crewneck' }).first().click();
   await expect(cart.getByTestId('cart-total')).toHaveText('$68.00');
   await cart.getByRole('button', { name: 'Review demo bag' }).click();
   await expect(cart.getByRole('status')).toHaveText('Demo bag reviewed. No payment or order was submitted.');
+  await checkpoint(page, 'cart-remove-line-and-review-confirmation');
 
   await page.keyboard.press('Escape');
   await expect(cart).not.toBeVisible();

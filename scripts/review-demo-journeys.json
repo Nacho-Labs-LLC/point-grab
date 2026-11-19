@@ -1,0 +1,41 @@
+{
+  "framework-vanilla": [
+    "player: volume, shuffle, repeat, seeking, resume and per-track likes"
+  ],
+  "framework-react": [
+    "feed: timed banner, reposts, real replies and retained state across views"
+  ],
+  "framework-vue": [
+    "cart: independently open empty drawer, contain keyboard focus, and dismiss three ways",
+    "options: every color updates artwork and each size has exclusive selection",
+    "cart: populated focus wrap, remove final item, and reopen the resulting empty bag"
+  ],
+  "framework-angular": [
+    "new task: blank validation recovers with assignee and normalized label",
+    "new task: Cancel and backdrop discard drafts without creating tasks",
+    "board: backward moves update both columns, drawer and sprint stats",
+    "board: combined empty filters recover via search clear and All",
+    "checklist: uncheck and restore updates progress and card completion"
+  ],
+  "framework-svelte": [
+    "formatting: Italic wraps the selected range without losing surrounding text",
+    "formatting: Heading wraps the selected range without losing surrounding text",
+    "formatting: Link wraps the selected range without losing surrounding text",
+    "formatting: Bold inserts the no-selection placeholder at the caret",
+    "formatting: Italic inserts the no-selection placeholder at the caret",
+    "formatting: Heading inserts the no-selection placeholder at the caret",
+    "formatting: Link inserts the no-selection placeholder at the caret",
+    "notes: edited title and body survive switching; update indicator returns to in-tab status"
+  ],
+  "framework-web-components": [
+    "new service: Cancel and backdrop discard drafts and reset form defaults",
+    "new service: duplicate name preserves draft, reports error, and corrected name creates once",
+    "busy release: create stays available, all cards lock, and newly created service unlocks after release"
+  ],
+  "framework-solid": [
+    "filters: Lighting and Essentials intersect saved, name and detail search",
+    "saved only: empty state, unsave removal, and reset do not restore saved items",
+    "search: unmatched query resets without clearing the bag or gift note",
+    "bag: decrement above one retains the line and recomputes quantity and subtotal"
+  ]
+}

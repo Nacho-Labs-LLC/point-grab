@@ -9,6 +9,7 @@ import {
   selectDialog, reviewDialog, preview, chooseAction, holdGrab, pick, clipboard, setClipboard,
   nextInspect, openScreenshot, regionOf, dragRegion, comparePreviewTo, transformOf, firstLine, settleScroll,
 } from './fixtures.mts';
+import { checkpoint } from '../checkpoint';
 
 const FRAMEWORK_ATTRS = /data-v-[a-f0-9]|_ngcontent|_nghost|ng-reflect|data-point-grab-|class="[^"]*svelte-[a-z0-9]{4,}|data-reactroot/;
 
@@ -21,6 +22,7 @@ test.describe(`${framework} demo`, () => {
     await expect(page.getByTestId('playground-guide')).toBeVisible();
     await expect(page.getByTestId('mcp-status').first()).toHaveText('MCP server connected');
     await expect(page.getByTestId('mcp-status').first()).toHaveAttribute('data-state', 'online');
+    await checkpoint(page, '01-arrival-and-connected-toolbar');
   });
 
   test('MCP status explains how to start the server when it is offline', async ({ page }) => {
@@ -46,6 +48,7 @@ test.describe(`${framework} demo`, () => {
     expect(snippet).toMatch(/<[a-z]/);
     expect(snippet).not.toMatch(FRAMEWORK_ATTRS);
     for (const pattern of profile.grab.snippet) expect(snippet).toMatch(pattern);
+    if (process.env.POINT_GRAB_EVIDENCE_DIR) await test.info().attach('actual-copied-element-context', { body: snippet, contentType: 'text/plain' });
 
     const entry = (await mcp.history()).entries.find((e) => e.id === ack.id)!;
     expect(entry.context.html).toContain(text);
@@ -57,6 +60,7 @@ test.describe(`${framework} demo`, () => {
     await toolbarButton(page, 'history').click();
     const history = page.getByRole('dialog', { name: 'Inspection history' });
     await expect(history).toBeVisible();
+    await checkpoint(page, '02-copied-element-in-history');
     const item = history.locator('.point-grab-history-item').first();
     await expect(item).toBeVisible();
     await setClipboard(page, 'replaced');
@@ -105,16 +109,19 @@ test.describe(`${framework} demo`, () => {
     await chooseAction(page, 'Add Comment');
     await pick(page, profile.target(page));
     await dialog.getByRole('textbox').fill(`${framework}: make this bolder`);
+    await checkpoint(page, '03-element-comment-editor');
     await dialog.getByRole('button', { name: 'Add to Review' }).click();
     await pick(page, profile.second(page));
     await dialog.getByRole('textbox').fill(`${framework}: align this left`);
     await dialog.getByRole('button', { name: 'Add to Review' }).click();
     await page.getByRole('button', { name: 'Confirm & Copy 2 reviewed elements' }).click();
+    await checkpoint(page, '04-two-comments-confirmed-and-copied');
     const prompt = await clipboard(page);
     expect(prompt).toContain('## Element 1');
     expect(prompt).toContain('## Element 2');
     expect(prompt).toContain(`Comment: ${framework}: make this bolder`);
     expect(prompt).toContain(`Comment: ${framework}: align this left`);
+    if (process.env.POINT_GRAB_EVIDENCE_DIR) await test.info().attach('actual-copied-two-element-prompt', { body: prompt, contentType: 'text/plain' });
     if (profile.grab.component) expect(prompt).toMatch(new RegExp(`in ${profile.grab.component.source.replace(/^\^|\$$/g, '')}\\b`));
   });
 
@@ -133,12 +140,14 @@ test.describe(`${framework} demo`, () => {
     await expect(detail).toBeVisible();
     const frozen = await transformOf(motion); await page.waitForTimeout(250);
     expect(await transformOf(motion)).toBe(frozen);
+    await checkpoint(page, '05-frozen-hover-detail-pointer-away');
 
     await page.keyboard.press('Escape');
     await expect(freezeLayer(page)).not.toBeVisible();
     await expect(detail).not.toBeVisible();
     await page.waitForTimeout(200);
     expect(await transformOf(motion)).not.toBe(frozen);
+    await checkpoint(page, '06-escape-resumes-live-page');
 
     await page.emulateMedia({ reducedMotion: 'reduce' }); await page.reload(); await profile.ready(page);
     const still = await transformOf(motion); await page.waitForTimeout(200);
@@ -219,17 +228,22 @@ test.describe(`${framework} demo`, () => {
     const similarity = await comparePreviewTo(page, reference, box);
     expect(similarity.meanAbsoluteError, JSON.stringify(similarity)).toBeLessThan(25);
     expect(similarity.closePixelFraction, JSON.stringify(similarity)).toBeGreaterThan(0.7);
+    await checkpoint(page, '07-selected-region-preview-before-retake');
     await page.waitForTimeout(200);
     expect(await transformOf(motion)).toBe(frozen);
 
     await page.getByRole('button', { name: 'Retake', exact: true }).click();
     await expect(selectDialog(page)).toBeVisible();
+    await checkpoint(page, '08-retake-back-to-selection');
+    expect(await transformOf(motion), 'Retake preserves the same frozen animation position').toBe(frozen);
     await dragRegion(page, box);
     await expect(reviewDialog(page)).toBeVisible();
+    expect(await transformOf(motion), 'recapture preview remains frozen').toBe(frozen);
     const src = await preview(page).getAttribute('src');
 
     const comment = `${framework}: tighten this spacing`;
     await page.getByRole('textbox', { name: 'Comment', exact: true }).fill(comment);
+    await checkpoint(page, '09-recaptured-preview-and-comment');
     const before = (await mcp.history()).entries.length;
     await page.route('http://localhost:3456/inspect', (route) => route.fulfill({ status: 503, headers: { 'Access-Control-Allow-Origin': '*' }, body: '{}' }));
     await page.getByRole('button', { name: 'Send image + comment' }).click();
@@ -237,6 +251,8 @@ test.describe(`${framework} demo`, () => {
     await expect(page.getByRole('textbox', { name: 'Comment', exact: true })).toHaveValue(comment);
     await expect(page.getByRole('button', { name: 'Send image + comment' })).toBeFocused();
     expect((await mcp.history()).entries).toHaveLength(before);
+    await checkpoint(page, '10-intentional-503-error-work-preserved');
+    expect(await transformOf(motion), 'failed-send retry preserves frozen animation').toBe(frozen);
 
     await page.unroute('http://localhost:3456/inspect');
     const response = nextInspect(page, mcp);
@@ -245,10 +261,13 @@ test.describe(`${framework} demo`, () => {
     expect(ack).toMatchObject({ success: true, imageAccepted: true });
     await expect(page.getByRole('dialog')).toHaveCount(0);
     await expect(toast(page)).toContainText('Screen Grab sent');
+    await checkpoint(page, '11-retry-acknowledged-screen-grab-sent');
+    await expect.poll(() => transformOf(motion), { message: 'acknowledged completion resumes real animation' }).not.toBe(frozen);
 
     const entry = (await mcp.history()).entries.find((e) => e.id === ack.id)!;
     expect(entry.context.screenGrab).toMatchObject({ comment, width: box.width, height: box.height });
     expect(src).toBe(`data:image/png;base64,${entry.context.screenGrab.data}`);
+    if (process.env.POINT_GRAB_EVIDENCE_DIR) await test.info().attach('actual-transmitted-screenshot-not-browser-reference', { body: Buffer.from(entry.context.screenGrab.data, 'base64'), contentType: 'image/png' });
     const result = await mcp.client.callTool({ name: 'point_grab_get', arguments: { id: entry.id } });
     expect(result.content).toContainEqual({ type: 'image', mimeType: 'image/png', data: entry.context.screenGrab.data });
     expect(JSON.stringify(result.content)).toContain(comment);
@@ -256,6 +275,8 @@ test.describe(`${framework} demo`, () => {
 
     await toolbarButton(page, 'history').click();
     await expect(page.getByRole('dialog', { name: 'Inspection history' })).toContainText(`Screenshot ${box.width} × ${box.height}`);
+    await checkpoint(page, '12-persisted-screenshot-in-history');
+    test.info().annotations.push({ type: 'coverage', description: 'capture-retake-retry' });
   });
 
   test('screenshots redact text fields without touching the live value', async ({ page }) => {
@@ -271,6 +292,7 @@ test.describe(`${framework} demo`, () => {
     const capture = async () => {
       await openScreenshot(page); await dragRegion(page, box);
       await expect(reviewDialog(page)).toContainText('Text fields are redacted');
+      await checkpoint(page, '13-redacted-field-preview');
       const data = await preview(page).getAttribute('src');
       await reviewDialog(page).getByRole('button', { name: 'Cancel', exact: true }).click();
       return data;
@@ -333,5 +355,6 @@ test.describe(`${framework} demo`, () => {
     expect(box.x).toBeGreaterThanOrEqual(0);
     expect(box.x + box.width).toBeLessThanOrEqual(390);
     await expect(toolbarButton(page, 'actions')).toBeVisible();
+    await checkpoint(page, '14-phone-layout-toolbar-reachable');
   });
 });

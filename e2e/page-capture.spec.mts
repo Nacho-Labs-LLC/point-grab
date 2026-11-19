@@ -1,4 +1,5 @@
 import { test, expect, type Page } from '@playwright/test';
+import { checkpoint } from './checkpoint';
 import { createServer, type Server } from 'node:http';
 import { readFile, mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -50,6 +51,7 @@ test('live page reverse drag → real red pixels → preview/comment → acknowl
   const data=await page.getByAltText('Selected screenshot region').getAttribute('src');
   await page.getByLabel('Comment',{exact:true}).fill('Make this blue');
   await page.screenshot({path:'test-results/page-capture/review.png'});
+  await checkpoint(page, 'real-red-pixel-region-and-comment');
   await page.getByRole('button',{name:'Send image + comment'}).click(); await expect(page.getByRole('dialog')).toHaveCount(0);
   const entries=(await history()).entries;expect(entries).toHaveLength(before+1);const entry=entries[0];
   expect(entry.context.screenGrab.comment).toBe('Make this blue'); expect(entry.context.screenGrab.region).toEqual({x:150,y:150,width:200,height:80});
@@ -72,15 +74,17 @@ test('smooth-scroll CSS does not shift cloned-page capture away from settled vie
   await open(page);await drag(page,150,150,200,80);
   expect(await pixels(page)).toEqual({width:200,height:80,center:[0,0,255,255]});
 });
-test('scroll offset and DPR 2 produce selected page coordinates and device pixels',async({browser})=>{
-  const context=await browser.newContext({viewport:{width:1000,height:700},deviceScaleFactor:2});
-  await context.route('http://localhost:3456/inspect',r=>r.continue({url:`http://127.0.0.1:${(webhook.address() as any).port}/inspect`}));
-  const page=await context.newPage();await page.goto(url);await page.evaluate(()=>scrollTo(0,900));await open(page);await drag(page,150,150,200,80);
+test.describe('High-DPI capture', () => {
+test.use({ deviceScaleFactor: 2 });
+test('scroll offset and DPR 2 produce selected page coordinates and device pixels',async({page})=>{
+  await page.evaluate(()=>scrollTo(0,900));await open(page);await drag(page,150,150,200,80);
   expect(await pixels(page)).toEqual({width:400,height:160,center:[0,0,255,255]});
+  await checkpoint(page, 'high-dpi-scrolled-preview');
   await page.getByRole('button',{name:'Send image + comment'}).click();await expect(page.getByRole('dialog')).toHaveCount(0);
   const grab=(await history()).entries[0].context.screenGrab;
   expect(grab.region).toEqual({x:150,y:1050,width:200,height:80});expect(grab.width).toBe(400);expect(grab.height).toBe(160);
-  expect(await page.evaluate(()=>scrollY)).toBe(900);await context.close();
+  expect(await page.evaluate(()=>scrollY)).toBe(900);
+});
 });
 test('Escape, pointercancel, tiny drag and scrolling during selection never send; Retake returns to live page',async({page})=>{
   const before=(await history()).entries.length;await open(page);await drag(page,150,150,2,2);
@@ -108,6 +112,7 @@ for (const [name,html] of [
 ] as const) test(`unsupported ${name} fails visibly, no partial preview`,async({page})=>{
   await page.evaluate(({html})=>{const holder=document.createElement('div');holder.innerHTML=html;const el=holder.firstElementChild as HTMLElement;el.style.cssText+=';position:absolute;left:160px;top:160px;width:100px;height:50px';document.body.append(el);if(el.id==='gl')(el as HTMLCanvasElement).getContext('webgl');},{html});
   await open(page);await drag(page);await expect(page.getByRole('alert')).toContainText('Cannot capture');
+  await checkpoint(page, `expected-rejection-${name}`);
   await expect(page.getByAltText('Selected screenshot region')).toHaveCount(0);await page.getByRole('button',{name:'Cancel',exact:true}).click();
 });
 test('a WebGL canvas is captured with a visible "appears blank" warning, not silently',async({page})=>{
@@ -115,6 +120,7 @@ test('a WebGL canvas is captured with a visible "appears blank" warning, not sil
   await open(page);await drag(page);
   await expect(page.getByAltText('Selected screenshot region')).toBeVisible();
   await expect(page.getByRole('dialog',{name:'Review screenshot'})).toContainText('A WebGL or empty canvas in this region appears blank.');
+  await checkpoint(page, 'webgl-blank-export-warning');
   await page.getByRole('button',{name:'Cancel',exact:true}).click();
 });
 test('open shadow DOM (nested + slotted) renders real pixels and redacts inputs inside shadow roots',async({page})=>{
@@ -132,6 +138,7 @@ test('open shadow DOM (nested + slotted) renders real pixels and redacts inputs 
     const at=(px:number,py:number)=>[...x.getImageData(px,py,1,1).data];return {corner:at(190,70),input:at(100,40)};});
   expect(sample.corner).toEqual([0,160,0,255]); // shadow-root styles rendered, not refused
   expect(sample.input).toEqual([0,160,0,255]);  // nested shadow input hidden in the capture
+  await checkpoint(page, 'nested-shadow-dom-rendered-and-redacted');
   await page.getByRole('button',{name:'Cancel',exact:true}).click();
   expect(await page.evaluate(()=>(document.querySelector('#shadow-host')!.shadowRoot!.querySelector('#inner')!.shadowRoot!.querySelector('input') as HTMLInputElement).value)).toBe('SHADOW-SECRET');
 });
@@ -158,6 +165,7 @@ test('pending Send locks controls until real acknowledgement',async({page})=>{
   await page.route('http://localhost:3456/inspect',async route=>{requests++;await gate;await route.continue({url:`http://127.0.0.1:${(webhook.address() as any).port}/inspect`});});
   await open(page);await drag(page);await pixels(page);await page.getByRole('button',{name:'Send image + comment'}).click();
   await expect(page.getByRole('status')).toHaveText('Sending…');for(const name of ['Send image + comment','Retake','Cancel'])await expect(page.getByRole('button',{name,exact:true})).toBeDisabled();
+  await checkpoint(page, 'pending-send-controls-locked');
   await page.keyboard.press('Escape');await expect(page.getByRole('dialog',{name:'Review screenshot'})).toBeVisible();expect((await history()).entries).toHaveLength(before);
   release();await expect(page.getByRole('dialog')).toHaveCount(0);expect(requests).toBe(1);expect((await history()).entries).toHaveLength(before+1);
 });

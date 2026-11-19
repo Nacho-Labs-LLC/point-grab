@@ -202,10 +202,9 @@ class ForgeDialog extends HTMLElement {
         </form>
       </div>`;
     const form = this.shadowRoot.querySelector('form');
-    const error = this.shadowRoot.querySelector('.error');
     const submit = () => {
       const name = form.name.value.trim();
-      if (!/^[a-z][a-z0-9-]{2,30}$/.test(name)) { error.hidden = false; form.name.focus(); return; }
+      if (!/^[a-z][a-z0-9-]{2,30}$/.test(name)) { this.showError('Use lowercase letters, numbers and dashes.'); return; }
       this.dispatchEvent(new CustomEvent('forge-create', { bubbles: true, composed: true, detail: { name, region: form.region.value } }));
     };
     form.addEventListener('submit', (e) => { e.preventDefault(); submit(); });
@@ -214,6 +213,12 @@ class ForgeDialog extends HTMLElement {
     this.shadowRoot.querySelector('.backdrop').addEventListener('click', (e) => { if (e.target === e.currentTarget) this.dispatchEvent(new CustomEvent('forge-cancel', { bubbles: true, composed: true })); });
   }
   connectedCallback() { queueMicrotask(() => this.shadowRoot.querySelector('input').focus()); }
+  showError(message) {
+    const error = this.shadowRoot.querySelector('.error');
+    error.textContent = message;
+    error.hidden = false;
+    this.shadowRoot.querySelector('input').focus();
+  }
 }
 customElements.define('forge-dialog', ForgeDialog);
 
@@ -388,9 +393,11 @@ class ForgeApp extends HTMLElement {
   }
   closeDialog() { this.shadowRoot.querySelector('forge-dialog')?.remove(); }
   create({ name, region }) {
-    if (!this.services.some((s) => s.id === name)) {
-      this.services.push({ id: name, region, version: '0.1.0', status: 'healthy', latency: [50, 52, 49, 51, 50, 48, 50, 49, 51, 50, 49, 50], previous: null });
+    if (this.services.some((s) => s.id === name)) {
+      this.shadowRoot.querySelector('forge-dialog')?.showError(`A service named ${name} already exists.`);
+      return;
     }
+    this.services.push({ id: name, region, version: '0.1.0', status: 'healthy', latency: [50, 52, 49, 51, 50, 48, 50, 49, 51, 50, 49, 50], previous: null });
     this.closeDialog();
     this.render();
     this.toast(`${name} created in ${region}`);

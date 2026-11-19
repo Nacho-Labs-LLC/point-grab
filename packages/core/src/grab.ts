@@ -233,7 +233,6 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
     const classFilters = store.state.options.classFilters;
     const htmlCleaners = store.state.options.htmlCleaners;
     const context = buildElementContext(element, componentResolver, sourceResolver, classFilters, htmlCleaners);
-    const maxLines = store.state.options.maxContextLines;
 
     lastSelectedElement = new WeakRef(element);
     lastSelectedContext = context;
@@ -241,10 +240,17 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
 
     switch (pending.type) {
       case 'copy-element': {
-        const ok = await copyElementSnippet(context, maxLines, pluginRegistry, htmlCleaners);
-        if (ok) {
+        const result = await copyElement(element, {
+          getComponentResolver: () => componentResolver,
+          getSourceResolver: () => sourceResolver,
+          getMaxContextLines: () => store.state.options.maxContextLines,
+          getClassFilters: () => store.state.options.classFilters,
+          getHtmlCleaners: () => store.state.options.htmlCleaners,
+          pluginRegistry,
+        });
+        if (result) {
           showSelectFeedback(element);
-          addHistoryEntry(context, '');
+          addHistoryEntry(result.context, result.snippet);
         }
         break;
       }
@@ -359,7 +365,8 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
     if (annotations.length === 0) return;
     const htmlCleaners = store.state.options.htmlCleaners;
     const maxLines = store.state.options.maxContextLines;
-    await copyAnnotationsAsPrompt(annotations, maxLines, pluginRegistry, htmlCleaners);
+    const copied = await copyAnnotationsAsPrompt(annotations, maxLines, pluginRegistry, htmlCleaners);
+    if (!copied) return; // Preserve reviewed work and its retry control after permission failure.
     annotations = [];
     commentModeActive = false;
     store.state.toolbar = { ...store.state.toolbar, pendingAction: null };
@@ -373,7 +380,8 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
     onSelectionMode() {
       closeAllPopovers();
       if (store.state.active) {
-        doDeactivate();
+        // Explicit toolbar exit must override hold-key freeze persistence.
+        doDeactivate(true);
       } else {
         doActivate();
       }
@@ -420,7 +428,7 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
       const newEnabled = !store.state.options.enabled;
       store.state.options = { ...store.state.options, enabled: newEnabled };
       if (!newEnabled) {
-        doDeactivate();
+        doDeactivate(true);
       }
       updateToolbar();
     },
@@ -533,6 +541,7 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
         });
         store.state.toolbar = { ...store.state.toolbar, pendingAction: { type: 'comment' } };
         updateToolbar();
+        doActivate(); // Existing-target comments can start after a completed grab.
       } else {
         const htmlCleaners = store.state.options.htmlCleaners;
         await copyWithComment(lastSelectedContext, comment, store.state.options.maxContextLines, pluginRegistry, htmlCleaners);
@@ -579,7 +588,13 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
 
   // --- Freeze key handler (F key during selection mode) ---
   function handleFreezeKey(e: KeyboardEvent): void {
-    if (screenGrabBusy) return;
+    if (screenGrabBusy || !store.state.options.enabled) return;
+    if (e.key === 'Escape' && (actionsMenu.isVisible() || historyPopover.isVisible())) {
+      const trigger = actionsMenu.isVisible() ? 'actions' : 'history';
+      closeAllPopovers();
+      e.preventDefault();
+      document.querySelector<HTMLButtonElement>(`[data-point-grab-btn="${trigger}"]`)?.focus();
+    }
     if (e.key === 'Escape' && store.state.frozen) {
       e.preventDefault();
       doDeactivate(true);
@@ -594,9 +609,10 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
       return;
     }
     if (!pressesKey(e, (store.state.options.freezeKey || 'F').trim().toLowerCase())) return;
-    const tag = (e.target as Element)?.tagName;
-    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-    if ((e.target as HTMLElement)?.isContentEditable) return;
+    const origin = (e.composedPath()[0] ?? e.target) as HTMLElement | null;
+    const tag = origin?.tagName;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+    if (origin?.isContentEditable) return;
 
     // Allow freeze when active, or when toolbar is visible (just deactivated)
     if (!store.state.active && !store.state.toolbar.visible) return;
@@ -740,7 +756,7 @@ function createPointGrabInstance(options?: Partial<PointGrabOptions>): PointGrab
         keyboard.start();
       } else {
         keyboard.stop();
-        doDeactivate();
+        doDeactivate(true);
       }
     }
     if (key === 'toolbar') {
