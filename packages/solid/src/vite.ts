@@ -77,7 +77,8 @@ export default function pointGrabSolid(
       root = options.root ?? config.root;
     },
     transform(code, id) {
-      const filename = id.replace(/\?.*$/, "");
+      const queryStart = id.indexOf("?");
+      const filename = queryStart === -1 ? id : id.slice(0, queryStart);
       // Test dependencies against the project-relative path, so a checkout that itself
       // lives under a node_modules directory is still instrumented.
       if (!/\.[cm]?[jt]sx$/i.test(filename) || /(^|[\\/])node_modules[\\/]/.test(relative(root, filename)))

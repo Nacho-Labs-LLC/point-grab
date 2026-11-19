@@ -60,6 +60,21 @@ describe("pointGrabSolid", () => {
     ).toContain("app/Card.tsx:1:20");
   });
 
+  it("removes the full query before checking the JSX filename, including line terminators", () => {
+    const plugin = pointGrabSolid({ root: "/project" });
+    for (const query of [
+      "?import",
+      `?${"?".repeat(2048)}\ntrailing`,
+      "?raw\rtrailing",
+      "?raw\u2028trailing",
+      "?raw\u2029trailing",
+    ]) {
+      expect(
+        plugin.transform("const Card = () => <p />;", `/project/src/Card.tsx${query}`),
+      ).toContain('data-point-grab-source="src/Card.tsx:1:20"');
+    }
+  });
+
   it("skips dependencies and non-JSX modules", () => {
     const plugin = pointGrabSolid();
     expect(
