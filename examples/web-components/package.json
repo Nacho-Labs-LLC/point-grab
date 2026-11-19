@@ -11,6 +11,6 @@
     "@point-grab/web-components": "workspace:*"
   },
   "devDependencies": {
-    "vite": "^8.2.1"
+    "vite": "^6.4.5"
   }
 }
