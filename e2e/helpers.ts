@@ -8,15 +8,15 @@ export const SEL = {
   freeze: '#__point-grab-freeze-overlay__',
 } as const;
 
-/** Hold Ctrl+C (Linux activation combo). Inspector activates immediately in hold mode. */
+/** Hold Ctrl+B (the default activation combo). Inspector activates immediately in hold mode. */
 export async function activateInspector(page: Page): Promise<void> {
   await page.keyboard.down('Control');
-  await page.keyboard.down('c');
+  await page.keyboard.down('b');
 }
 
-/** Release Ctrl+C — deactivates inspector in hold mode. */
+/** Release Ctrl+B — deactivates inspector in hold mode. */
 export async function deactivateInspector(page: Page): Promise<void> {
-  await page.keyboard.up('c');
+  await page.keyboard.up('b');
   await page.keyboard.up('Control');
 }
 

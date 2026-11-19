@@ -1,7 +1,10 @@
 <script>
   import { onMount } from 'svelte';
-  import { pointGrab } from '@point-grab/svelte';
+  import { pointGrab, getPointGrabApi } from '@point-grab/svelte';
   import './app.css';
+  import NoteCard from './NoteCard.svelte';
+  import FormatToolbar from './FormatToolbar.svelte';
+  import GrabGuide from './GrabGuide.svelte';
 
   const initialNotes = [
     { id: 1, title: 'Product launch checklist', body: 'Review pricing page copy\nUpdate hero section\nTest mobile breakpoints', tags: ['work', 'launch'] },
@@ -14,6 +17,9 @@
   let toolbarOpen = $state(false);
   let saving = $state(false);
   let nextId = $state(4);
+  let query = $state('');
+  let editor = $state(null);
+  let visibleNotes = $derived(notes.filter(note => `${note.title} ${note.body} ${note.tags.join(' ')}`.toLowerCase().includes(query.toLowerCase())));
 
   let saveTimer = null;
 
@@ -51,6 +57,7 @@
   }
 
   function newNote() {
+    query = '';
     const id = nextId++;
     notes = [
       { id, title: 'Untitled note', body: '', tags: [] },
@@ -59,7 +66,21 @@
     selectedNoteId = id;
   }
 
+  function formatSelection(prefix, suffix) {
+    if (!editor || !selectedNote) return;
+    const start = editor.selectionStart;
+    const end = editor.selectionEnd;
+    const body = selectedNote.body;
+    const selection = body.slice(start, end) || 'text';
+    notes = notes.map(note => note.id === selectedNoteId ? { ...note, body: body.slice(0, start) + prefix + selection + suffix + body.slice(end) } : note);
+    triggerSave();
+    editor.focus();
+  }
+
   onMount(() => {
+    // Show the toolbar on arrival so Actions → Add screenshot is discoverable.
+    // The action initializes point-grab before mount effects run.
+    getPointGrabApi()?.showToolbar();
     return () => {
       if (saveTimer) clearTimeout(saveTimer);
     };
@@ -73,7 +94,7 @@
       <span class="inkwell-beta">beta</span>
     </div>
     <div class="pg-hint">
-      Hold <kbd>Cmd+C</kbd> / <kbd>Ctrl+C</kbd>, hover any element, click to grab its context
+      Hold <kbd>Ctrl+B</kbd>, hover any element, click to grab its context
     </div>
   </header>
 
@@ -82,25 +103,14 @@
     <aside class="note-sidebar">
       <div class="sidebar-top">
         <button class="new-note-btn" onclick={newNote}>+ New Note</button>
+        <input class="note-search" aria-label="Search notes" type="search" placeholder="Find a thought…" bind:value={query} />
       </div>
 
       <div class="note-list">
-        {#each notes as note (note.id)}
-          <button
-            class="note-item {note.id === selectedNoteId ? 'active' : ''}"
-            onclick={() => selectNote(note.id)}
-          >
-            <div class="note-title-preview">{note.title || 'Untitled note'}</div>
-            <div class="note-snippet">{note.body.split('\n')[0] || 'No content'}</div>
-            {#if note.tags.length > 0}
-              <div class="note-tags">
-                {#each note.tags as tag}
-                  <span class="tag">{tag}</span>
-                {/each}
-              </div>
-            {/if}
-          </button>
+        {#each visibleNotes as note (note.id)}
+          <NoteCard {note} active={note.id === selectedNoteId} onselect={selectNote} />
         {/each}
+        {#if visibleNotes.length === 0}<p class="empty-notes">No matching notes.</p>{/if}
       </div>
     </aside>
 
@@ -108,27 +118,22 @@
     <main class="editor-panel">
       {#if selectedNote}
         <div class="editor-topbar">
-          <div class="format-toolbar" class:visible={toolbarOpen}>
-            <button class="format-btn" title="Bold"><strong>B</strong></button>
-            <button class="format-btn" title="Italic"><em>I</em></button>
-            <button class="format-btn" title="Heading">H1</button>
-            <button class="format-btn" title="Link">🔗</button>
-          </div>
-          <button class="toggle-format-btn" onclick={() => toolbarOpen = !toolbarOpen}>
+          <FormatToolbar open={toolbarOpen} onformat={formatSelection} />
+          <button class="toggle-format-btn" aria-expanded={toolbarOpen} onclick={() => toolbarOpen = !toolbarOpen}>
             {toolbarOpen ? 'Hide toolbar' : 'Format ↓'}
           </button>
 
           <div class="editor-meta">
             <span class="word-count">{wordCount} {wordCount === 1 ? 'word' : 'words'}</span>
-            {#if saving}
-              <span class="saving-dot" aria-label="Saving..."></span>
-            {/if}
+            <span class="session-status" role="status">{saving ? 'Updating…' : 'In this tab only'}</span>
           </div>
         </div>
 
         <div class="editor-body">
+          <div class="writing-flow"><span class="motion-pen" data-testid="motion-sample" aria-hidden="true">✎</span><span class="flow-help"><button data-testid="freeze-trigger" aria-describedby="flow-tip">Writing flow ↗</button><span id="flow-tip" role="tooltip" data-testid="freeze-popover">A quiet workspace: select text and use Format to wrap it in Markdown. Notes stay in this tab.</span></span></div>
           <input
             class="editor-title"
+            aria-label="Note title"
             type="text"
             value={selectedNote.title}
             oninput={updateTitle}
@@ -137,6 +142,8 @@
 
           <textarea
             class="editor-textarea"
+            aria-label="Note body"
+            bind:this={editor}
             value={selectedNote.body}
             oninput={updateBody}
             placeholder="Start writing…"
@@ -153,4 +160,5 @@
       {/if}
     </main>
   </div>
+  <GrabGuide />
 </div>

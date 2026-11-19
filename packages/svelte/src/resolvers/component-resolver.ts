@@ -36,8 +36,11 @@ function getComponentNameFromMeta(meta: SvelteMeta): string | null {
 
   // Derive from file path
   if (meta.loc?.file) {
-    const match = meta.loc.file.match(/([^/\\]+)\.svelte$/);
-    if (match) return match[1];
+    const file = meta.loc.file;
+    const basename = file.slice(Math.max(file.lastIndexOf('/'), file.lastIndexOf('\\')) + 1);
+    if (basename.endsWith('.svelte') && basename.length > '.svelte'.length) {
+      return basename.slice(0, -'.svelte'.length);
+    }
   }
 
   return null;

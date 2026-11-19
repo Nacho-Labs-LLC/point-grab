@@ -6,13 +6,28 @@ export type PendingAction =
   | { type: 'copy-html' }
   | { type: 'comment' };
 
+/** PNG data is base64 without a data URL prefix. width/height are PNG pixels;
+ * current-page region is document CSS coordinates/dimensions (including scroll). */
+export interface ScreenGrab {
+  mimeType: 'image/png';
+  data: string;
+  width: number;
+  height: number;
+  region: { x: number; y: number; width: number; height: number };
+  comment: string;
+}
+
 export interface Annotation {
   context: ElementContext;
   comment: string;
 }
 
 /** Serializable subset of ElementContext — no live DOM reference. */
+/** Screenshot metadata kept in local history (the PNG itself is not retained). */
+export type ScreenGrabSummary = Omit<ScreenGrab, 'data'>;
+
 export interface HistoryContext {
+  screenGrab?: ScreenGrabSummary;
   html: string;
   componentName: string | null;
   filePath: string | null;
@@ -48,8 +63,14 @@ export type ClassFilter = (className: string) => boolean;
 export type HtmlCleaner = { pattern: RegExp; replacement: string };
 
 export interface PointGrabOptions {
-  /** Keyboard shortcut to activate. Default: "Meta+C" (Mac) / "Ctrl+C" (Win) */
+  /**
+   * Keyboard shortcut to activate: one key plus optional Ctrl/Meta(Cmd)/Alt(Option)/Shift,
+   * e.g. "Ctrl+Shift+X" or "Alt+G". Modifiers must match exactly.
+   * Default: "Ctrl+B" (all platforms)
+   */
   activationKey: string;
+  /** Single key that toggles Freeze while selecting or while the toolbar is shown. Default: "F" */
+  freezeKey: string;
   /** Whether activation requires hold or toggle. Default: 'hold' */
   activationMode: 'hold' | 'toggle';
   /** Milliseconds to hold before activating in hold mode. Default: 0 */
@@ -82,6 +103,7 @@ export interface ComponentStackEntry {
 }
 
 export interface ElementContext {
+  screenGrab?: ScreenGrab;
   element: Element;
   html: string;
   componentName: string | null;
@@ -98,6 +120,8 @@ export interface ElementContext {
 }
 
 export interface PluginHooks {
+  /** Explicit image send. Resolve only after transport acknowledgement; reject on failure. */
+  onScreenGrab?: (context: ElementContext, snippet: string) => Promise<void>;
   onActivate?: () => void;
   onDeactivate?: () => void;
   onElementHover?: (element: Element) => void;

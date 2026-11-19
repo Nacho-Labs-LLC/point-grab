@@ -137,6 +137,7 @@ function formatEntry(entry: GrabEntry) {
       framework: entry.context.framework,
       sessionId: entry.context.sessionId ?? null,
       computedStyles: entry.context.computedStyles,
+      ...(entry.context.screenGrab ? { screenGrab: { ...entry.context.screenGrab, data: undefined } } : {}),
     },
   };
 }
@@ -432,6 +433,7 @@ function searchHistory(
     const normalizedQuery = query.toLowerCase();
     results = results.filter(
       (entry) =>
+        (entry.context.screenGrab?.comment.toLowerCase().includes(normalizedQuery) ?? false) ||
         entry.context.html.toLowerCase().includes(normalizedQuery) ||
         (entry.context.componentName?.toLowerCase().includes(normalizedQuery) ?? false) ||
         (entry.context.filePath?.toLowerCase().includes(normalizedQuery) ?? false) ||
@@ -500,7 +502,7 @@ function buildCaptureLinks(history: GrabHistory, entries: GrabEntry[], includeLa
   });
 }
 
-function buildToolResult(payload: unknown, resourceLinks: ReturnType<typeof buildCaptureLinks> = []) {
+function buildToolResult(payload: unknown, resourceLinks: ReturnType<typeof buildCaptureLinks> = [], image?: GrabContext['screenGrab']) {
   return {
     content: [
       {
@@ -508,6 +510,7 @@ function buildToolResult(payload: unknown, resourceLinks: ReturnType<typeof buil
         text: JSON.stringify(payload, null, 2),
       },
       ...resourceLinks,
+      ...(image ? [{ type: 'image' as const, data: image.data, mimeType: image.mimeType }] : []),
     ],
   };
 }
@@ -569,6 +572,20 @@ function readComponentStack(
     }));
 }
 
+function readScreenGrab(value: unknown): GrabContext['screenGrab'] {
+  if (value === undefined) return undefined;
+  const fail = () => { throw new Error('Invalid Screen Grab: expected a PNG up to 2 MiB, dimensions up to 8192 and a valid region/comment.'); };
+  if (!isRecord(value) || value.mimeType !== 'image/png' || typeof value.data !== 'string' || value.data.length > 2796204 || !/^[A-Za-z0-9+/]+={0,2}$/.test(value.data)) return fail();
+  const bytes = Buffer.from(value.data, 'base64');
+  if (bytes.length < 24 || bytes.length > 2 * 1024 * 1024 || bytes.subarray(0, 8).toString('hex') !== '89504e470d0a1a0a' || bytes.toString('base64') !== value.data) return fail();
+  if (!Number.isInteger(value.width) || !Number.isInteger(value.height) || Number(value.width) < 1 || Number(value.height) < 1 || Number(value.width) > 8192 || Number(value.height) > 8192 || Number(value.width) * Number(value.height) > 16777216) return fail();
+  if (bytes.readUInt32BE(16) !== value.width || bytes.readUInt32BE(20) !== value.height) return fail();
+  const region = value.region;
+  if (!isRecord(region) || !['x', 'y', 'width', 'height'].every((key) => typeof region[key] === 'number' && Number.isFinite(region[key]) && Number(region[key]) >= 0) || Number(region.width) < 1 || Number(region.height) < 1) return fail();
+  if (typeof value.comment !== 'string' || value.comment.length > 10000) return fail();
+  return { mimeType: 'image/png', data: value.data, width: Number(value.width), height: Number(value.height), region: { x: Number(region.x), y: Number(region.y), width: Number(region.width), height: Number(region.height) }, comment: value.comment };
+}
+
 function parseIncomingGrab(data: unknown) {
   if (!isRecord(data)) {
     throw new Error('Invalid grab payload');
@@ -582,6 +599,7 @@ function parseIncomingGrab(data: unknown) {
   }
 
   const computedStyles = readStringRecord(data.computedStyles);
+  const screenGrab = readScreenGrab(data.screenGrab);
 
   return {
     snippet: readString(data.snippet) ?? '',
@@ -601,6 +619,7 @@ function parseIncomingGrab(data: unknown) {
       framework: readNullableString(data.framework),
       sessionId: readNullableString(data.sessionId),
       computedStyles,
+      ...(screenGrab ? { screenGrab } : {}),
     } satisfies GrabContext,
   };
 }
@@ -616,18 +635,46 @@ function isSupportedResourceUri(uri: string): boolean {
   );
 }
 
+/**
+ * Captures flow straight into an AI agent's context, so only accept them from pages a
+ * developer is plausibly running locally. Requests without an Origin (curl, CLIs) are
+ * allowed; extra origins can be added with POINT_GRAB_ALLOWED_ORIGINS (comma separated).
+ */
+export function isAllowedOrigin(origin: string | undefined, extra = process.env.POINT_GRAB_ALLOWED_ORIGINS ?? ''): boolean {
+  if (!origin) return true;
+  if (extra.split(',').map((o) => o.trim()).filter(Boolean).includes(origin)) return true;
+  let host: string;
+  try { host = new URL(origin).hostname.replace(/^\[|\]$/g, ''); } catch { return false; }
+  if (host === 'localhost' || host === '::1' || /\.(localhost|local|test|internal)$/.test(host)) return true;
+  const ip = host.split('.').map(Number);
+  if (ip.length !== 4 || ip.some((n) => !Number.isInteger(n) || n < 0 || n > 255)) return false;
+  return ip[0] === 127 || ip[0] === 10 || (ip[0] === 192 && ip[1] === 168) || (ip[0] === 172 && ip[1] >= 16 && ip[1] <= 31);
+}
+
 function startWebhookServer(
   port: number,
   processIncomingGrab: (data: unknown) => Promise<GrabEntry>
 ): HttpServer {
   const httpServer = createHttpServer(async (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    const origin = req.headers.origin;
+    const allowed = isAllowedOrigin(origin);
+    res.setHeader('Access-Control-Allow-Origin', allowed && origin ? origin : '*');
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    // Chrome Private Network Access preflight for pages served from a LAN address.
+    if (req.headers['access-control-request-private-network']) res.setHeader('Access-Control-Allow-Private-Network', 'true');
 
     if (req.method === 'OPTIONS') {
       res.writeHead(204);
       res.end();
+      return;
+    }
+
+    if (req.method === 'GET' && req.url === '/health') {
+      // Lets browser playgrounds show whether Send has a live, image-capable destination.
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ ok: true, name: 'point-grab-mcp', imageSupport: true }));
       return;
     }
 
@@ -637,16 +684,28 @@ function startWebhookServer(
       return;
     }
 
-    const maxBodySize = 1024 * 512;
-    let body = '';
+    if (!allowed) {
+      res.writeHead(403, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: `Origin ${origin} is not allowed. Add it to POINT_GRAB_ALLOWED_ORIGINS to accept captures from it.` }));
+      console.error(`[point-grab] Rejected capture from origin ${origin} (set POINT_GRAB_ALLOWED_ORIGINS to allow it).`);
+      return;
+    }
+
+    const maxBodySize = 4 * 1024 * 1024;
+    // Collect raw bytes: decoding per chunk corrupts multi-byte UTF-8 split across chunks.
+    const chunks: Buffer[] = [];
+    let received = 0;
     let overflow = false;
 
     req.on('data', (chunk: Buffer) => {
-      body += chunk.toString();
-      if (body.length > maxBodySize) {
+      if (overflow) return;
+      received += chunk.length;
+      if (received > maxBodySize) {
         overflow = true;
-        req.destroy();
+        chunks.length = 0;
+        return;
       }
+      chunks.push(chunk);
     });
 
     req.on('end', async () => {
@@ -657,10 +716,10 @@ function startWebhookServer(
       }
 
       try {
-        const entry = await processIncomingGrab(JSON.parse(body));
+        const entry = await processIncomingGrab(JSON.parse(Buffer.concat(chunks).toString('utf8')));
 
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ success: true, id: entry.id }));
+        res.end(JSON.stringify({ success: true, id: entry.id, ...(entry.context.screenGrab ? { imageAccepted: true } : {}) }));
 
         const framework = entry.context.framework ? ` [${entry.context.framework}]` : '';
         console.error(
@@ -668,7 +727,7 @@ function startWebhookServer(
         );
       } catch (error) {
         const message = error instanceof Error ? error.message : 'Internal server error';
-        const statusCode = message.startsWith('Missing required field') ? 400 : 500;
+        const statusCode = message.startsWith('Missing required field') || message.startsWith('Invalid Screen Grab') ? 400 : 500;
         console.error('[point-grab] Failed to process grab:', error);
         res.writeHead(statusCode, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: message }));
@@ -688,8 +747,10 @@ function startWebhookServer(
     console.error('[point-grab] Webhook server error:', error);
   });
 
-  httpServer.listen(port, () => {
-    console.error(`[point-grab] Webhook listener on http://localhost:${port}/inspect`);
+  // Loopback only by default: the webhook writes into the agent's context.
+  const host = process.env.POINT_GRAB_HOST ?? '127.0.0.1';
+  httpServer.listen(port, host, () => {
+    console.error(`[point-grab] Webhook listener on http://${host}:${port}/inspect`);
   });
 
   return httpServer;
@@ -782,7 +843,7 @@ export function createPointGrabMcpServer(
   const server = new Server(
     {
       name: 'point-grab-mcp',
-      version: '0.1.6',
+      version: '0.2.0',
     },
     {
       capabilities: {
@@ -934,6 +995,7 @@ export function createPointGrabMcpServer(
   server.setRequestHandler(ReadResourceRequestSchema, async (request) => {
     const history = await historyStore.readHistory();
     const payload = resolveResourcePayload(history, request.params.uri);
+    const image = 'id' in payload ? history.entries.find((entry) => entry.id === payload.id)?.context.screenGrab : undefined;
 
     return {
       contents: [
@@ -942,6 +1004,7 @@ export function createPointGrabMcpServer(
           mimeType: RESOURCE_MIME_TYPE,
           text: JSON.stringify(payload, null, 2),
         },
+        ...(image ? [{ uri: `${request.params.uri}#image`, mimeType: image.mimeType, blob: image.data }] : []),
       ],
     };
   });
@@ -1025,7 +1088,8 @@ export function createPointGrabMcpServer(
 
           return buildToolResult(
             formatEntry(entry),
-            buildCaptureLinks(history, [entry], history.entries[0]?.id === entry.id)
+            buildCaptureLinks(history, [entry], history.entries[0]?.id === entry.id),
+            entry.context.screenGrab
           );
         }
 

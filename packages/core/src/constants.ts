@@ -1,9 +1,11 @@
-export const Z_INDEX_FREEZE = 2147483644;
-export const Z_INDEX_CROSSHAIR = 2147483645;
-export const Z_INDEX_OVERLAY = 2147483646;
-export const Z_INDEX_LABEL = 2147483647;
+// Inspection labels/feedback must never paint over interactive tool controls.
+export const Z_INDEX_FREEZE = 2147483641;
+export const Z_INDEX_CROSSHAIR = 2147483642;
+export const Z_INDEX_OVERLAY = 2147483643;
+export const Z_INDEX_LABEL = 2147483644;
 export const Z_INDEX_TOOLBAR = 2147483646;
-export const Z_INDEX_TOAST = 2147483647;
+// Informational feedback must not obscure labels in interactive popovers.
+export const Z_INDEX_TOAST = 2147483645;
 export const Z_INDEX_POPOVER = 2147483647;
 
 export const TOOLBAR_TOAST_OFFSET = '72px';

@@ -170,10 +170,11 @@ export function createHistoryPopover(callbacks: HistoryPopoverCallbacks): Histor
       html += '<div class="point-grab-history-empty">No elements inspected yet</div>';
     } else {
       for (const entry of entries) {
-        const selector = escapeHtml(entry.context.selector);
+        const shot = entry.context.screenGrab;
+        const selector = shot ? `Screenshot ${shot.width} × ${shot.height}` : escapeHtml(entry.context.selector);
         const comp = entry.context.componentName ? escapeHtml(entry.context.componentName) : '';
         const time = formatRelativeTime(entry.timestamp);
-        let meta = comp ? `in ${comp}` : '';
+        let meta = shot ? escapeHtml(shot.comment || 'No comment') : comp ? `in ${comp}` : '';
         if (entry.context.filePath) {
           const uri = buildVsCodeUri(entry.context.filePath, entry.context.line, entry.context.column);
           const fileName = escapeHtml(shortPath(entry.context.filePath));

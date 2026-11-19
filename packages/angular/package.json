@@ -1,6 +1,6 @@
 {
   "name": "@point-grab/angular",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "Angular adapter for point-grab",
   "author": {
     "name": "Nate Richardson",
@@ -37,6 +37,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
+    "test": "vitest run",
     "lint": "tsc --noEmit",
     "clean": "rm -rf dist .turbo"
   },
@@ -53,7 +54,8 @@
     "@angular/core": "^22.1.0",
     "@point-grab/core": "workspace:*",
     "tsup": "^8.3.0",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.10"
   },
   "publishConfig": {
     "access": "public"

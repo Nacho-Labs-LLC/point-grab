@@ -53,6 +53,8 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
         pointer-events: auto;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         transition: opacity 0.2s ease, transform 0.2s ease;
+        max-width: calc(100vw - 24px);
+        box-sizing: border-box;
       }
       #${TOOLBAR_ID}.point-grab-toolbar-hidden {
         opacity: 0;
@@ -114,8 +116,8 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
         display: flex;
         align-items: center;
         gap: 2px;
-        overflow: hidden;
-        max-width: 240px;
+        overflow-x: auto;
+        max-width: 600px;
         opacity: 1;
         transition: max-width 0.25s ease, opacity 0.2s ease, margin 0.25s ease;
       }
@@ -259,6 +261,12 @@ export function createToolbarRenderer(callbacks: ToolbarCallbacks): ToolbarRende
       buttons.theme.innerHTML = themeIcon;
       buttons.theme.title = themeLabel;
       buttons.theme.setAttribute('aria-label', themeLabel);
+
+      const freezeLabel = `Freeze page (${(state.options.freezeKey || 'F').toUpperCase()})`;
+      if (buttons.freeze.title !== freezeLabel) {
+        buttons.freeze.title = freezeLabel;
+        buttons.freeze.setAttribute('aria-label', freezeLabel);
+      }
 
       // Freeze button active state
       if (state.frozen) {

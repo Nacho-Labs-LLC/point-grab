@@ -204,4 +204,25 @@ describe('generateSnippet', () => {
     // Only HTML should be output, as the stack entry yields empty location string
     expect(result).toBe('<div>hello</div>\n');
   });
+
+  it('leads with the picked element\'s own source line when it differs from the component host', () => {
+    const ctx = makeContext({
+      html: '<button>Add</button>', selector: '', filePath: 'src/App.tsx', line: 98, column: 7,
+      componentStack: [
+        { name: 'ProductCard', filePath: 'src/App.tsx', line: 72, column: 5 },
+        { name: 'App', filePath: 'src/App.tsx', line: 300, column: 3 },
+      ],
+    });
+    expect(generateSnippet(ctx, 20).split('\n').slice(-3)).toEqual([
+      'at src/App.tsx:98:7', 'in ProductCard at src/App.tsx:72:5', 'in App at src/App.tsx:300:3',
+    ]);
+  });
+
+  it('does not repeat the location when the picked element is the component host', () => {
+    const ctx = makeContext({
+      html: '<article></article>', selector: '', filePath: 'src/App.tsx', line: 72, column: 5,
+      componentStack: [{ name: 'ProductCard', filePath: 'src/App.tsx', line: 72, column: 5 }],
+    });
+    expect(generateSnippet(ctx, 20)).not.toContain('\nat src/App.tsx:72:5');
+  });
 });

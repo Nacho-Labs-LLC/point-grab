@@ -1,5 +1,6 @@
 import { test, expect, type Locator, type Page } from "@playwright/test";
 import { SEL, activateInspector } from "./helpers";
+import { checkpoint } from './checkpoint';
 
 const COMMENT_POPOVER = "#__point-grab-comment-popover__";
 
@@ -10,6 +11,7 @@ async function selectForComment(page: Page, target: Locator, comment: string) {
   await target.click();
   await expect(page.locator(COMMENT_POPOVER)).toBeVisible();
   await page.locator(`${COMMENT_POPOVER} textarea`).fill(comment);
+  await checkpoint(page, 'site-element-comment-editor');
   await page.getByRole("button", { name: "Add to Review" }).click();
 }
 
@@ -19,6 +21,17 @@ test.describe("site LiveDemo", () => {
     await expect(page.locator("#tour-instruction")).toContainText(
       "Build one AI-ready review",
     );
+  });
+
+  test("framework catalog links all seven demos to their canonical example sources", async ({ page }) => {
+    const frameworks = ["angular", "react", "vue", "svelte", "web-components", "solid", "vanilla"];
+    const sources = page.getByRole("link", { name: "Demo source", exact: true });
+    await expect(sources).toHaveCount(frameworks.length);
+    expect(await sources.evaluateAll(links => links.map(link => link.getAttribute("href")).sort()))
+      .toEqual(frameworks.map(framework => `https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/${framework}`).sort());
+    await expect(page.locator('a[href*="/stackblitz/"]')).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Solid", exact: true })).toBeVisible();
+    await checkpoint(page, 'site-canonical-demo-sources-all-seven');
   });
 
   test("walks through a multi-element comment review and copies one batch", async ({
@@ -63,6 +76,7 @@ test.describe("site LiveDemo", () => {
     await expect(page.locator("#tour-complete")).toContainText(
       "one AI-ready prompt",
     );
+    await checkpoint(page, 'site-completed-review');
     await expect(page.locator(".tour-dot")).toHaveClass(/done/);
     await expect(page.locator("#tour-chat")).toHaveCount(0);
     await expect(page.locator("#tour-continue-btn")).toHaveCount(0);
@@ -71,5 +85,8 @@ test.describe("site LiveDemo", () => {
     expect(clipboard).toContain("Make this metric easier to scan.");
     expect(clipboard).toContain("Make the progress state more prominent.");
     expect(clipboard).toContain("## Element 2");
+    if (process.env.POINT_GRAB_EVIDENCE_DIR) {
+      await test.info().attach('actual-copied-prompt', { body: clipboard, contentType: 'text/plain' });
+    }
   });
 });

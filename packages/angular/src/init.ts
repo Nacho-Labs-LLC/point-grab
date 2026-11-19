@@ -24,9 +24,10 @@ export function initPointGrabAngular(options?: Partial<PointGrabOptions>): Point
   instance = init(options);
   instance.setComponentResolver((el) => resolveComponent(el));
   instance.setSourceResolver((el) => resolveSource(el));
+  // Keep caller-provided filters/cleaners alongside the adapter defaults.
   instance.setOptions({
-    classFilters: [angularClassFilter],
-    htmlCleaners: angularHtmlCleaners,
+    classFilters: [angularClassFilter, ...(options?.classFilters ?? [])],
+    htmlCleaners: [...angularHtmlCleaners, ...(options?.htmlCleaners ?? [])],
   });
 
   return instance;

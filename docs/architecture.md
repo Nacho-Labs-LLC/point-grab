@@ -82,7 +82,7 @@ packages/core/src/
 The picker is the heart of point-grab. Here is the full cycle from activation to capture:
 
 ```
-User holds Cmd+C (or configured key)
+User holds Ctrl+B (or the configured activationKey)
   |
   v
 keyboard-handler detects keydown matching activationKey

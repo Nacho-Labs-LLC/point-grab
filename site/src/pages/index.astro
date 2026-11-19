@@ -6,13 +6,16 @@ import Badge from "../components/Badge.astro";
 import FrameworkIcon from "../components/FrameworkIcon.astro";
 import LiveDemo from "../components/LiveDemo.astro";
 
-const STACKBLITZ_DEMOS = {
-  angular: "https://stackblitz.com/github/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/angular?file=src%2Fmain.ts",
-  react: "https://stackblitz.com/github/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/react?file=src%2FApp.jsx",
-  vue: "https://stackblitz.com/github/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/vue?file=src%2FApp.vue",
-  svelte: "https://stackblitz.com/github/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/svelte?file=src%2FApp.svelte",
-  webComponents: "https://stackblitz.com/github/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/web-components?file=main.js",
-  vanilla: "https://stackblitz.com/github/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/vanilla?file=main.js",
+// examples/ is the only demo source. Add hosted StackBlitz links after the
+// corresponding projects have been imported and verified, not guessed URLs.
+const DEMO_SOURCES = {
+  angular: "https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/angular",
+  react: "https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/react",
+  vue: "https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/vue",
+  svelte: "https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/svelte",
+  webComponents: "https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/web-components",
+  vanilla: "https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/vanilla",
+  solid: "https://github.com/Nacho-Labs-LLC/point-grab/tree/main/examples/solid",
 } as const;
 ---
 
@@ -154,7 +157,7 @@ const STACKBLITZ_DEMOS = {
           </div>
         </div>
         <p class="text-sm leading-relaxed text-text-muted">
-          Hold <kbd class="rounded border border-border bg-bg-muted px-1 py-0.5 text-[10px] text-text-muted">&#8984;C</kbd> and hover. A highlight overlay tracks your cursor with the component name in a floating label.
+          Hold <kbd class="rounded border border-border bg-bg-muted px-1 py-0.5 text-[10px] text-text-muted">Ctrl+B</kbd> and hover. A highlight overlay tracks your cursor with the component name in a floating label.
         </p>
       </div>
 
@@ -421,14 +424,11 @@ const STACKBLITZ_DEMOS = {
           </div>
         </div>
         <p class="text-sm leading-relaxed text-text-muted">
-          Reads the component tree via <code class="text-text-faint">window.ng</code> for component names, template references, and source locations.
+          Reads the component tree via <code class="text-text-faint">window.ng</code> for component names and ancestry. Source locations are available when mappings are supplied.
         </p>
         <div class="mt-4 flex flex-wrap items-center gap-4 text-xs font-medium">
-          <a href={STACKBLITZ_DEMOS.angular} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
-            Open in StackBlitz
-          </a>
-          <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/angular" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-text-faint transition-colors hover:text-text-heading">
-            Source
+          <a href={DEMO_SOURCES.angular} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
+            Demo source
           </a>
           <a href="/docs/install#angular" class="inline-flex items-center gap-1 text-text-faint transition-colors hover:text-text-heading">
             Install docs →
@@ -449,11 +449,8 @@ const STACKBLITZ_DEMOS = {
           Walks the fiber tree via <code class="text-text-faint">__reactFiber$</code> for component names and <code class="text-text-faint">_debugSource</code> for file paths with line numbers.
         </p>
         <div class="mt-4 flex flex-wrap items-center gap-4 text-xs font-medium">
-          <a href={STACKBLITZ_DEMOS.react} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
-            Open in StackBlitz
-          </a>
-          <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/react" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-text-faint transition-colors hover:text-text-heading">
-            Source
+          <a href={DEMO_SOURCES.react} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
+            Demo source
           </a>
         </div>
       </div>
@@ -471,11 +468,8 @@ const STACKBLITZ_DEMOS = {
           Traverses the Vue instance tree, resolving SFC file paths and stripping <code class="text-text-faint">data-v-*</code> scoped hashes.
         </p>
         <div class="mt-4 flex flex-wrap items-center gap-4 text-xs font-medium">
-          <a href={STACKBLITZ_DEMOS.vue} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
-            Open in StackBlitz
-          </a>
-          <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/vue" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-text-faint transition-colors hover:text-text-heading">
-            Source
+          <a href={DEMO_SOURCES.vue} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
+            Demo source
           </a>
         </div>
       </div>
@@ -493,11 +487,8 @@ const STACKBLITZ_DEMOS = {
           Reads <code class="text-text-faint">__svelte_meta</code> for component boundaries and <code class="text-text-faint">loc</code> for source mappings.
         </p>
         <div class="mt-4 flex flex-wrap items-center gap-4 text-xs font-medium">
-          <a href={STACKBLITZ_DEMOS.svelte} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
-            Open in StackBlitz
-          </a>
-          <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/svelte" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-text-faint transition-colors hover:text-text-heading">
-            Source
+          <a href={DEMO_SOURCES.svelte} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
+            Demo source
           </a>
         </div>
       </div>
@@ -515,11 +506,27 @@ const STACKBLITZ_DEMOS = {
           Pierces Shadow DOM boundaries and maps custom element tags back to their class definitions.
         </p>
         <div class="mt-4 flex flex-wrap items-center gap-4 text-xs font-medium">
-          <a href={STACKBLITZ_DEMOS.webComponents} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
-            Open in StackBlitz
+          <a href={DEMO_SOURCES.webComponents} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
+            Demo source
           </a>
-          <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/web-components" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-text-faint transition-colors hover:text-text-heading">
-            Source
+        </div>
+      </div>
+
+      <!-- Solid -->
+      <div class="group rounded-xl border border-border bg-bg-raised p-6 transition-all hover:border-border-bright hover:shadow-[var(--shadow-glow-blue)]">
+        <div class="mb-4 flex items-center gap-3">
+          <span aria-hidden="true" class="flex h-9 w-9 items-center justify-center rounded-lg bg-point-grab-blue/10 text-xl font-bold text-point-grab-blue">S</span>
+          <div>
+            <h3 class="font-semibold text-text-heading">Solid</h3>
+            <code class="text-xs text-text-faint">@point-grab/solid</code>
+          </div>
+        </div>
+        <p class="text-sm leading-relaxed text-text-muted">
+          Uses build-time JSX instrumentation for component and source context, alongside native signals and control flow.
+        </p>
+        <div class="mt-4 flex flex-wrap items-center gap-4 text-xs font-medium">
+          <a href={DEMO_SOURCES.solid} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
+            Demo source
           </a>
         </div>
       </div>
@@ -537,11 +544,8 @@ const STACKBLITZ_DEMOS = {
           Pure DOM inspection with CSS selector generation. Zero dependencies, works in any page.
         </p>
         <div class="mt-4 flex flex-wrap items-center gap-4 text-xs font-medium">
-          <a href={STACKBLITZ_DEMOS.vanilla} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
-            Open in StackBlitz
-          </a>
-          <a href="https://github.com/Nacho-Labs-LLC/point-grab/tree/main/stackblitz/vanilla" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-text-faint transition-colors hover:text-text-heading">
-            Source
+          <a href={DEMO_SOURCES.vanilla} target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-point-grab-blue transition-colors hover:text-point-grab-blue-bright">
+            Demo source
           </a>
         </div>
       </div>
@@ -582,7 +586,7 @@ const STACKBLITZ_DEMOS = {
   <span class="text-text">PointGrab</span><span class="text-text-faint">.</span><span class="text-point-grab-blue">init</span><span class="text-text-faint">();</span>
 <span class="text-text-faint">&lt;/</span><span class="text-point-grab-blue">script</span><span class="text-text-faint">&gt;</span></code></pre>
           </div>
-          <p class="mt-3 text-xs text-text-faint">Load the IIFE bundle, call <code class="text-text-heading">PointGrab.init()</code>, then hold <kbd class="rounded border border-border bg-bg-muted px-1 py-0.5 text-[10px] text-text-muted">&#8984;C</kbd> and hover.</p>
+          <p class="mt-3 text-xs text-text-faint">Load the IIFE bundle, call <code class="text-text-heading">PointGrab.init()</code>, then hold <kbd class="rounded border border-border bg-bg-muted px-1 py-0.5 text-[10px] text-text-muted">Ctrl+B</kbd> and hover.</p>
         </div>
 
         <!-- React -->

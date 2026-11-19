@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Wavely</title>
+  <title>Wavely · Vanilla JS playground</title>
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
@@ -13,10 +13,16 @@
         <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><circle cx="10" cy="10" r="9" stroke="#818cf8" stroke-width="1.5"/><circle cx="10" cy="10" r="3.5" fill="#818cf8"/></svg>
         Wavely
       </div>
-      <p class="pg-hint">Hold <kbd>Cmd+C</kbd> / <kbd>Ctrl+C</kbd>, hover any element, click to grab its context for your AI</p>
+      <p class="pg-hint">Hold <kbd>Ctrl+B</kbd> and click anything to grab it for your AI</p>
     </header>
 
-    <div class="player">
+    <section class="intro">
+      <span class="guide-kicker">Tonight's queue</span>
+      <h1>Find your next frequency.</h1>
+      <p>Five late-night tracks, ready when you are.</p>
+      <div class="signal-row"><span class="motion-sample" data-testid="motion-sample" aria-hidden="true">♫</span><span class="freeze-help"><button type="button" data-testid="freeze-trigger" aria-describedby="mix-tip">About this mix</button><span role="tooltip" id="mix-tip" data-testid="freeze-popover">Synthwave and late-night electronica, sequenced to wind down slowly. Shuffle keeps the closer last.</span></span></div>
+    </section>
+    <main class="player" aria-label="Demo music player">
       <div class="now-playing">
         <div class="album-art" id="album-art"></div>
         <div class="track-meta">
@@ -29,7 +35,7 @@
 
       <div class="scrubber">
         <span class="time" id="time-elapsed">1:23</span>
-        <div class="progress-track" id="progress-track">
+        <div class="progress-track" id="progress-track" role="slider" tabindex="0" aria-label="Track position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
           <div class="progress-fill" id="progress-fill"></div>
           <div class="progress-thumb" id="progress-thumb"></div>
         </div>
@@ -56,7 +62,7 @@
           </button>
           <div class="volume-popover hidden" id="volume-popover">
             <span class="volume-pct" id="volume-pct">75%</span>
-            <input type="range" class="volume-slider" id="volume-slider" min="0" max="100" value="75" />
+            <input type="range" class="volume-slider" id="volume-slider" aria-label="Demo volume" min="0" max="100" value="75" />
             <span class="volume-label">Volume</span>
           </div>
         </div>
@@ -66,10 +72,15 @@
       </div>
 
       <div class="queue">
-        <div class="queue-header">Queue</div>
+        <div class="queue-header"><span>Queue</span><input type="search" id="queue-filter" class="queue-filter" placeholder="Filter tracks" aria-label="Filter queue" autocomplete="off" /></div>
+        <p class="queue-empty hidden" id="queue-empty">No tracks match that filter.</p>
         <div class="queue-list" id="queue-list"></div>
       </div>
-    </div>
+    </main>
+    <section class="playground-guide" data-testid="playground-guide" aria-labelledby="guide-title">
+      <div class="guide-head"><div><span class="eyebrow">Vanilla JS playground</span><h2 id="guide-title">Try Point Grab on this player</h2></div><span class="mcp-status" data-testid="mcp-status" role="status" data-state="checking">Checking MCP server…</span></div>
+      <ol><li><strong>Grab</strong> Hold <kbd>Ctrl+B</kbd>, hover the track title or a queue row and click. Your clipboard gets its HTML plus a stable CSS selector and text, with no framework required.</li><li><strong>Comment</strong> Toolbar <kbd>⋯</kbd> → Add Comment, click an element, write a note. Queue a few, then Confirm &amp; Copy.</li><li><strong>Freeze</strong> Hover <em>About this mix</em>, hold <kbd>Ctrl+B</kbd> and press <kbd>F</kbd>. Hover states and motion hold still. <kbd>Esc</kbd> resumes.</li><li><strong>Screenshot</strong> <kbd>⋯</kbd> → Add screenshot, drag over the player, add a note and Send it to your AI.</li><li><strong>History</strong> The clock button lists every grab. Click one to copy it again.</li></ol>
+    </section>
   </div>
 
   <script type="module" src="/main.js"></script>

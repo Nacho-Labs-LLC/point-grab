@@ -44,8 +44,11 @@ function getComponentName(instance: VueComponentInstance): string | null {
 
   // Derive name from __file path as a last resort
   if (type.__file) {
-    const match = type.__file.match(/([^/\\]+)\.vue$/);
-    if (match) return match[1];
+    const file = type.__file;
+    const basename = file.slice(Math.max(file.lastIndexOf('/'), file.lastIndexOf('\\')) + 1);
+    if (basename.endsWith('.vue') && basename.length > '.vue'.length) {
+      return basename.slice(0, -'.vue'.length);
+    }
   }
 
   return null;

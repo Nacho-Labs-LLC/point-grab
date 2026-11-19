@@ -15,6 +15,8 @@ export type {
   ToolbarState,
   PendingAction,
   Annotation,
+  ScreenGrab,
+  ScreenGrabSummary,
   ComponentResolver,
   SourceResolver,
   ClassFilter,

@@ -19,7 +19,7 @@ const pointGrab = init();
 ```
 
 Default flow:
-- hold `Cmd+C` on macOS or `Ctrl+C` on Windows/Linux
+- hold `Ctrl+B`
 - hover an element
 - click to capture it
 
@@ -44,6 +44,10 @@ const pointGrab = init({
   mcpWebhook: true,
 });
 ```
+
+## Screen Grab
+
+Choose **Actions → Add screenshot** and drag directly on the current live webpage. Release to automatically render that region, review the mandatory preview, add a comment, and explicitly Send. This is DOM rasterization, not OS/compositor pixels; no upload, clipboard intake or sharing session is required. Editable fields are redacted. Frames/video/canvas/shadow DOM/cross-origin images/filters can block capture; fonts, shadows and complex CSS may differ. Nothing is sent before **Send**; image clipboard copying is not implemented. Requires an image-aware MCP server or custom image transport. See [screenshot flow](../../docs/screen-grab.md) for the DOM-rendering boundaries, transport, limits and verification.
 
 ## What gets captured
 

@@ -1,4 +1,7 @@
 import { defineConfig } from 'tsup';
+import { readFileSync } from 'node:fs';
+
+const banner = { js: `/*!\n${readFileSync(new URL('./THIRD_PARTY_LICENSES.txt', import.meta.url), 'utf8')}\n*/` };
 
 export default defineConfig([
   {
@@ -13,6 +16,7 @@ export default defineConfig([
     outDir: 'dist',
     format: ['iife'],
     globalName: 'PointGrab',
+    banner,
     clean: false,
     minify: true,
     outExtension: () => ({ js: '.global.js' }),

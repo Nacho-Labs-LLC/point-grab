@@ -1,6 +1,6 @@
 {
   "name": "@point-grab/svelte",
-  "version": "0.1.6",
+  "version": "0.2.0",
   "description": "Svelte adapter for point-grab",
   "author": {
     "name": "Nate Richardson",
@@ -37,6 +37,7 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
+    "test": "vitest run",
     "lint": "tsc --noEmit",
     "clean": "rm -rf dist .turbo"
   },
@@ -51,8 +52,10 @@
   },
   "devDependencies": {
     "@point-grab/core": "workspace:*",
+    "jsdom": "^30.0.1",
     "tsup": "^8.3.0",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "vitest": "^4.1.10"
   },
   "publishConfig": {
     "access": "public"

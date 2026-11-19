@@ -21,7 +21,7 @@ Point at any element in a running web app. Get its full context -- cleaned HTML,
 </script>
 ```
 
-That's it. Hold `Cmd+C` (Mac) or `Ctrl+C` (Windows/Linux), hover over any element, and click. The context is on your clipboard.
+That's it. Hold `Ctrl+B`, hover over any element, and click. The context is on your clipboard.
 
 The IIFE bundle exposes a global `PointGrab`; it does not auto-initialize or create `window.__POINT_GRAB__`.
 
@@ -35,7 +35,7 @@ npm install @point-grab/core
 import { init } from '@point-grab/core';
 
 const inspector = init();
-// Hold Cmd+C (Mac) / Ctrl+C (Win), hover, click
+// Hold Ctrl+B, hover, click
 ```
 
 ---
@@ -43,6 +43,8 @@ const inspector = init();
 ## Framework Guides
 
 The core engine works on any page out of the box. Framework adapters add rich metadata: component names, source file paths with line numbers, and component ancestor chains.
+
+The seven runnable demos live only in [`examples/`](examples/README.md), the canonical sources for StackBlitz. That guide covers browser features, editable configuration/extension use cases, and the separate real MCP/image-transport requirements. No duplicate demo tree is maintained; hosted links will be added only after the actual StackBlitz projects are verified.
 
 ### Vanilla JS
 
@@ -158,6 +160,10 @@ Or pass options:
 
 The Svelte adapter reads `__svelte_meta` (Svelte 5) and `__svelte_component` (Svelte 4) for component names and `__svelte_meta.loc` for source locations. It strips `s-*` and `svelte-*` CSS classes and `svelte-*` attributes.
 
+### Solid
+
+Use `initPointGrabSolid()` from `@point-grab/solid` and register the `@point-grab/solid/vite` transform **before** `vite-plugin-solid`. The transform supplies development JSX file/line/column and lexical component context; it does not emulate a complete logical owner graph. See [Solid setup and metadata boundaries](docs/solid-support.md) and the canonical [Solid demo](examples/solid).
+
 ### Web Components
 
 ```bash
@@ -260,7 +266,8 @@ See [docs/mcp.md](./docs/mcp.md) for full tool schemas and example responses.
 
 | Option | Type | Default | Description |
 |---|---|---|---|
-| `activationKey` | `string` | `'Meta+C'` (Mac) / `'Ctrl+C'` (Win) | Keyboard shortcut to activate |
+| `activationKey` | `string` | `'Ctrl+B'` | Keyboard shortcut to activate |
+| `freezeKey` | `string` | `'F'` | Single key that toggles Freeze while selecting or while the toolbar is shown |
 | `activationMode` | `'hold' \| 'toggle'` | `'hold'` | Hold key to inspect, or toggle on/off |
 | `keyHoldDuration` | `number` | `0` | Milliseconds to hold before activating (hold mode only) |
 | `maxContextLines` | `number` | `20` | Max lines of HTML in the copied snippet |
@@ -332,7 +339,7 @@ See [docs/plugins.md](./docs/plugins.md) for the full hook reference and plugin 
 
 ## Keyboard Shortcuts
 
-Default activation: hold `Cmd+C` (Mac) or `Ctrl+C` (Windows/Linux).
+Default activation: hold `Ctrl+B`.
 
 In hold mode, the inspector activates while the key combination is held down and deactivates on release. In toggle mode, the shortcut toggles the inspector on and off.
 
@@ -340,7 +347,7 @@ While the inspector is active:
 
 | Key | Action |
 |---|---|
-| `F` | Freeze/unfreeze selection mode (keep inspector active after releasing keys) |
+| `F` (or your `freezeKey`) | Freeze/unfreeze selection mode (keep inspector active after releasing keys) |
 
 Customize the activation shortcut:
 
@@ -348,10 +355,16 @@ Customize the activation shortcut:
 const inspector = init({
   activationKey: 'Ctrl+Shift+X',
   activationMode: 'toggle',
+  freezeKey: 'P',
 });
 ```
 
-Key combo format: modifier names (`Meta`, `Cmd`, `Command`, `Ctrl`, `Control`, `Shift`, `Alt`, `Option`) joined with `+` followed by the key name.
+Key combo format: modifier names (`Meta`, `Cmd`, `Command`, `Ctrl`, `Control`, `Shift`, `Alt`, `Option`) joined with `+`, followed by exactly one key, e.g. `Alt+G`, `Ctrl+Shift+1`, `Cmd+Space` or `Ctrl++`.
+
+- **Modifiers match exactly.** `Ctrl+B` does not fire on Ctrl+Shift+B, so browser shortcuts like the bookmarks bar keep working.
+- **Letters and digits match by physical key**, so `Alt+G` works on macOS (where Option+G types `©`), `Shift+1` works, and non-Latin keyboard layouts work.
+- An invalid combo (no key, or more than one) logs a single console warning and never activates.
+- Every adapter accepts the same options, and `setOptions({ activationKey, freezeKey })` changes them at runtime.
 
 ---
 
@@ -547,6 +560,7 @@ interface PluginHooks {
 | [`@point-grab/react`](./packages/react) | React adapter -- fiber tree, `_debugSource`, `usePointGrab()` hook |
 | [`@point-grab/vue`](./packages/vue) | Vue adapter -- component tree, `__file`, `PointGrabPlugin` for `app.use()` |
 | [`@point-grab/svelte`](./packages/svelte) | Svelte adapter -- `__svelte_meta`, `use:pointGrab` action |
+| [`@point-grab/solid`](./packages/solid) | Solid adapter -- development JSX instrumentation, `initPointGrabSolid()` and Vite transform |
 | [`@point-grab/web-components`](./packages/web-components) | Web Components adapter -- Shadow DOM traversal, custom element detection |
 | [`@point-grab/mcp-server`](./packages/mcp-server) | MCP server -- stdio transport for AI agents + HTTP webhook for browser |
 

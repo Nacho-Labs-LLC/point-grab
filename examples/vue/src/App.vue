@@ -1,5 +1,10 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, nextTick } from 'vue';
+import ProductArtwork from './ProductArtwork.vue';
+import CartItem from './CartItem.vue';
+import ColorPicker from './ColorPicker.vue';
+import SizePicker from './SizePicker.vue';
+import GrabGuide from './GrabGuide.vue';
 
 const colors = [
   { name: 'Black',  value: '#1a1a1a' },
@@ -11,53 +16,72 @@ const sizes = ['S', 'M', 'L', 'XL'];
 
 const selectedColor = ref(null);
 const selectedSize  = ref(null);
-const cartCount     = ref(0);
+const monogram      = ref('');
+const cartCount     = computed(() => cartItems.value.length);
+// Sum the line prices: a monogram adds $8 to that item.
+const cartTotal     = computed(() => cartItems.value.reduce((sum, item) => sum + Number(item.price.slice(1)), 0));
 const cartOpen      = ref(false);
 const cartItems     = ref([]);
 const cartBumping   = ref(false);
 const btnShaking    = ref(false);
+const error = ref('');
+const checkoutMessage = ref('');
+let nextItemId = 1;
+const cartPanel = ref(null);
+let cartOpener = null;
 
 const productImageBg = computed(() =>
   selectedColor.value ? selectedColor.value.value : '#1e2130'
 );
 
-function selectColor(color) {
-  selectedColor.value = color;
-}
-
-function selectSize(size) {
-  selectedSize.value = size;
-}
-
 function addToCart() {
   if (!selectedColor.value || !selectedSize.value) {
+    error.value = 'Choose a color and size before adding to your cart.';
     btnShaking.value = true;
     setTimeout(() => { btnShaking.value = false; }, 300);
     return;
   }
 
+  error.value = '';
+  checkoutMessage.value = '';
   cartItems.value.push({
-    id: Date.now(),
+    id: nextItemId++,
     name: 'Novo Crewneck',
     color: selectedColor.value.name,
+    swatch: selectedColor.value.value,
     size: selectedSize.value,
-    price: '$68.00',
+    monogram: monogram.value,
+    price: monogram.value ? '$76.00' : '$68.00',
   });
 
-  cartCount.value += 1;
+
 
   cartBumping.value = true;
   setTimeout(() => { cartBumping.value = false; }, 400);
 
-  cartOpen.value = true;
+  openCart();
 }
 
-function openCart() {
+async function openCart() {
+  cartOpener = document.activeElement;
   cartOpen.value = true;
+  await nextTick();
+  cartPanel.value?.querySelector('button')?.focus();
 }
 
 function closeCart() {
   cartOpen.value = false;
+  cartOpener?.focus();
+}
+
+function cartKeydown(event) {
+  if (event.key === 'Escape') { closeCart(); return; }
+  if (event.key !== 'Tab') return;
+  const buttons = Array.from(cartPanel.value.querySelectorAll('button:not(:disabled)'));
+  const first = buttons[0];
+  const last = buttons[buttons.length - 1];
+  if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+  if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
 }
 
 function starFill(index) {
@@ -91,14 +115,10 @@ function starFill(index) {
     </nav>
 
     <div class="product-layout">
-      <div
-        class="product-image"
-        :style="{ background: productImageBg }"
-      >
-        <span v-if="selectedColor" class="image-color-label">{{ selectedColor.name }}</span>
-      </div>
+      <ProductArtwork :color="productImageBg" :name="selectedColor?.name" :monogram="monogram" />
 
       <div class="product-info">
+        <span class="eyebrow">THE EVERYDAY UNIFORM / COLLECTION 01</span>
         <h1 class="product-name">Novo Crewneck</h1>
 
         <div class="product-price">$68</div>
@@ -128,38 +148,16 @@ function starFill(index) {
           Heavyweight 400gsm French terry. Slightly oversized. Pre-shrunk.
         </p>
 
-        <div class="option-group">
-          <div class="option-label">
-            Color
-            <span v-if="selectedColor" class="option-value">{{ selectedColor.name }}</span>
-          </div>
-          <div class="color-swatches">
-            <button
-              v-for="color in colors"
-              :key="color.value"
-              :class="['color-swatch', { 'swatch-active': selectedColor?.value === color.value }]"
-              :style="{ background: color.value }"
-              :aria-label="color.name"
-              @click="selectColor(color)"
-            />
-          </div>
-        </div>
+        <ColorPicker v-model="selectedColor" :colors="colors" />
+        <SizePicker v-model="selectedSize" :sizes="sizes" />
 
-        <div class="option-group">
-          <div class="option-label">
-            Size
-            <span v-if="selectedSize" class="option-value">{{ selectedSize }}</span>
-          </div>
-          <div class="size-options">
-            <button
-              v-for="size in sizes"
-              :key="size"
-              :class="['size-btn', { 'size-active': selectedSize === size }]"
-              @click="selectSize(size)"
-            >{{ size }}</button>
-          </div>
-        </div>
+        <label class="monogram">
+          <span class="option-label">Monogram <span class="option-value">optional</span></span>
+          <input v-model="monogram" maxlength="3" placeholder="ABC" aria-label="Monogram" autocomplete="off" @input="monogram = monogram.toUpperCase().replace(/[^A-Z]/g, '')" />
+        </label>
 
+        <span class="fit-help"><button data-testid="freeze-trigger" aria-describedby="fit-tip">A note on fit ↗</button><span id="fit-tip" role="tooltip" data-testid="freeze-popover">Relaxed through the body. Choose your usual size for a roomy fit, or size down for a closer silhouette.</span></span>
+        <p v-if="error" role="alert" class="validation-error">{{ error }}</p>
         <button
           :class="['add-to-cart-btn', { shake: btnShaking }]"
           @click="addToCart"
@@ -179,11 +177,12 @@ function starFill(index) {
         </div>
       </div>
     </div>
+    <GrabGuide />
   </main>
 
   <div v-if="cartOpen" class="cart-overlay" @click="closeCart" />
 
-  <div v-if="cartOpen" class="cart-drawer">
+  <aside v-if="cartOpen" ref="cartPanel" class="cart-drawer" role="dialog" aria-modal="true" aria-label="Your Cart" @keydown="cartKeydown">
     <div class="cart-drawer-header">
       <span class="cart-drawer-title">Your Cart</span>
       <button class="cart-close" @click="closeCart" aria-label="Close cart">
@@ -198,28 +197,18 @@ function starFill(index) {
       <div v-if="cartItems.length === 0" class="cart-empty">
         Your cart is empty.
       </div>
-      <div
-        v-for="item in cartItems"
-        :key="item.id"
-        class="cart-item"
-      >
-        <div class="cart-item-swatch" :style="{ background: colors.find(c => c.name === item.color)?.value || '#1e2130' }" />
-        <div class="cart-item-details">
-          <span class="cart-item-name">{{ item.name }}</span>
-          <span class="cart-item-meta">{{ item.color }} · {{ item.size }}</span>
-        </div>
-        <span class="cart-item-price">{{ item.price }}</span>
-      </div>
+      <CartItem v-for="item in cartItems" :key="item.id" :item="item" @remove="id => { cartItems = cartItems.filter(item => item.id !== id); checkoutMessage = ''; }" />
     </div>
 
     <div v-if="cartItems.length > 0" class="cart-footer">
       <div class="cart-total">
         <span>Total</span>
-        <span>${{ (cartItems.length * 68).toFixed(2) }}</span>
+        <span data-testid="cart-total" aria-live="polite">${{ cartTotal.toFixed(2) }}</span>
       </div>
-      <button class="checkout-btn">Checkout</button>
+      <button class="checkout-btn" @click="checkoutMessage = 'Demo bag reviewed. No payment or order was submitted.'">Review demo bag</button>
+      <p role="status">{{ checkoutMessage }}</p>
     </div>
-  </div>
+  </aside>
 </template>
 
 <style>
@@ -258,8 +247,7 @@ body {
   justify-content: space-between;
   padding: 0 2rem;
   height: 56px;
-  background: rgba(13, 15, 20, 0.85);
-  backdrop-filter: blur(12px);
+  background: #0d0f14;
   border-bottom: 1px solid var(--border);
 }
 
@@ -361,11 +349,11 @@ body {
   font-size: 0.7rem;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(255,255,255,0.45);
-  background: rgba(0,0,0,0.3);
+  color: #e9edf5;
+  background: #222936;
   padding: 3px 10px;
   border-radius: 999px;
-  backdrop-filter: blur(4px);
+
 }
 
 /* ── Product info ── */
@@ -425,6 +413,9 @@ body {
 
 /* ── Options ── */
 .option-group { display: flex; flex-direction: column; gap: 0.6rem; }
+.monogram { display: flex; flex-direction: column; gap: 0.6rem; max-width: 220px; }
+.monogram input { padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: transparent; color: var(--text-heading, #fff); font: inherit; letter-spacing: .3em; text-transform: uppercase; }
+.monogram input:focus { outline: 2px solid #818cf8; outline-offset: 1px; }
 
 .option-label {
   font-size: 0.75rem;
@@ -510,7 +501,7 @@ body {
   transition: filter 0.2s, transform 0.1s;
   margin-top: 0.25rem;
 }
-.add-to-cart-btn:hover { filter: brightness(1.12); }
+.add-to-cart-btn:hover { background: #6275df; }
 .add-to-cart-btn:active { transform: scale(0.98); }
 
 /* ── Product meta ── */
@@ -536,7 +527,7 @@ body {
   inset: 0;
   z-index: 200;
   background: rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(2px);
+
   animation: fade-in 0.2s ease;
 }
 
@@ -671,7 +662,7 @@ body {
   cursor: pointer;
   transition: filter 0.2s;
 }
-.checkout-btn:hover { filter: brightness(1.12); }
+.checkout-btn:hover { background: #6275df; }
 
 /* ── Animations ── */
 @keyframes badge-bump {
@@ -698,4 +689,38 @@ body {
   from { transform: translateX(100%); }
   to   { transform: translateX(0); }
 }
+
+.playground-guide { color: var(--text); max-width: 1100px; margin: 48px auto; padding: 24px 28px; border-radius: 18px; border: 1px solid rgba(255,255,255,.1); background: rgba(255,255,255,.03); }
+.playground-guide .guide-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px; }
+.playground-guide .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; opacity: .75; }
+.playground-guide h2 { margin: 6px 0 0; font-size: 22px; letter-spacing: -.02em; }
+.playground-guide ol { list-style: none; margin: 20px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; counter-reset: step; }
+.playground-guide li { counter-increment: step; font-size: 13.5px; line-height: 1.6; opacity: .88; }
+.playground-guide li strong { display: block; margin-bottom: 4px; font-size: 14px; opacity: 1; }
+.playground-guide li strong::before { content: counter(step) " · "; opacity: .6; }
+.playground-guide kbd { font: 11.5px ui-monospace, SFMono-Regular, Menlo, monospace; padding: 1px 5px; border-radius: 4px; border: 1px solid rgba(127,127,127,.4); }
+.mcp-status { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; font-size: 13px; border: 1px solid rgba(127,127,127,.3); }
+.mcp-status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; }
+.mcp-status[data-state="online"]::before { background: #34d399; }
+.mcp-status[data-state="offline"]::before { background: #f87171; }
+.mcp-status code { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; }
+@media (max-width: 640px) { .playground-guide { margin: 32px 16px; padding: 20px; } }
+</style>
+
+<style>
+:root { --text-muted: #a4acc8; --text-faint: #939cba; }
+.page-main { max-width: 1060px; padding-top: 40px; }
+.product-layout { gap: 48px; }
+.product-image { min-height: 420px; border: 1px solid var(--border); }
+.eyebrow { color: #a4b1ff; font-size: 10px; font-weight: 700; letter-spacing: .14em; }
+.product-name { font-size: clamp(32px,4vw,44px); letter-spacing: -.04em; }
+.fit-help { position: relative; display: inline-block; margin-bottom: 20px; }
+.fit-help button, .remove-item { color: #c4ccff; background: var(--bg-muted); border: 1px solid var(--border); padding: 8px 12px; border-radius: 8px; cursor: pointer; }
+.fit-help [role=tooltip] { display: none; position: absolute; top: 100%; left: 0; width: 255px; z-index: 110; background: #282f46; border: 1px solid #67769a; border-radius: 10px; padding: 16px; font-size: 13px; }
+.fit-help:hover [role=tooltip], .fit-help:focus-within [role=tooltip] { display: block; }
+.validation-error { color: #ffb5b5; margin-bottom: 12px; font-size: 13px; }
+button:focus-visible { outline: 2px solid #aab9ff; outline-offset: 4px; }
+.add-to-cart-btn:hover { filter: none; background: #6275df; }
+@media (max-width: 650px) { .product-layout { grid-template-columns: 1fr; gap: 24px; } .product-image { min-height: 300px; } .page-main { padding-inline: 20px; } .cart-drawer { width: min(100%, 380px); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; } }
 </style>

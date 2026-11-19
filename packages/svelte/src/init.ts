@@ -24,9 +24,10 @@ export function initPointGrabSvelte(options?: Partial<PointGrabOptions>): PointG
   instance = init(options);
   instance.setComponentResolver((el) => resolveComponent(el));
   instance.setSourceResolver((el) => resolveSource(el));
+  // Keep caller-provided filters/cleaners alongside the adapter defaults.
   instance.setOptions({
-    classFilters: [svelteClassFilter],
-    htmlCleaners: svelteHtmlCleaners,
+    classFilters: [svelteClassFilter, ...(options?.classFilters ?? [])],
+    htmlCleaners: [...svelteHtmlCleaners, ...(options?.htmlCleaners ?? [])],
   });
 
   return instance;

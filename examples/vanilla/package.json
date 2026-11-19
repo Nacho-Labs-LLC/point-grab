@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "test": "node --test player-model.test.mjs"
   },
   "devDependencies": {
     "vite": "^8.2.1"

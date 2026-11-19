@@ -50,7 +50,12 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.css"]
+            "styles": [
+              "src/styles.css"
+            ],
+            "allowedCommonJsDependencies": [
+              "html2canvas"
+            ]
           },
           "configurations": {
             "production": {

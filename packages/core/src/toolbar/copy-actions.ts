@@ -36,35 +36,44 @@ export async function copyElementStyles(element: Element): Promise<boolean> {
     return false;
   }
 
-  const computed = window.getComputedStyle(element);
-  const tag = element.tagName.toLowerCase();
-  const lines: string[] = [`/* Computed styles for <${tag}> */`, `${tag} {`];
+  // Picker cursor styling is tool UI, not an authored style to export. Suspend
+  // its stylesheet while reading, without changing DOM/classes or painting a frame.
+  const pickerSheet = (document.getElementById('__point-grab-crosshair-styles__') as HTMLStyleElement | null)?.sheet;
+  const wasDisabled = pickerSheet?.disabled ?? false;
+  if (pickerSheet) pickerSheet.disabled = true;
+  try {
+    const computed = window.getComputedStyle(element);
+    const tag = element.tagName.toLowerCase();
+    const lines: string[] = [`/* Computed styles for <${tag}> */`, `${tag} {`];
 
-  const props = [
-    'display', 'position', 'top', 'right', 'bottom', 'left',
-    'width', 'height', 'min-width', 'min-height', 'max-width', 'max-height',
-    'margin', 'padding',
-    'border', 'border-radius',
-    'background', 'background-color',
-    'color', 'font', 'font-size', 'font-weight', 'font-family', 'line-height',
-    'text-align', 'text-decoration', 'text-transform',
-    'opacity', 'overflow', 'z-index',
-    'flex-direction', 'justify-content', 'align-items', 'gap',
-    'grid-template-columns', 'grid-template-rows',
-    'box-shadow', 'cursor', 'transition', 'transform',
-  ];
+    const props = [
+      'display', 'position', 'top', 'right', 'bottom', 'left',
+      'width', 'height', 'min-width', 'min-height', 'max-width', 'max-height',
+      'margin', 'padding',
+      'border', 'border-radius',
+      'background', 'background-color',
+      'color', 'font', 'font-size', 'font-weight', 'font-family', 'line-height',
+      'text-align', 'text-decoration', 'text-transform',
+      'opacity', 'overflow', 'z-index',
+      'flex-direction', 'justify-content', 'align-items', 'gap',
+      'grid-template-columns', 'grid-template-rows',
+      'box-shadow', 'cursor', 'transition', 'transform',
+    ];
 
-  for (const prop of props) {
-    const value = computed.getPropertyValue(prop);
-    if (value && value !== 'none' && value !== 'normal' && value !== 'auto' && value !== '0px' && value !== 'visible') {
-      lines.push(`  ${prop}: ${value};`);
+    for (const prop of props) {
+      const value = computed.getPropertyValue(prop);
+      if (value && value !== 'none' && value !== 'normal' && value !== 'auto' && value !== '0px' && value !== 'visible') {
+        lines.push(`  ${prop}: ${value};`);
+      }
     }
+
+    lines.push('}');
+    const css = lines.join('\n');
+
+    return writeAndToast(css, 'Styles copied to clipboard');
+  } finally {
+    if (pickerSheet) pickerSheet.disabled = wasDisabled;
   }
-
-  lines.push('}');
-  const css = lines.join('\n');
-
-  return writeAndToast(css, 'Styles copied to clipboard');
 }
 
 export async function copyWithComment(
@@ -127,6 +136,7 @@ async function writeAndToast(text: string, message: string, context?: ElementCon
     } : undefined);
     return true;
   } catch {
+    showToast('Failed to copy to clipboard');
     return false;
   }
 }

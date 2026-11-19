@@ -11,8 +11,9 @@
     "build": "PATH=\"$PWD/scripts/bin:$PATH\" corepack pnpm exec turbo run build",
     "dev": "PATH=\"$PWD/scripts/bin:$PATH\" corepack pnpm exec turbo run dev",
     "test": "PATH=\"$PWD/scripts/bin:$PATH\" corepack pnpm exec turbo run test",
-    "test:e2e": "playwright test",
-    "test:e2e:ui": "playwright test --ui",
+    "test:e2e": "PATH=\"$PWD/scripts/bin:$PATH\" node scripts/test-e2e.mjs",
+    "test:e2e:review": "PATH=\"$PWD/scripts/bin:$PATH\" node scripts/review-e2e.mjs",
+    "test:e2e:ui": "playwright test --config=playwright.framework-matrix.config.ts --ui",
     "lint": "PATH=\"$PWD/scripts/bin:$PATH\" corepack pnpm exec turbo run lint",
     "clean": "PATH=\"$PWD/scripts/bin:$PATH\" corepack pnpm exec turbo run clean",
     "verify:release": "node scripts/verify-release-artifacts.mjs"

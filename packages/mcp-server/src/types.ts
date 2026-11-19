@@ -8,6 +8,11 @@ export interface ComponentStackEntry {
 
 /** Context captured when an element is inspected */
 export interface GrabContext {
+  screenGrab?: {
+    mimeType: 'image/png'; data: string; width: number; height: number;
+    region: { x: number; y: number; width: number; height: number };
+    comment: string;
+  };
   html: string;
   componentName: string | null;
   filePath: string | null;

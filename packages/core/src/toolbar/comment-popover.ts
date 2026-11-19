@@ -41,6 +41,8 @@ export function createCommentPopover(callbacks: CommentPopoverCallbacks): Commen
         border-radius: 12px;
         box-shadow: 0 8px 24px var(--point-grab-popover-shadow, rgba(0, 0, 0, 0.5));
         width: 340px;
+        max-width: calc(100vw - 24px);
+        box-sizing: border-box;
         padding: 14px;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         opacity: 0;
