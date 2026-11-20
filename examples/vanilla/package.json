@@ -8,7 +8,7 @@
     "test": "node --test player-model.test.mjs"
   },
   "devDependencies": {
-    "vite": "^8.2.1"
+    "vite": "^8.3.8"
   },
   "dependencies": {
     "@point-grab/core": "workspace:*"

@@ -4,7 +4,7 @@
 
 ## Candidate and version decision
 
-- Candidate baseline: **`22a639d`** on `naterchrdsn/recover-inflight-work-release`, consolidated in `/workspace/point-grab`. Subsequent release-preparation edits require fresh verification; this is not a tag or published version.
+- Release implementation and CodeQL fixes merged via PR #66 at **`0b28f9a`** on `main`. The dependency refresh is prepared on `chore/dependency-security-v020` in the same `/workspace/point-grab` checkout. These dependency changes require their own review, CI and merge before tagging; no release tag exists yet.
 - All eight package manifests now declare **`0.2.0`**, coordinated for the breaking default shortcut. Internal `workspace:*` references are retained in source and rewritten to the selected package version by pnpm packing; do not publish package directories with unresolved workspace references. The MCP handshake version is aligned as well.
 - This document records local verification and pending release gates. Local results are not hosted CI, deployment or registry results. No publication is authorized by these notes.
 
@@ -17,7 +17,9 @@
 
 ## Evidence boundary
 
-The v0.2.0 draft candidate passed frozen installation, root unit/lint/build gates and packing/clean installation for all eight packages. Retained candidate tarballs are under `/workspace/point-grab-release-evidence/v0.2.0-draft-tarballs/`; every packed manifest is v0.2.0, with internal workspace references rewritten to v0.2.0. A separate clean installation of the MCP tarball completed a real stdio SDK handshake reporting v0.2.0 and listing its tools. This handshake is not capture persistence/image-display certification. Gate log: `v0.2.0-draft-gates.log`. The 315-browser-test implementation run predates this metadata-only version bump; no new full browser recording or hosted CI pass is claimed.
+The dependency-refresh candidate passed frozen installation, root unit/lint/build gates and packing/clean installation for all eight packages. Current tarballs are under `/workspace/point-grab-release-evidence/v0.2.0-dependency-tarballs/`; packed versions and internal references are v0.2.0. The updated dependency set passed **315 local Chromium tests across 11 suites**. Final root/package gates ran after the later metadata-only peer-floor and CI-runtime edits; the browser run used the same resolved framework/runtime versions. No new video recording or hosted dependency-PR CI pass is claimed here.
+
+Fresh tarball consumers imported all eight public package entry points in a Node/jsdom environment and type-checked their imports with TypeScript 5.9.3 (`skipLibCheck` enabled; this is not an exhaustive declaration/API test). Separate Solid consumers at the supported minimums (Solid 1.9.18 with Vite 6.4.5, 7.3.7 and 8.3.3) passed development source transformation and production builds. A clean-installed MCP 0.2.0 tarball with SDK 1.32.2 completed real stdio handshake/tool listing, rejected an untrusted Origin, accepted an explicitly allowed Origin, persisted PNG+comment input and returned the same image through its tool and resource APIs. All five consumer graphs audited clean. This does **not** certify image display in an external AI application's UI. Logs: `dependency-update-final-gates.log`, `dependency-update-browser-gates.log`, `dependency-update-consumers-final.log` in the release-evidence directory.
 
 The historical **170 executions included 20 duplicates**: `playwright.screen-grab.config.ts` aliases the page-capture suite. That total is not 170 independent tests and is not a current candidate pass. Older demo-rejection descriptions and historical unit/browser totals must not substitute for newly collected reports. `docs/framework-verification.md` retains historical assertions; interpret them as historical, not release certification.
 
@@ -30,7 +32,7 @@ The historical **170 executions included 20 duplicates**: `playwright.screen-gra
 - [ ] Verify loopback binding, origin rejection/explicit allowlisting, custom host/port transport setup and privacy limitations against the final artifact.
 - [ ] Review final diff and repository cleanliness; confirm packaging and CI wiring. Record actual hosted CI results if run—local results are not hosted CI evidence.
 - [x] Obtain approval for commit/push and draft release preparation.
-- [ ] Assess/remediate the current workspace production-dependency audit findings before publication: 1 critical, 11 high, 20 moderate and 5 low. This workspace scope includes demos/site and is not a reachability finding for every published package. The default-branch GitHub alert banner is a different inventory. Audit evidence: `/workspace/point-grab-release-evidence/release-runtime-audit.json`.
+- [x] Refresh compatible dependencies and remediate the captured audit inventory. Production and full-workspace audit runs on the dependency candidate report **zero findings**, replacing the earlier 1 critical/11 high/20 moderate/5 low inventory. Full audit evidence: `/workspace/point-grab-release-evidence/dependency-update-audit-final.json`. These are point-in-time resolved-tree results, not a promise about arbitrary consumer lockfiles or future advisories. Repeat after resolution changes and check clean-installed release consumers.
 - [ ] Obtain separate final approval for public GitHub release/npm publication after outstanding gates pass. Draft preparation does not authorize publishing.
 
 ## Local verification — November 17, 2026
