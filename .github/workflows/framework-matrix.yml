@@ -15,10 +15,10 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
-      - uses: pnpm/action-setup@v6.0.10
+      - uses: pnpm/action-setup@v6.1.1
       - uses: actions/setup-node@v7
         with:
-          node-version: 24.15.0
+          node-version: 24.22.3
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       # Build only packages, topologically and sequentially; don't start the demo fleet.
