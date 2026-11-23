@@ -52,7 +52,7 @@
   },
   "devDependencies": {
     "@point-grab/core": "workspace:*",
-    "jsdom": "^30.1.3",
+    "jsdom": "^31.0.1",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
     "vitest": "^4.1.12"
