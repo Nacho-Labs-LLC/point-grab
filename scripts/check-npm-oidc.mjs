@@ -36,7 +36,7 @@ export async function diagnoseNpmOidc({ env = process.env, fetchImpl = fetch, ma
     }
     stage = 'exchange';
     status = undefined;
-    const exchange = await fetchImpl(`https://registry.npmjs.org/-/npm/v1/oidc/token/exchange/package/${packageName.replace('/', '%2f')}`, {
+    const exchange = await fetchImpl(`https://registry.npmjs.org/-/npm/v1/oidc/token/exchange/package/${packageName.replaceAll('/', '%2f')}`, {
       method: 'POST', headers: { Accept: 'application/json', Authorization: `Bearer ${idToken}` },
       redirect: 'error', signal: AbortSignal.timeout(15000),
     });

@@ -95,7 +95,7 @@ const failureCases = [
   ['wrong asset URL', f => { f.release.assets.at(-1).browser_download_url = 'https://evil.invalid/file'; }, /asset pin/],
   ['registry 500 is not absence', f => { f.override = url => url.endsWith('mcp-server/0.2.0') ? new Response('do-not-log', { status: 500 }) : undefined; }, /HTTP 500/],
   ['registry 403 is not absence', f => { f.override = url => url.endsWith('mcp-server/0.2.0') ? new Response('do-not-log', { status: 403 }) : undefined; }, /HTTP 403/],
-  ['mismatched existing bytes', f => { f.override = url => url.includes('registry.npmjs.org') && url.endsWith('mcp-server-0.2.0.tgz') ? new Response('different') : undefined; }, /SHA256 mismatch/],
+  ['mismatched existing bytes', f => { f.override = url => new URL(url).origin === 'https://registry.npmjs.org' && url.endsWith('mcp-server-0.2.0.tgz') ? new Response('different') : undefined; }, /SHA256 mismatch/],
   ['unsafe existing URL', f => { f.override = url => url.endsWith('mcp-server/0.2.0') ? Response.json({ name: '@point-grab/mcp-server', version: '0.2.0', dist: { tarball: 'https://registry.npmjs.org/@point-grab/mcp-server/-/mcp-server-0.2.0.tgz?token=secret' } }) : undefined; }, /tarball URL/],
   ['wrong latest', f => { f.latest = '0.1.0'; }, /latest/],
   ['Solid missing', f => { f.present.delete('solid'); }, /Solid bootstrap/],
