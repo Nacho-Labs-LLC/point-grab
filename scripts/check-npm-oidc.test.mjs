@@ -100,7 +100,7 @@ test('rejection diagnostics cannot expose credentials through other fields and p
   });
 });
 
-test('manual workflow dispatch is exchange-only and cannot enter the release publisher', () => {
+test('diagnostic dispatch is exchange-only and cannot enter the release publisher', () => {
   const workflow = readFileSync(new URL('../.github/workflows/npm-publish.yml', import.meta.url), 'utf8');
   assert.match(workflow, /workflow_dispatch:/);
   const [publisher, diagnostic] = workflow.split('\n  diagnose:');

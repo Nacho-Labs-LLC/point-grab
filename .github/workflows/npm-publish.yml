@@ -3,8 +3,17 @@ name: Publish npm packages
 on:
   release:
     types: [published]
-  # Diagnostics only: manual dispatch must never publish packages.
+  # Default dispatch is diagnostic-only; recovery is explicitly pinned to v0.2.0.
   workflow_dispatch:
+    inputs:
+      operation:
+        description: Diagnose only, or resume the approved v0.2.0 publication
+        type: choice
+        required: true
+        default: diagnose
+        options:
+          - diagnose
+          - recover-v0.2.0
 
 permissions:
   contents: read
@@ -16,6 +25,9 @@ jobs:
     name: Publish point-grab packages
     runs-on: ubuntu-latest
     environment: npm-publish
+    concurrency:
+      group: point-grab-npm-publish
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v7
         with:
@@ -81,9 +93,83 @@ jobs:
             npm publish "$RUNNER_TEMP/point-grab-verified-tarballs/point-grab-${dir#packages/}-$version.tgz" --provenance --access public
           done
 
+  # Controller is pinned to this run; source stays on the original release.
+  recover:
+    if: github.event_name == 'workflow_dispatch' && inputs.operation == 'recover-v0.2.0'
+    name: Recover approved v0.2.0 npm publication
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    environment: npm-publish
+    concurrency:
+      group: point-grab-npm-publish
+      cancel-in-progress: false
+    defaults:
+      run:
+        working-directory: release-source
+    steps:
+      - name: Check out recovery controller
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          path: .recovery-controller
+          persist-credentials: false
+
+      - name: Check out immutable release source
+        uses: actions/checkout@v7
+        with:
+          ref: 7d03457cb315d685835afcf2448e36524a7a2923
+          path: release-source
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@v6.1.1
+        with:
+          version: 9.15.0
+          package_json_file: release-source/package.json
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.22.3
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+          cache-dependency-path: release-source/pnpm-lock.yaml
+
+      - name: Test recovery controller and dispatch boundaries
+        working-directory: .recovery-controller
+        run: node --test scripts/recover-npm-v020.test.mjs scripts/recovery-workflow.test.mjs scripts/check-npm-oidc.test.mjs scripts/npm-recovery-trust.test.mjs
+
+      - name: Preflight trusted publishing for every remaining package
+        run: |
+          node --input-type=module <<'NODE'
+          import { diagnoseNpmOidc } from '../.recovery-controller/scripts/check-npm-oidc.mjs';
+          let failed = false;
+          for (const name of ['core', 'angular', 'react', 'svelte', 'vue', 'web-components', 'mcp-server']) {
+            const result = await diagnoseNpmOidc({
+              packageName: `@point-grab/${name}`,
+              mask: (value) => console.log(`::add-mask::${value.replaceAll('%', '%25').replaceAll('\r', '%0D').replaceAll('\n', '%0A')}`),
+            });
+            console.log(JSON.stringify(result));
+            if (!result.ok) failed = true;
+          }
+          if (failed) process.exitCode = 1;
+          NODE
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run build
+      - run: pnpm run test
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm run test:e2e
+      - run: pnpm run verify:release
+        env:
+          POINT_GRAB_RELEASE_DIR: ${{ runner.temp }}/point-grab-recovery-validation
+
+      # Publish original GitHub assets, never newly rebuilt tarballs.
+      # Preflight every package before the first registry write.
+      - name: Resume exact approved artifacts and verify registry readback
+        run: node ../.recovery-controller/scripts/recover-npm-v020.mjs
+
   diagnose:
     name: Diagnose npm trusted publishing (no publication)
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' && (inputs.operation == 'diagnose' || inputs.operation == '')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     environment: npm-publish

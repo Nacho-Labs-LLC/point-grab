@@ -1,6 +1,8 @@
 import { pathToFileURL } from 'node:url';
 
-export async function diagnoseNpmOidc({ env = process.env, fetchImpl = fetch, mask = () => {} } = {}) {
+export async function diagnoseNpmOidc({ env = process.env, fetchImpl = fetch, mask = () => {}, packageName = '@point-grab/core' } = {}) {
+  const packages = ['core', 'angular', 'react', 'solid', 'svelte', 'vue', 'web-components', 'mcp-server'].map((name) => `@point-grab/${name}`);
+  if (!packages.includes(packageName)) return { ok: false, stage: 'context', reason: 'Unapproved package name' };
   if (env.GITHUB_ACTIONS !== 'true') return { ok: false, stage: 'context' };
   if (env.NPM_ID_TOKEN) return { ok: false, stage: 'context', reason: 'Unexpected NPM_ID_TOKEN override; diagnostic would not match the npm CLI token path' };
   const requestToken = env.ACTIONS_ID_TOKEN_REQUEST_TOKEN;
@@ -34,7 +36,7 @@ export async function diagnoseNpmOidc({ env = process.env, fetchImpl = fetch, ma
     }
     stage = 'exchange';
     status = undefined;
-    const exchange = await fetchImpl('https://registry.npmjs.org/-/npm/v1/oidc/token/exchange/package/@point-grab%2fcore', {
+    const exchange = await fetchImpl(`https://registry.npmjs.org/-/npm/v1/oidc/token/exchange/package/${packageName.replace('/', '%2f')}`, {
       method: 'POST', headers: { Accept: 'application/json', Authorization: `Bearer ${idToken}` },
       redirect: 'error', signal: AbortSignal.timeout(15000),
     });
@@ -55,10 +57,10 @@ export async function diagnoseNpmOidc({ env = process.env, fetchImpl = fetch, ma
         .replace(/[\x00-\x20\x7f]+/g, ' ').slice(0, 400);
       const recognizedCodes = ['E400', 'E401', 'E403', 'E404', 'E409', 'E422', 'E429', 'E500', 'E502', 'E503', 'E504', 'EAUTH', 'ENEEDAUTH', 'EOIDC'];
       const code = recognizedCodes.includes(exchanged?.code) && !credentials.includes(exchanged.code) ? exchanged.code : 'unreported';
-      return { ok: false, stage, status: exchange.status, code, reason, package: '@point-grab/core', identity };
+      return { ok: false, stage, status: exchange.status, code, reason, package: packageName, identity };
     }
     if (typeof exchanged?.token !== 'string' || !exchanged.token) return { ok: false, stage, status: exchange.status, reason: 'Registry exchange response missing credential', identity };
-    return { ok: true, stage, status: exchange.status, package: '@point-grab/core', identity };
+    return { ok: true, stage, status: exchange.status, package: packageName, identity };
   } catch {
     // Never return exception text: fetch/parser errors can contain URLs or credentials.
     return { ok: false, stage, status, reason: 'Request or response processing failed; raw details withheld', identity };
