@@ -1,4 +1,4 @@
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -136,13 +136,28 @@ export async function runRecovery({ fetchImpl = fetch, artifacts = ARTIFACTS, ch
   } finally { rmSync(dir, { recursive: true, force: true }); }
 }
 
-function defaultNpmRunner(args, options) {
-  execFileSync('npm', args, { ...options, stdio: 'pipe', timeout: 180000, maxBuffer: 1024 * 1024 });
+export function summarizeNpmResult({ status, stdout, stderr }) {
+  const out = String(stdout ?? ''), err = String(stderr ?? '');
+  const allowedCodes = ['E400', 'E401', 'E403', 'E404', 'E409', 'E422', 'E429', 'E500', 'E502', 'E503', 'E504', 'EAUTH', 'ENEEDAUTH', 'EOIDC', 'EUSAGE', 'EINTEGRITY'];
+  return {
+    exitStatus: Number.isInteger(status) ? status : null,
+    publishedMarker: ARTIFACTS.some(({ name }) => out.split(/\r?\n/).includes(`+ @point-grab/${name}@0.2.0`)),
+    dryRun: /\(dry-run\)/.test(out + err),
+    putStatuses: [...err.matchAll(/\bhttp fetch PUT ([1-5][0-9]{2})\b/g)].map(match => Number(match[1])).slice(0, 10),
+    errorCodes: allowedCodes.filter(code => err.split(/\r?\n/).includes(`npm error code ${code}`)),
+  };
+}
+
+export function defaultNpmRunner(args, options, { spawnImpl = spawnSync, log = console.log } = {}) {
+  const result = spawnImpl('npm', [...args, '--loglevel=http', '--dry-run=false', '--usage=false', '--tag=latest'], { ...options, encoding: 'utf8', stdio: 'pipe', timeout: 180000, maxBuffer: 1024 * 1024 });
+  const summary = summarizeNpmResult(result);
+  log(JSON.stringify({ stage: 'npm-result', ...summary }));
+  if (result.error || result.status !== 0 || summary.dryRun || !summary.publishedMarker) fail('npm process did not confirm a non-dry-run publication');
 }
 async function verifyVisible(artifact, fetchImpl, sleep) {
-  for (let attempt = 0; attempt < 5; attempt++) {
+  for (let attempt = 0; attempt < 60; attempt++) {
     if (await registryState(artifact, fetchImpl, true)) return;
-    if (attempt < 4) await sleep(2000);
+    if (attempt < 59) await sleep(10000);
   }
   fail(`Registry version still absent after bounded verification: @point-grab/${artifact.name}`);
 }

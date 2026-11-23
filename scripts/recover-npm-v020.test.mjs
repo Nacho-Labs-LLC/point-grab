@@ -160,12 +160,12 @@ test('post-publish 500 aborts immediately and never publishes later packages', a
   assert.equal(f.publishes.length, 1);
 });
 
-test('persistent post-publish 404 stops after five reads without republishing', async () => {
+test('persistent post-publish 404 stops after a bounded ten-minute window without republishing', async () => {
   const { runRecovery } = await load(); const f = fixture(); f.present.delete('core');
   let reads = 0, sleeps = 0;
   f.override = url => { if (f.publishes.length && url.endsWith('core/0.2.0')) { reads++; return new Response('', { status: 404 }); } };
-  await assert.rejects(runRecovery({ ...f, sleep: async () => { sleeps++; } }), /bounded verification/);
-  assert.equal(reads, 5); assert.equal(sleeps, 4); assert.equal(f.publishes.length, 1);
+  await assert.rejects(runRecovery({ ...f, sleep: async ms => { assert.equal(ms, 10000); sleeps++; } }), /bounded verification/);
+  assert.equal(reads, 60); assert.equal(sleeps, 59); assert.equal(f.publishes.length, 1);
 });
 
 test('final verification checks previously skipped packages again', async () => {
@@ -227,6 +227,32 @@ test('unknown CLI arguments never start network', async () => {
 });
 
 const load = () => import('./recover-npm-v020.mjs');
+test('npm diagnostics expose only bounded allowlisted evidence, never raw process output', async () => {
+  const { summarizeNpmResult } = await load();
+  assert.equal(typeof summarizeNpmResult, 'function');
+  const summary = summarizeNpmResult({ status: 0, stdout: '+ @point-grab/core@0.2.0\nnpm_fixture_secret\n', stderr: 'npm notice Publishing to https://registry.npmjs.org/ (dry-run)\nnpm http fetch PUT 201 https://registry.npmjs.org/@point-grab%2fcore\nBearer fixture-secret' });
+  assert.deepEqual(summary, { exitStatus: 0, publishedMarker: true, dryRun: true, putStatuses: [201], errorCodes: [] });
+  assert(!JSON.stringify(summary).includes('secret'));
+  assert.deepEqual(summarizeNpmResult({ status: 1, stdout: '', stderr: 'npm error code E403\nnpm error code npm_secret\nhttps://private.invalid/' }), { exitStatus: 1, publishedMarker: false, dryRun: false, putStatuses: [], errorCodes: ['E403'] });
+});
+
+test('real process boundary requires a publish marker and emits only sanitized diagnostics', async () => {
+  const { defaultNpmRunner } = await load();
+  assert.equal(typeof defaultNpmRunner, 'function');
+  const logs = [], options = { cwd: '/fixture', env: {} };
+  defaultNpmRunner(['publish', '/fixture/core.tgz'], options, { log: value => logs.push(value), spawnImpl: (command, args, opts) => {
+    assert.equal(command, 'npm');
+    assert.deepEqual(args, ['publish', '/fixture/core.tgz', '--loglevel=http', '--dry-run=false', '--usage=false', '--tag=latest']);
+    assert.equal(opts.cwd, '/fixture');
+    return { status: 0, stdout: '+ @point-grab/core@0.2.0\n', stderr: 'npm http fetch PUT 201 https://registry.npmjs.org/@point-grab%2fcore\nfixture-secret' };
+  } });
+  assert.equal(JSON.parse(logs[0]).publishedMarker, true);
+  assert(!logs.join('').includes('fixture-secret'));
+  for (const result of [{ status: 0, stdout: 'Usage: npm publish', stderr: '' }, { status: 1, stdout: '', stderr: 'npm error code E403' }, { status: 0, stdout: '+ @point-grab/core@0.2.0', stderr: '(dry-run)' }]) {
+    assert.throws(() => defaultNpmRunner([], options, { log: () => {}, spawnImpl: () => result }), /npm process/);
+  }
+});
+
 test('local CLI refuses before network or npm', async () => {
   const { main } = await load();
   let requests = 0;
