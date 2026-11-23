@@ -3,6 +3,8 @@ name: Publish npm packages
 on:
   release:
     types: [published]
+  # Diagnostics only: manual dispatch must never publish packages.
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -10,6 +12,7 @@ permissions:
 
 jobs:
   publish:
+    if: github.event_name == 'release' && github.event.action == 'published'
     name: Publish point-grab packages
     runs-on: ubuntu-latest
     environment: npm-publish
@@ -77,3 +80,27 @@ jobs:
             version=$(node -p "require('./$dir/package.json').version")
             npm publish "$RUNNER_TEMP/point-grab-verified-tarballs/point-grab-${dir#packages/}-$version.tgz" --provenance --access public
           done
+
+  diagnose:
+    name: Diagnose npm trusted publishing (no publication)
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: npm-publish
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24.22.3
+          package-manager-cache: false
+
+      - name: Verify diagnostic safety tests
+        run: node --test scripts/check-npm-oidc.test.mjs
+
+      # This dispatch has its selected ref/event claims, not the original release claims.
+      # A successful exchange here is not proof that npm publication succeeded.
+      - name: Inspect npm-audience token exchange without publishing
+        run: node scripts/check-npm-oidc.mjs
