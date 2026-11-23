@@ -61,7 +61,7 @@
     }
   },
   "dependencies": {
-    "@babel/core": "^7.29.13",
+    "@babel/core": "^8.1.2",
     "@babel/types": "^7.29.14"
   },
   "devDependencies": {
